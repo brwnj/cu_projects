@@ -1,0 +1,8 @@
+#!/bin/sh
+
+while true
+do
+    date
+    ssh -C brownj.dyndns.org -R 2223:127.0.0.1:22 -N
+    sleep 3
+done

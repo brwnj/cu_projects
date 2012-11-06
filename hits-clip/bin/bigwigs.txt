@@ -1,0 +1,265 @@
+track type=bigWig name='MP10.rmd.pos.align' description='MP10 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP10.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP10.rmd.neg.align' description='MP10 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP10.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP10.novo.CIMS' description='MP10 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP10.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP2.rmd.pos.align' description='MP2 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP2.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP2.rmd.neg.align' description='MP2 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP2.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP2.novo.CIMS' description='MP2 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP2.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP21.rmd.pos.align' description='MP21 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP21.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP21.rmd.neg.align' description='MP21 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP21.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP21.novo.CIMS' description='MP21 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP21.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP23.rmd.pos.align' description='MP23 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP23.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP23.rmd.neg.align' description='MP23 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP23.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP1.rmd.pos.align' description='MP1 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP1.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP23.novo.CIMS' description='MP23 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP23.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP20.rmd.pos.align' description='MP20 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP20.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP1.rmd.neg.align' description='MP1 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP1.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP20.rmd.neg.align' description='MP20 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP20.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP1.novo.CIMS' description='MP1 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP1.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP11.rmd.pos.align' description='MP11 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP11.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP20.novo.CIMS' description='MP20 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP20.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP11.rmd.neg.align' description='MP11 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP11.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP11.novo.CIMS' description='MP11 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP11.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP22.rmd.pos.align' description='MP22 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP22.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP22.rmd.neg.align' description='MP22 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP22.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP22.novo.CIMS' description='MP22 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP22.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP38.rmd.pos.align' description='MP38 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP38.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP38.rmd.neg.align' description='MP38 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP38.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP38.novo.CIMS' description='MP38 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP38.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.ACTG.rmd.pos.align' description='MP39.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.ACTG.rmd.neg.align' description='MP39.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.ACTG.novo.CIMS' description='MP39.ACTG Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.ACTG.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP36.rmd.pos.align' description='MP36 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP36.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP36.rmd.neg.align' description='MP36 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP36.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP36.novo.CIMS' description='MP36 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP36.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP34.rmd.pos.align' description='MP34 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP34.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP34.rmd.neg.align' description='MP34 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP34.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP34.novo.CIMS' description='MP34 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP34.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP35.rmd.pos.align' description='MP35 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP35.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP35.rmd.neg.align' description='MP35 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP35.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP35.novo.CIMS' description='MP35 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP35.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP30.rmd.pos.align' description='MP30 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP30.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP30.rmd.neg.align' description='MP30 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP30.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP30.novo.CIMS' description='MP30 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP30.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP31.rmd.pos.align' description='MP31 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP31.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP31.rmd.neg.align' description='MP31 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP31.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP31.novo.CIMS' description='MP31 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP31.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP24.rmd.pos.align' description='MP24 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP24.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP24.rmd.neg.align' description='MP24 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP24.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP24.novo.CIMS' description='MP24 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP24.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.ACTG.rmd.pos.align' description='MP44.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.ACTG.rmd.neg.align' description='MP44.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.ACTG.novo.CIMS' description='MP44.ACTG Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.ACTG.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP40.rmd.pos.align' description='MP40 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP40.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP40.rmd.neg.align' description='MP40 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP40.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP40.novo.CIMS' description='MP40 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP40.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.TCGA.rmd.pos.align' description='MP39.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.TCGA.rmd.neg.align' description='MP39.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP39.TCGA.novo.CIMS' description='MP39.TCGA Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP39.TCGA.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP41.rmd.pos.align' description='MP41 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP41.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP41.rmd.neg.align' description='MP41 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP41.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.ACTG.rmd.pos.align' description='MP43.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP41.novo.CIMS' description='MP41 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP41.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.ACTG.rmd.neg.align' description='MP43.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.ACTG.novo.CIMS' description='MP43.ACTG Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.ACTG.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.ACTG.rmd.pos.align' description='MP42.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.ACTG.rmd.neg.align' description='MP42.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.ACTG.novo.CIMS' description='MP42.ACTG Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.ACTG.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.TCGA.rmd.pos.align' description='MP42.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.TCGA.rmd.neg.align' description='MP42.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP42.TCGA.novo.CIMS' description='MP42.TCGA Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.TCGA.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.TCGA.rmd.pos.align' description='MP43.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.TCGA.rmd.neg.align' description='MP43.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP43.TCGA.novo.CIMS' description='MP43.TCGA Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.TCGA.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK21.rmd.pos.align' description='PK21 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK21.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK21.rmd.neg.align' description='PK21 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK21.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK21.novo.CIMS' description='PK21 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK21.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK11.rmd.pos.align' description='PK11 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK11.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK11.rmd.neg.align' description='PK11 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK11.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK11.novo.CIMS' description='PK11 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK11.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK12.rmd.pos.align' description='PK12 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK12.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK12.rmd.neg.align' description='PK12 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK12.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK12.novo.CIMS' description='PK12 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK12.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.TCGA.rmd.pos.align' description='MP45.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.TCGA.rmd.neg.align' description='MP45.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.TCGA.novo.CIMS' description='MP45.TCGA Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.TCGA.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.ACTG.rmd.pos.align' description='MP45.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.ACTG.rmd.neg.align' description='MP45.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP45.ACTG.novo.CIMS' description='MP45.ACTG Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.ACTG.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP9.rmd.pos.align' description='MP9 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP9.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP7.rmd.pos.align' description='MP7 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP7.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP9.rmd.neg.align' description='MP9 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP9.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP7.rmd.neg.align' description='MP7 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP7.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP9.novo.CIMS' description='MP9 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP9.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP7.novo.CIMS' description='MP7 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP7.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.TCGA.rmd.pos.align' description='MP44.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.TCGA.rmd.neg.align' description='MP44.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP44.TCGA.novo.CIMS' description='MP44.TCGA Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.TCGA.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK42.rmd.pos.align' description='PK42 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK42.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK42.rmd.neg.align' description='PK42 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK42.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK42.novo.CIMS' description='PK42 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK42.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK31.rmd.pos.align' description='PK31 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK31.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK31.rmd.neg.align' description='PK31 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK31.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK31.novo.CIMS' description='PK31 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK31.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK23.rmd.pos.align' description='PK23 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK23.rmd.neg.align' description='PK23 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK23.novo.CIMS' description='PK23 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK32.rmd.pos.align' description='PK32 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK32.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK24.rmd.pos.align' description='PK24 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK24.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK32.rmd.neg.align' description='PK32 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK32.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK24.rmd.neg.align' description='PK24 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK24.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK32.novo.CIMS' description='PK32 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK32.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK24.novo.CIMS' description='PK24 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK24.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK22.rmd.pos.align' description='PK22 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK22.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK22.rmd.neg.align' description='PK22 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK22.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK22.novo.CIMS' description='PK22 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK22.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK33.rmd.pos.align' description='PK33 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK33.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK33.rmd.neg.align' description='PK33 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK33.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK33.novo.CIMS' description='PK33 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK33.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK41.rmd.pos.align' description='PK41 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK41.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK41.rmd.neg.align' description='PK41 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK41.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK41.novo.CIMS' description='PK41 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK41.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK52.rmd.pos.align' description='PK52 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK52.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK52.rmd.neg.align' description='PK52 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK52.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK52.novo.CIMS' description='PK52 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK52.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK54.rmd.pos.align' description='PK54 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK54.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK54.rmd.neg.align' description='PK54 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK54.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK53.rmd.pos.align' description='PK53 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK53.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK54.novo.CIMS' description='PK54 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK54.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK53.novo.CIMS' description='PK53 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK53.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK51.rmd.pos.align' description='PK51 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK51.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK51.rmd.neg.align' description='PK51 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK51.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK51.novo.CIMS' description='PK51 Novoalign CIMS (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK51.novoalign.cims.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+
+sandbox::
+/data/home/brownj/public_html/hits-clip/20120423
+
+# HS27A
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS27A.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS27A.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS27A.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS27A.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP1.peaks.track.001.bed.gz
+track type=bigWig name='MP1.rmd.pos.align' description='MP1 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP1.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP1.rmd.neg.align' description='MP1 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP1.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP21.peaks.track.001.bed.gz
+track type=bigWig name='MP21.rmd.pos.align' description='MP21 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP21.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP21.rmd.neg.align' description='MP21 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP21.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP35.peaks.track.001.bed.gz
+track type=bigWig name='MP35.rmd.pos.align' description='MP35 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP35.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='MP35.rmd.neg.align' description='MP35 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP35.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+# HS5
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS5.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS5.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS5.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/HS5.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP2.peaks.track.001.bed.gz
+track type=bigWig name='MP2.rmd.pos.align' description='MP2 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP2.pos.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='MP2.rmd.neg.align' description='MP2 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP2.neg.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP20.peaks.track.001.bed.gz
+track type=bigWig name='MP20.rmd.pos.align' description='MP20 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP20.pos.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='MP20.rmd.neg.align' description='MP20 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP20.neg.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP34.peaks.track.001.bed.gz
+track type=bigWig name='MP34.rmd.pos.align' description='MP34 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP34.pos.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='MP34.rmd.neg.align' description='MP34 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP34.neg.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+# hMSC
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/hMSC.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/hMSC.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/hMSC.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/hMSC.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP36.peaks.track.001.bed.gz
+track type=bigWig name='MP36.rmd.pos.align' description='MP36 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP36.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='MP36.rmd.neg.align' description='MP36 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP36.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP43.ACTG.peaks.track.001.bed.gz
+track type=bigWig name='MP43.ACTG.rmd.pos.align' description='MP43.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='MP43.ACTG.rmd.neg.align' description='MP43.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP43.TCGA.peaks.track.001.bed.gz
+track type=bigWig name='MP43.TCGA.rmd.pos.align' description='MP43.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='MP43.TCGA.rmd.neg.align' description='MP43.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP43.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP44.ACTG.peaks.track.001.bed.gz
+track type=bigWig name='MP44.ACTG.rmd.pos.align' description='MP44.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='MP44.ACTG.rmd.neg.align' description='MP44.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP44.TCGA.peaks.track.001.bed.gz
+track type=bigWig name='MP44.TCGA.rmd.pos.align' description='MP44.TCGA Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.TCGA.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='MP44.TCGA.rmd.neg.align' description='MP44.TCGA Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP44.TCGA.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+# BMEC
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BMEC.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BMEC.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BMEC.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BMEC.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP42.ACTG.peaks.track.001.bed.gz
+track type=bigWig name='MP42.ACTG.rmd.pos.align' description='MP42.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='MP42.ACTG.rmd.neg.align' description='MP42.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP42.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MP45.ACTG.peaks.track.001.bed.gz
+track type=bigWig name='MP45.ACTG.rmd.pos.align' description='MP45.ACTG Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.ACTG.pos.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='MP45.ACTG.rmd.neg.align' description='MP45.ACTG Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/MP45.ACTG.neg.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+
+
+#MCF7
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7.both.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK11.peaks.track.001.bed.gz
+track type=bigWig name='PK11.rmd.pos.align' description='PK11 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK11.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK11.rmd.neg.align' description='PK11 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK11.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK31.peaks.track.001.bed.gz
+track type=bigWig name='PK31.rmd.pos.align' description='PK31 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK31.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK31.rmd.neg.align' description='PK31 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK31.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK51.peaks.track.001.bed.gz
+track type=bigWig name='PK51.rmd.pos.align' description='PK51 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK51.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK51.rmd.neg.align' description='PK51 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK51.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+# MCF7 + estrogen
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7estr.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7estr.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7estr.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MCF7estr.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK12.peaks.track.001.bed.gz
+track type=bigWig name='PK12.rmd.pos.align' description='PK12 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK12.pos.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='PK12.rmd.neg.align' description='PK12 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK12.neg.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK32.peaks.track.001.bed.gz
+track type=bigWig name='PK32.rmd.pos.align' description='PK32 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK32.pos.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='PK32.rmd.neg.align' description='PK32 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK32.neg.rmd.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+# MDA231
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MDA231.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MDA231.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MDA231.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/MDA231.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK24.peaks.track.001.bed.gz
+track type=bigWig name='PK24.rmd.pos.align' description='PK24 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK24.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='PK24.rmd.neg.align' description='PK24 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK24.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK42.peaks.track.001.bed.gz
+track type=bigWig name='PK42.rmd.pos.align' description='PK42 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK42.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='PK42.rmd.neg.align' description='PK42 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK42.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK54.peaks.track.001.bed.gz
+track type=bigWig name='PK54.rmd.pos.align' description='PK54 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK54.pos.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='PK54.rmd.neg.align' description='PK54 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK54.neg.rmd.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+# BT474
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK21.peaks.track.001.bed.gz
+track type=bigWig name='PK21.rmd.pos.align' description='PK21 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK21.pos.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='PK21.rmd.neg.align' description='PK21 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK21.neg.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK41.peaks.track.001.bed.gz
+track type=bigWig name='PK41.rmd.pos.align' description='PK41 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK41.pos.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='PK41.rmd.neg.align' description='PK41 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK41.neg.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK52.peaks.track.001.bed.gz
+track type=bigWig name='PK52.rmd.pos.align' description='PK52 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK52.pos.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='PK52.rmd.neg.align' description='PK52 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK52.neg.rmd.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+# BT474 + estrogen
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474estr.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474estr.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474estr.pos.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474estr.neg.peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK22.peaks.track.001.bed.gz
+track type=bigWig name='PK22.rmd.pos.align' description='PK22 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK22.pos.rmd.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+track type=bigWig name='PK22.rmd.neg.align' description='PK22 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK22.neg.rmd.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK53.peaks.track.001.bed.gz
+track type=bigWig name='PK53.rmd.pos.align' description='PK53 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK53.pos.rmd.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+track type=bigWig name='PK53.rmd.neg.align' description='PK53 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK53.neg.rmd.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+# BT474herc
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474herc.pos.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474herc.neg.peaks.trimmed.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK23.peaks.track.001.bed.gz
+track type=bigWig name='PK23.rmd.pos.align' description='PK23 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='PK23.rmd.neg.align' description='PK23 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
