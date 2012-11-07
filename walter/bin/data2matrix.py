@@ -1,13 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
-"""
-"""
+
 import sys
 from toolshed import reader
 from collections import defaultdict
-
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
 
 
 def main(args):

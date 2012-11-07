@@ -37,6 +37,3 @@ dists = dist(t(exprs(vdsFull)))
 mat = as.matrix(dists)
 rownames(mat) = colnames(mat) = with(pData(cdsFullBlind), paste(walterDesign$condition, walterDesign$libType, sep=" : "))
 heatmap.2(mat, trace="none", col = rev(hmcol), margin=c(13, 13))
-# pca
-plotPCA(vdsFull, intgroup=walterDesign$condition)
-
