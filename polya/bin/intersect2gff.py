@@ -34,14 +34,14 @@ def main(args):
             if genestop < int(toks['stop']):
                 genestop = int(toks['stop'])
         # print gene line
-        genefields = [chrom, source, "aggregate_gene", genestart, genestop, ".", strand, ".", 'gene_id "%s"' % gene]
+        genefields = [chrom, source, "aggregate_gene", genestart - 1, genestop + 1, ".", strand, ".", 'gene_id "%s"' % gene]
         print "\t".join(map(str, genefields))
         # print each polya site
         counter = 0
         for polya, toks in transcripts.iteritems():
             counter += 1
             attrs = 'transcripts "%s"; exonic_part_number "%03d"; gene_id "%s"' % (polya, counter, gene)
-            polyafields = [toks['chrom'], source, "exonic_part", toks['start'], toks['stop'], ".", toks['strand'], ".", attrs]
+            polyafields = [toks['chrom'], source, "exonic_part", int(toks['start']) - 1, int(toks['stop']) + 1, ".", toks['strand'], ".", attrs]
             print "\t".join(map(str, polyafields))
 
 

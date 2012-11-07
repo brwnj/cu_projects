@@ -49,13 +49,14 @@ def main(args):
     countsdf = np.log(countsdf + 1)
     
     manojset = "MP1 MP2 MP9 MP20 MP21 MP24 MP34 MP35 MP36 MP38 MP42.ACTG MP43.ACTG MP43.TCGA MP44.ACTG MP44.TCGA MP45.ACTG MP45.TCGA".split()
+    manojset = "MP2 MP9 MP20 MP21 MP34 MP35 MP36 MP43.ACTG MP43.TCGA MP44.ACTG MP44.TCGA".split()
     peterset1 = "PK11 PK21 PK24 PK31 PK41 PK42 PK51 PK52 PK54".split()
     peterset2 = "PK11 PK12 PK21 PK22 PK31 PK32 PK41 PK51 PK52 PK53".split()
     
     # print matrix
-    countsdf.ix[uniquemirnas,manojset].to_csv("manoj_top50.csv", sep=",", header=True)
-    countsdf.ix[uniquemirnas,peterset1].to_csv("peter1_top50.csv", sep=",", header=True)
-    countsdf.ix[uniquemirnas,peterset2].to_csv("peter2_top50.csv", sep=",", header=True)
+    countsdf.ix[uniquemirnas,manojset].to_csv("manoj_top200.csv", sep=",", header=True)
+    # countsdf.ix[uniquemirnas,peterset1].to_csv("peter1_top50.csv", sep=",", header=True)
+    # countsdf.ix[uniquemirnas,peterset2].to_csv("peter2_top50.csv", sep=",", header=True)
 
 
 if __name__ == "__main__":

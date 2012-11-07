@@ -29,7 +29,7 @@ heatmap.2(MP,
 dev.off()
 png("~/projects/hits-clip/data/peter_set1_R_top50.png", width=2000, height=2000)
 heatmap.2(PK1,
-          cexRow=2,
+          cexRow=2, 
           Rowv=TRUE,
           Colv=TRUE,
           labRow=NA,

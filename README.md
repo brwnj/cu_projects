@@ -1,15 +1,15 @@
+==============================================================================
 Duval
-=======
+==============================================================================
 
 * Counts and DESeq
 
+==============================================================================
 Hits-Clip
 ==============================================================================
 
 * stats for snoRNA
 * ayb with shorter and shorter (less priority)
-
-::
 
     scp */*.bw sandbox:/data/home/brownj/public_html/hits-clip/20121107
 
@@ -24,13 +24,19 @@ Hits-Clip
     track type=bigWig name='PK62 pos' description='PK62 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20121107/PK62.umi_filtered.pos.bw maxHeightPixels=15:50:35 color=254,224,144 visibility=full
     track type=bigWig name='PK62 neg' description='PK62 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20121107/PK62.umi_filtered.neg.bw maxHeightPixels=15:50:35 color=254,224,144 visibility=full
 
+==============================================================================
 Marrack
-========
+==============================================================================
 
 * Counts and DESeq
 
+==============================================================================
 Poly(A)
-========
+==============================================================================
 
-* prep data for DEXSeq
-* DEXSeq
+    samtools view bam | python dexseq_count.py flattened.gff - out.counts
+    awk 'BEGIN{OFS=FS="\t"}{if($2!=0){n=int(rand()*5);print $1,$2+n}else{print $0}}' out.counts > outx.counts
+
+* neg and pos split everything; annotation, bam, etc
+* tracks have to be shown only using 5' read ends
+* re-run dexseq
