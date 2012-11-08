@@ -79,13 +79,16 @@ def main(args):
         sys.stderr.write(">> Correlation table:\n")
         sys.stderr.write("%s\n" % df.corr())
     
+    # df = np.log2(df)
+    
     for geneid, values in df.iterrows():
         a = np.array([values[n] for n in anames])
         b = np.array([values[n] for n in bnames])
-        fval, pval = st.f_oneway(a, b)
+        amean, bmean, fc = foldchange(a, b)
+        # fval, pval = st.f_oneway(a, b)
+        fval, pval = st.f_oneway(np.log2(a), np.log2(b))
         if str(pval) == 'nan':
             pval = 1.0
-        amean, bmean, fc = foldchange(a, b)
 
         fields = [geneid, genenames.get(geneid)]
         fields.extend([values[n] for n in anames])

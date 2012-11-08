@@ -73,8 +73,7 @@ def rum(samples, datadir, resultsdir, index):
         fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
         if not op.exists(fastq):
             bsub.poll(extract(gzipfastq, fastq))
-        #--limit-nu n
-        # Limits the number of ambiguous mappers in the final output by removing all reads that map to n locations or more.
+
         cmd = "rum_runner align -v -i " + index + " -o " + outdir + " --chunks 5 --dna --nu-limit 2 --variable-length-reads --name " + sample + " " + fastq
         jobid = bsub("rum", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
@@ -102,18 +101,23 @@ def postprocessrum(resultsdir):
     return jobs
 
 
-def macs(samples, resultsdir):
+def macs(samples, resultsdir, control):
     jobs = []
     for sample in samples:
         bams = getfilelist(resultsdir, sample + ".bam")
         assert(len(bams) == 1)
+        
+        # control
+        if bams[0].contains(control): continue
+        controlbam = getfilelist(resultsdir, control + ".bam")
+        assert(len(controlbam) == 1)
         
         outdir = resultsdir.rstrip("/") + "/" + sample
         macsresult = outdir + "/" + sample + "_peaks.xls"
         
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
         
-        cmd = "macs14 -t " + bams[0] + " -f BAM -n " + sample + " -g hs -w --single-profile"
+        cmd = "macs14 -t " + bams[0] + "-c " + controlbam[0] + " -f BAM -n " + sample + " -g mm -w --single-profile"
         jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
@@ -136,6 +140,7 @@ def main():
     samples = ['RS_input_CCGTCC_L005_R1_001',
                 'RS_iso_ATGTCA_L005_R1_001',
                 'RS_tbet_CTTGTA_L005_R1_001']
+    control = 'RS_input_CCGTCC_L005_R1_001'
     datadir = "/vol1/home/brownj/projects/marrack/data/20121101"
     resultsdir = "/vol1/home/brownj/projects/marrack/results/common"
     rumindex = "/vol1/home/brownj/ref/rum/mm9"
@@ -144,7 +149,7 @@ def main():
     bsub.poll(trim(datadir, "*R1_001.fastq.gz"))
     bsub.poll(rum(samples, datadir, resultsdir, rumindex))
     bsub.poll(postprocessrum(resultsdir))
-    bsub.poll(macs(samples, resultsdir))
+    bsub.poll(macs(samples, resultsdir, control))
     cleanup(resultsdir)
 
 

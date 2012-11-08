@@ -1,0 +1,26 @@
+library(DESeq)
+ct = read.table("~/projects/hits-clip/data/manoj_top10.csv", header=T, row.names=1, sep=",")
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = estimateSizeFactors(cds)
+write.csv(log(1 + counts( cds, normalized=TRUE )), file="~/projects/hits-clip/data/manoj_top10_norm.csv")
+
+
+ct = read.table("~/projects/hits-clip/data/manoj_top25.csv", header=T, row.names=1, sep=",")
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = estimateSizeFactors(cds)
+write.csv(log(1 + counts( cds, normalized=TRUE )), file="~/projects/hits-clip/data/manoj_top25_norm.csv")
+
+ct = read.table("~/projects/hits-clip/data/manoj_top50.csv", header=T, row.names=1, sep=",")
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = estimateSizeFactors(cds)
+write.csv(log(1 + counts( cds, normalized=TRUE )), file="~/projects/hits-clip/data/manoj_top50_norm.csv")
+
+ct = read.table("~/projects/hits-clip/data/manoj_top100.csv", header=T, row.names=1, sep=",")
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = estimateSizeFactors(cds)
+write.csv(log(1 + counts( cds, normalized=TRUE )), file="~/projects/hits-clip/data/manoj_top100_norm.csv")
+
+ct = read.table("~/projects/hits-clip/data/manoj_top200.csv", header=T, row.names=1, sep=",")
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = estimateSizeFactors(cds)
+write.csv(log(1 + counts( cds, normalized=TRUE )), file="~/projects/hits-clip/data/manoj_top200_norm.csv")
