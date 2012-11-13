@@ -27,11 +27,11 @@ Walter
 ==============================================================================
 
 * test across the time series
-* pull out significant
-* intersect with mirbase19
-* compare lists
+    * pull out significant
+    * intersect with mirbase19
+    * compare lists
 
 * peaks on tuberculosis
-* consensus, counts, deseq
-* tests across time series
-* send list of anything significant
+    * consensus, counts, deseq
+    * tests across time series
+    * send list of anything significant
