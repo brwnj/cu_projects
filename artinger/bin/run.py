@@ -70,9 +70,9 @@ def rum(samples, datadir, resultsdir, index):
         if op.exists(alignresult) or op.exists(alternatealignresult): continue
         
         gzipfastq = fastqs[0]
-        fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
-        if not op.exists(fastq):
-            bsub.poll(extract(gzipfastq, fastq))
+        # fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
+        # if not op.exists(fastq):
+        #     bsub.poll(extract(gzipfastq, fastq))
 
         cmd = "rum_runner align -v -i " + index + " -o " + outdir + " --chunks 5 --dna --nu-limit 2 --variable-length-reads --name " + sample + " " + fastq
         jobid = bsub("rum", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
