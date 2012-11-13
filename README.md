@@ -2,7 +2,8 @@
 Duval
 ==============================================================================
 
-* Counts and DESeq
+* UCSC Tracks
+* Write email explaining steps and point to fastq, deseq plots, etc
 
 ==============================================================================
 Hits-Clip
@@ -15,39 +16,6 @@ Hits-Clip
 Marrack
 ==============================================================================
 
-    ==> RS_input_CCGTCC_L005_R1_001/mapping_stats.txt <==
-    genome size: 2,725,765,481
-    number of bases covered by unique mappers: 32,581,696 (1.19%)
-    number of bases covered by non-unique mappers: 5,794,538 (0.21%)
-    Number of reads: 7,856,284
-    ------
-    UNIQUE MAPPERS: 3,757,338 (47.82%)
-    NON-UNIQUE MAPPERS: 222,422 (2.8%)
-    -----
-    TOTAL: 3,979,760 (50.6%)
-
-    ==> RS_iso_ATGTCA_L005_R1_001/mapping_stats.txt <==
-    genome size: 2,725,765,481
-    number of bases covered by unique mappers: 3,404,077 (0.12%)
-    number of bases covered by non-unique mappers: 1,102,603 (0.04%)
-    Number of reads: 9,994,627
-    ------
-    UNIQUE MAPPERS: 4,225,504 (42.27%)
-    NON-UNIQUE MAPPERS: 178,947 (1.7%)
-    -----
-    TOTAL: 4,404,451 (44%)
-
-    ==> RS_tbet_CTTGTA_L005_R1_001/mapping_stats.txt <==
-    genome size: 2,725,765,481
-    number of bases covered by unique mappers: 3,544,680 (0.13%)
-    number of bases covered by non-unique mappers: 923,512 (0.03%)
-    Number of reads: 4,848,946
-    ------
-    UNIQUE MAPPERS: 1,252,496 (25.83%)
-    NON-UNIQUE MAPPERS: 57,767 (1.1%)
-    -----
-    TOTAL: 1,310,263 (27%)
-
 The ISO is an off-target IP control and Tbet is the target IP that you want to examine
 input sample as a random background
 then use the ISO sample to subtract any non-specific pull-downs that are seen in both ISO and Tbet
@@ -56,6 +24,13 @@ then use the ISO sample to subtract any non-specific pull-downs that are seen in
     * control background = RS_input_CCGTCC_L005_R1_001
 * filter peaks by subtracting iso from tbet
 * deliver tbet only peaks
+
+track type=bigWig name='ISO Pos' description='ISO Coverage on positive strand' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/marrack/20121109/RS_iso_ATGTCA_L005_R1_001.pos.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='ISO Neg' description='ISO Coverage on negative strand' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/marrack/20121109/RS_iso_ATGTCA_L005_R1_001.neg.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+track type=bigWig name='TBET Pos' description='TBET Coverage on positive strand' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/marrack/20121109/RS_tbet_CTTGTA_L005_R1_001.pos.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='TBET Neg' description='TBET Coverage on negative strand' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/marrack/20121109/RS_tbet_CTTGTA_L005_R1_001.neg.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+http://amc-sandbox.ucdenver.edu/~brownj/marrack/20121109/RS_tbet_CTTGTA_L005_R1_001_unique_peaks.bed.gz
+
 
 ==============================================================================
 Poly(A)

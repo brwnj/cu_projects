@@ -5,8 +5,10 @@ Duval
 """
 from bsub import bsub
 from pybedtools import BedTool
+from toolshed import reader
 import os
 import os.path as op
+import pandas as pd
 import sys
 import fnmatch
 import shutil
@@ -134,10 +136,47 @@ def cleanup(path):
         pass
 
 
-def consensus(samples, resultsdir):
-    """docstring for consensus"""
-    pass
+def counts(samples, resultsdir):
+    """docstring"""
+    # get the consensus peaks
+    f = open(resultsdir + "/peak_coordinates.bed", 'w')
+    x = BedTool()
+    consensus = x.multi_intersect(i=getfilelist(resultsdir, "*peaks.bed.gz"))
+    for c in consensus:
+        replicate_counts = c.name
+        if replicate_counts < 2: continue
+        
+        fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % (c.chrom, c.start, c.stop)]
+        f.write("\t".join(map(str, fields)))
+    f.close()
     
+    # get counts for each sample
+    jobs = []
+    countfiles = []
+    for sample in samples:
+        bams = getfilelist(resultsdir, sample + "*.hg19_novoalign.bam")
+        assert(len(bams) == 1)
+        outdir = resultsdir.rstrip("/") + "/" + sample
+        countsresult = outdir + "/" + sample + ".counts"
+        countfiles.append(countsresult)
+        if op.exists(countsresult): continue
+        cmd = "bedtools coverage -abam " + bams[0] + " -b " + f.name + " > " + countsresult
+        jobid = bsub(sample + "_counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
+        jobs.append(jobid)
+    bsub.poll(jobs)
+    
+    # counts to matrix
+    allcounts = {}
+    for cf in countfiles:
+        cfname = op.basename(cf).split(".hg19_novoalign.bam")[0]
+        casecounts = {}
+        for toks in reader(cf, header="chrom start stop name a_overlaps_in_b b_with_nonzero length_b frac_b_nonzero".split()):
+            casecounts[toks['name']] = int(toks['a_overlaps_in_b'])
+        allcounts[cfname] = casecounts
+    countsdf = pd.DataFrame(allcounts)
+    countsdf.to_csv(resultsdir + "/sample_counts.csv", sep=",", header=True)
+
+
 def trimreads(samples, datadir):
     script = "/vol1/home/brownj/projects/duval/bin/solid-trimmer.py"
     jobs = []
@@ -175,13 +214,14 @@ def main():
     # bsub.poll(solid2fastq(samples, datadir))
     # fastqc(samples, datadir, resultsdir)
     # bsub.poll(trimreads(samples, datadir))
-    bsub.poll(bowtiealign(samples, datadir, resultsdir, btindex, "hg19"))
+    # bsub.poll(bowtiealign(samples, datadir, resultsdir, btindex, "hg19"))
     # bsub.poll(novoalign(samples, datadir, resultsdir, novoindex, "hg19_novoalign"))
-    bsub.poll(macs(samples, resultsdir))
-    cleanup(resultsdir)
+    # bsub.poll(macs(samples, resultsdir))
+    # cleanup(resultsdir)
     # consensus peaks
     # bedtools coverage
     # data -> matrix
+    counts(samples, resultsdir)
 
 
 if __name__ == '__main__':

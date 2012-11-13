@@ -32,11 +32,12 @@ cases = {'BT474herc':"PK23",
          'BMEC':"MP42.ACTG MP45.ACTG MP45.TCGA",
          'HUVEC':"MP24 MP38"}
 
+reps = "MP1 MP2 MP9 MP20 MP21 MP24 MP34 MP35 MP36 MP38 MP42.ACTG MP43.ACTG MP43.TCGA MP44.ACTG MP44.TCGA MP45.ACTG MP45.TCGA".split()
 
 snorna = BedTool("/vol1/home/brownj/projects/hits-clip/data/20120815/snoRNA.bed.gz")
 
 casedata = defaultdict(dict)
-with Genome("/vol1/home/brownj/projects/hits-clip/data/combined.genomedata") as genome:    
+with Genome("/vol1/home/brownj/projects/hits-clip/data/combined.genomedata") as genome:
     
     for b in snorna:
         chromosome = genome[b.chrom]
@@ -47,17 +48,15 @@ with Genome("/vol1/home/brownj/projects/hits-clip/data/combined.genomedata") as 
         else:
             strand = "neg"
         
-        for case, replicates in cases.iteritems():
-            casedata[case][b.name] = {}
+        for rep in reps:
+            casedata[rep][b.name] = {}
             tracklist = []
-            for r in replicates.split():
-                tracklist.append("%s.%s" % (r, strand))
-            intensities = chromosome[b.start:b.stop, tracklist]            
-            casedata[case][b.name] = get_peak_max(intensities)
+            intensities = chromosome[b.start:b.stop, ["%s.%s" % (rep, strand)]]
+            casedata[rep][b.name] = get_peak_max(intensities)
 
 caselist = casedata.keys()
 features = casedata[caselist[0]].keys()
 
-print "#snoRNA\t" + "\t".join(k for k in caselist)    
+print "\t" + "\t".join(k for k in caselist)
 for feature in features:
-    print feature + "\t" + "\t".join(str(casedata[c][feature]) for c in caselist)
+    print feature + "\t" + "\t".join(str(casedata[k][feature]) for k in caselist)

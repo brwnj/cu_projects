@@ -101,23 +101,25 @@ def postprocessrum(resultsdir):
     return jobs
 
 
-def macs(samples, resultsdir, control):
+def macs(samples, resultsdir, controls):
     jobs = []
     for sample in samples:
         bams = getfilelist(resultsdir, sample + ".bam")
         assert(len(bams) == 1)
         
         # control
-        if control in bams[0]: continue
-        controlbam = getfilelist(resultsdir, control + ".bam")
-        assert(len(controlbam) == 1)
+        if "Input" in bams[0]: continue
+        controlbam = ""
+        for control in controls:
+            if control.split("_")[0] == bams[0].split("_")[0]:
+                controlbam = getfilelist(resultsdir, control + ".bam")[0]
         
-        outdir = resultsdir.rstrip("/") + "/" + sample
+        outdir = resultsdir + "/" + sample
         macsresult = outdir + "/" + sample + "_peaks.xls"
         
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
         
-        cmd = "macs14 -t " + bams[0] + " -c " + controlbam[0] + " -f BAM -n " + sample + " -g mm -w --single-profile"
+        cmd = "macs14 -t " + bams[0] + " -c " + controlbam + " -f BAM -n " + sample + " -g hs -w --single-profile"
         jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
@@ -136,21 +138,67 @@ def cleanup(path):
         pass
 
 
+def counts(samples, resultsdir):
+    """docstring"""
+    # get the consensus peaks
+    f = open(resultsdir + "/peak_coordinates.bed", 'w')
+    x = BedTool()
+    consensus = x.multi_intersect(i=getfilelist(resultsdir, "*peaks.bed.gz"))
+    for c in consensus:
+        replicate_counts = c.name
+        if replicate_counts < 2: continue
+        
+        fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % (c.chrom, c.start, c.stop)]
+        f.write("\t".join(map(str, fields)))
+    f.close()
+    
+    # get counts for each sample
+    jobs = []
+    countfiles = []
+    for sample in samples:
+        bams = getfilelist(resultsdir, sample + "*.bam")
+        assert(len(bams) == 1)
+        outdir = resultsdir.rstrip("/") + "/" + sample
+        countsresult = outdir + "/" + sample + ".counts"
+        countfiles.append(countsresult)
+        if op.exists(countsresult): continue
+        cmd = "bedtools coverage -abam " + bams[0] + " -b " + f.name + " > " + countsresult
+        jobid = bsub(sample + "_counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
+        jobs.append(jobid)
+    bsub.poll(jobs)
+    
+    # counts to matrix
+    allcounts = {}
+    for cf in countfiles:
+        cfname = op.basename(cf).split(".bam")[0]
+        casecounts = {}
+        for toks in reader(cf, header="chrom start stop name a_overlaps_in_b b_with_nonzero length_b frac_b_nonzero".split()):
+            casecounts[toks['name']] = int(toks['a_overlaps_in_b'])
+        allcounts[cfname] = casecounts
+    countsdf = pd.DataFrame(allcounts)
+    countsdf.to_csv(resultsdir + "/sample_counts.csv", sep=",", header=True)
+
+
 def main():
-    samples = ['RS_input_CCGTCC_L005_R1_001',
-                'RS_iso_ATGTCA_L005_R1_001',
-                'RS_tbet_CTTGTA_L005_R1_001']
-    control = 'RS_input_CCGTCC_L005_R1_001'
-    datadir = "/vol1/home/brownj/projects/marrack/data/20121101"
-    resultsdir = "/vol1/home/brownj/projects/marrack/results/common"
-    rumindex = "/vol1/home/brownj/ref/rum/mm9"
+    samples = ['2Som_chip1_GCCAAT_L006_R1_001',
+               '2Som_chip2_GTCCGC_L006_R1_001',
+               '2Som_Input_GTGAAA_L006_R1_001',
+               '31hpt_Chip1_CAGATC_L006_R1_001',
+               '31hpt_Chip2_ACAGTG_L006_R1_001',
+               '31hpt_Input_TGACCA_L006_R1_001']
+    controls = ['2Som_Input_GTGAAA_L006_R1_001',
+                '31hpt_Input_TGACCA_L006_R1_001']
+    datadir = "/vol1/home/brownj/projects/artinger/data/20121101"
+    resultsdir = "/vol1/home/brownj/projects/artinger/results/common"
+    rumindex = "/vol1/home/brownj/ref/rum/hg19"
     
     fastqc(samples, datadir, resultsdir)
     bsub.poll(trim(datadir, "*R1_001.fastq.gz"))
     bsub.poll(rum(samples, datadir, resultsdir, rumindex))
     bsub.poll(postprocessrum(resultsdir))
-    bsub.poll(macs(samples, resultsdir, control))
+    bsub.poll(macs(samples, resultsdir, controls))
     cleanup(resultsdir)
+    counts(samples, resultsdir)
 
 
 if __name__ == '__main__':
