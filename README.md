@@ -21,3 +21,17 @@ Poly(A)
 * neg and pos split everything; annotation, bam, etc
 * tracks have to be shown only using 5' read ends
 * re-run dexseq
+
+==============================================================================
+Walter
+==============================================================================
+
+* test across the time series
+* pull out significant
+* intersect with mirbase19
+* compare lists
+
+* peaks on tuberculosis
+* consensus, counts, deseq
+* tests across time series
+* send list of anything significant
