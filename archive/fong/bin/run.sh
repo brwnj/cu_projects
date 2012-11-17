@@ -9,5 +9,4 @@ for bam in /vol2/home/fonga/Bentley/Illumina_data/*.bam; do
         --bam $bam \
         --index /vol1/home/brownj/ref/hg19/miso_isoforms \
         --out /vol2/home/fonga/Bentley/$(basename $bam _L003_R1_001_filtered.ProperPairs_sorted.bam) \
-        --queue_name normal
 done

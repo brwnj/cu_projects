@@ -34,8 +34,17 @@ cds = newCountDataSet(ct, conditions=c(rep("t",5),rep("c",5)))
 cds = estimateSizeFactors(cds)
 write.csv(log(1 + counts(cds, normalized=TRUE)), file="~/projects/hits-clip/data/peter2_top50_norm.csv")
 
-ct = read.table("~/projects/hits-clip/data/manoj_allsno.csv", header=T, row.names=1, sep=",")
-cds = newCountDataSet(ct, conditions=c(rep("t",9),rep("c",8)))
+ct = read.table("~/projects/hits-clip/data/manoj_allsno_nonames.csv", header=T, row.names=1, sep=",")
+
+# rs = rowSums(ct)
+# table(use)
+subset = ct[,c(2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17)]
+
+
+
+cds = newCountDataSet(subset, conditions=c(rep("t",8),rep("c",8)))
+head(cds)
+counts(cds)
 cds = estimateSizeFactors(cds)
 sizeFactors(cds)
 

@@ -5,6 +5,7 @@ duvalCountTable = read.csv("~/projects/duval/data/sample_counts.csv",
                            row.names=1)
 
 # A vs D
+# subset(world,select=income:military)
 use = duvalCountTable[,c(3,4,5,6,7,8)]
 design = data.frame(row.names = colnames(use),
                     condition = c("T220A","T220A","T220A",

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Artinger
+Leinwand
 """
 from bsub import bsub
 import os
@@ -9,7 +9,6 @@ import os.path as op
 import sys
 import fnmatch
 import shutil
-
 
 def getfilelist(path, pattern):
     files = []
@@ -34,14 +33,15 @@ def fastqc(script, samples, data_path):
         cmd = "%s --outdir %s %s" % (script, data_path, fastq)
         bsub("qc", verbose=True)(cmd)
 
-def trim(path, pattern):
-    """uses https://github.com/lh3/seqtk"""
+def trimadapter(datadir, adapters):
+    """trim adapters using ea-utils"""
     jobs = []
-    for fastq in getfilelist(path, pattern):
-        trimresult = "%s.trim.fastq.gz" % fastq.split(".fastq", 1)[0]
+    for fastq in getfilelist(datadir, "*.fastq.gz"):
+        trimresult = op.dirname(fastq) + "/" + op.basename(fastq).split(".fastq", 1)[0] + ".trm.fq.gz"
         if op.exists(trimresult): continue
-        cmd = "seqtk trimfq %s | gzip -c > %s" % (fastq, trimresult)
-        jobs.append(bsub("trim", verbose=True)(cmd))
+        cmd = "fastq-mcf " + adapters + " " + fastq + " | gzip -c > " + trimresult
+        jobid = bsub("trim", verbose=True)(cmd)
+        jobs.append(jobid)
     return jobs
 
 def rum(samples, datadir, resultsdir, cmdstr):
@@ -90,25 +90,18 @@ def postprocessrum(resultsdir):
         jobs.append(bsub("sam2bam", cwd=outdir, verbose=True)(cmd))
     return jobs
 
-def macs(samples, resultsdir, controls, cmdstr):
+def macs(samples, resultsdir, cmdstr):
     jobs = []
     for sample in samples:
         bams = getfilelist(resultsdir, sample + ".bam")
         assert(len(bams) == 1)
-        
-        # control
-        if "Input" in bams[0]: continue
-        controlbam = ""
-        for control in controls:
-            if control.split("_")[0] == bams[0].split("_")[0]:
-                controlbam = getfilelist(resultsdir, control + ".bam")[0]
         
         outdir = resultsdir + "/" + sample
         macsresult = outdir + "/" + sample + "_peaks.xls"
         
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
         
-        cmd = cmdstr.format(bams[0], controlbam, sample)
+        cmd = cmdstr.format(bams[0], sample)
         jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
@@ -169,27 +162,25 @@ def clobber_previous(results_path):
     os.makedirs(results_path)
 
 def main(args):
-    samples = ['2Som_chip1_GCCAAT_L006_R1_001',
-               '2Som_chip2_GTCCGC_L006_R1_001',
-               '2Som_Input_GTGAAA_L006_R1_001',
-               '31hpt_Chip1_CAGATC_L006_R1_001',
-               '31hpt_Chip2_ACAGTG_L006_R1_001',
-               '31hpt_Input_TGACCA_L006_R1_001']
-    controls = ['2Som_Input_GTGAAA_L006_R1_001',
-                '31hpt_Input_TGACCA_L006_R1_001']
-    datadir = "/vol1/home/brownj/projects/artinger/data/20121101"
-    resultsdir = "/vol1/home/brownj/projects/artinger/results/common"
+    samples = ["MDX_22_AGTTCC_L003_R1_001",
+               "MDX_23_ATGTCA_L003_R1_001",
+               "MDX_24_CCGTCC_L003_R1_001",
+               "WT_21_AGTCAA_L003_R1_001",
+               "WT_25_GTAGAG_L003_R1_001",
+               "WT_42_GTCCGC_L003_R1_001"]
+    datadir = "/vol1/home/brownj/projects/leinwand/data/20121101"
+    resultsdir = "/vol1/home/brownj/projects/leinwand/results/common"
     fastqc_script="/vol1/home/brownj/opt/fastqc/fastqc"
-    rumindex = "/vol1/home/brownj/ref/rum/zebrafish"
+    rumindex = "/vol1/home/brownj/ref/rum/mm9"
     
     rumcmd = "rum_runner align -v -i %s -o {} --chunks 5 --dna --nu-limit 2 --variable-length-reads --name {} {}" % rumindex
-    macscmd = "macs14 -t {} -c {} -f BAM -n {} -g 1400000000 -w --single-profile"
+    macscmd = "macs14 -t {} -f BAM -n {} -g mm -w --single-profile"
     
     if args.clobber:
         clobber_previous(resultsdir)
     
     fastqc(fastqc_script, samples, datadir)
-    bsub.poll(trim(datadir, "*R1_001.fastq.gz"))
+    bsub.poll(trimadapter(datadir, "/vol1/home/brownj/projects/leinwand/data/20121101/adapters.fa"))
     bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
     bsub.poll(postprocessrum(resultsdir))
     bsub.poll(macs(samples, resultsdir, controls, macscmd))

@@ -2,13 +2,15 @@
 Artinger
 ==============================================================================
 
-* check that the pipeline ran to completion
-  
+* zebrafish!!
+* redo: fix macs genome size!
+* peaks for both groups but eventually it may be interesting to compare between the two
+* ucsc tracks + common deliverables
+
 ==============================================================================
 Hits-Clip
 ==============================================================================
 
-* stats for snoRNA
 * ayb with shorter and shorter (less priority)
 
 ==============================================================================
