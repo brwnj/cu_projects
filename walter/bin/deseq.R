@@ -1,4 +1,8 @@
-walterCountTable = read.table("/Users/brownj/projects/walter/data/countsmatrix.txt", header=T, row.names=1)
+library(DESeq)
+
+walterCountTable = read.table("~/projects/walter/data/countsmatrix.txt", header=T, row.names=1)
+
+# full experiment
 walterDesign = data.frame(  
     row.names = colnames( walterCountTable ),
     condition = c("inf","uninf","inf","uninf","inf",
@@ -11,15 +15,105 @@ walterDesign = data.frame(
                 "24","24","2","2","8",
                 "8","1","1","24","24",
                 "2","2","8","8"))
-library(DESeq)
-cds = newCountDataSet(walterCountTable, walterDesign$condition)
+
+# normalize, estimate, and test only per time series
+# 1 hour
+t1c = subset(walterCountTable, select = c("E1T1_Inf","E1T1_Uninf",
+                                          "E2T1_Inf","E2T1_Uninf",
+                                          "E3T1_Inf","E3T1_Uninf"))
+t1d = data.frame(row.names = colnames(t1c),
+                 condition = c("inf","uninf",
+                               "inf","uninf",
+                               "inf","uninf"))
+cds = newCountDataSet(t1c, t1d$condition)
 cds = estimateSizeFactors(cds)
+sizeFactors(cds)
 cds = estimateDispersions(cds)
+png("~/projects/walter/data/dispersions_t1.png", width=2000, height=2000)
 plotDispEsts(cds)
+dev.off()
 res = nbinomTest(cds, "uninf", "inf")
+png("~/projects/walter/data/ma_t1.png", width=2000, height=2000)
 plotMA(res)
+dev.off()
+png("~/projects/walter/data/pvals_t1.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
-write.csv(res, file="/Users/brownj/projects/walter/data/result.txt")
+dev.off()
+write.csv(res, file="~/projects/walter/data/result_t1.txt")
+
+# 2 hours
+t2c = subset(walterCountTable, select = c("E1T2_Inf","E1T2_Uninf",
+                                          "E2T2_Inf","E2T2_Uninf",
+                                          "E3T2_Inf","E3T2_Uninf"))
+t2d = data.frame(row.names = colnames(t2c),
+                 condition = c("inf","uninf",
+                               "inf","uninf",
+                               "inf","uninf"))
+cds = newCountDataSet(t2c, t2d$condition)
+cds = estimateSizeFactors(cds)
+sizeFactors(cds)
+cds = estimateDispersions(cds)
+png("~/projects/walter/data/dispersions_t2.png", width=2000, height=2000)
+plotDispEsts(cds)
+dev.off()
+res = nbinomTest(cds, "uninf", "inf")
+png("~/projects/walter/data/ma_t2.png", width=2000, height=2000)
+plotMA(res)
+dev.off()
+png("~/projects/walter/data/pvals_t2.png", width=2000, height=2000)
+hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
+dev.off()
+write.csv(res, file="~/projects/walter/data/result_t2.txt")
+
+# 8 hours
+t8c = subset(walterCountTable, select = c("E1T8_Inf","E1T8_Uninf",
+                                          "E2T8_Inf","E2T8_Uninf",
+                                          "E3T8_Inf","E3T8_Uninf"))
+t8d = data.frame(row.names = colnames(t8c),
+                 condition = c("inf","uninf",
+                               "inf","uninf",
+                               "inf","uninf"))
+cds = newCountDataSet(t8c, t8d$condition)
+cds = estimateSizeFactors(cds)
+sizeFactors(cds)
+cds = estimateDispersions(cds)
+png("~/projects/walter/data/dispersions_t8.png", width=2000, height=2000)
+plotDispEsts(cds)
+dev.off()
+res = nbinomTest(cds, "uninf", "inf")
+png("~/projects/walter/data/ma_t8.png", width=2000, height=2000)
+plotMA(res)
+dev.off()
+png("~/projects/walter/data/pvals_t8.png", width=2000, height=2000)
+hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
+dev.off()
+write.csv(res, file="~/projects/walter/data/result_t8.txt")
+
+# 24 hours
+t24c = subset(walterCountTable, select = c("E1T24_Inf","E1T24_Uninf",
+                                          "E2T24_Inf","E2T24_Uninf",
+                                          "E3T24_Inf","E3T24_Uninf"))
+t24d = data.frame(row.names = colnames(t24c),
+                  condition = c("inf","uninf",
+                                "inf","uninf",
+                                "inf","uninf"))
+cds = newCountDataSet(t24c, t24d$condition)
+cds = estimateSizeFactors(cds)
+sizeFactors(cds)
+cds = estimateDispersions(cds)
+png("~/projects/walter/data/dispersions_t24.png", width=2000, height=2000)
+plotDispEsts(cds)
+dev.off()
+res = nbinomTest(cds, "uninf", "inf")
+png("~/projects/walter/data/ma_t24.png", width=2000, height=2000)
+plotMA(res)
+dev.off()
+png("~/projects/walter/data/pvals_t24.png", width=2000, height=2000)
+hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
+dev.off()
+write.csv(res, file="~/projects/walter/data/result_t24.txt")
+
+save.image("~/projects/walter/data/deseq_session.RData")
 
 # QC
 cdsFull = newCountDataSet(walterCountTable, walterDesign)

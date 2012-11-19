@@ -10,19 +10,14 @@ import tempfile
 from toolshed import reader
 from collections import defaultdict
 
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
-
 def buildpeakcoords(bed):
-    """build a simple lookup dict since i lost coord info in deseq"""
+    """build a simple lookup dict for peak coordinates"""
     pc = defaultdict(dict)
     for b in reader(bed, header="chrom start stop name".split()):
         pc[b['name']]['chrom'] = b['chrom']
         pc[b['name']]['start'] = b['start']
         pc[b['name']]['stop'] = b['stop']
     return pc
-
 
 def main(args):
     # build dictionary of consensus peak information
@@ -38,7 +33,6 @@ def main(args):
     f.close()
     for t in reader(f.name, header=False):
         print "\t".join(map(str, t))
-
 
 if __name__ == "__main__":
     import argparse

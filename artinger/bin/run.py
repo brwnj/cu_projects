@@ -90,6 +90,40 @@ def postprocessrum(resultsdir):
         jobs.append(bsub("sam2bam", cwd=outdir, verbose=True)(cmd))
     return jobs
 
+def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
+    """align reads for each sample according to the command string."""
+    jobs = []
+    for sample in samples:
+        fastqs = getfilelist(reads_path, sample + ".trim.fastq.gz")
+        assert(len(fastqs) == 1)
+        fastq = fastqs[0]
+        
+        out = "%s/%s" % (results_path, sample)
+        if not op.exists(out):
+            os.makedirs(out)
+        
+        align_result = "%s/%s.bam" % (out, sample)
+        if op.exists(align_result): continue
+        
+        cmd = cmd_str.format(gmap_db, fastq, sample, sample)
+        jobid = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
+        jobs.append(jobid)
+    return jobs
+
+def alignment_stats(results_path, picard_path, ref_fasta):
+    for bam in getfilelist(results_path, "*.bam"):
+        stats_result = "%s_stats.txt" % op.splitext(bam)[0]
+        if op.exists("%s.bai" % bam) and op.exists(stats_result): continue
+        cmd = "samtools index %s" % bam
+        jobid = bsub("index", verbose=True)(cmd)
+        bsub.poll(jobid)
+        cmd = "java -Xmx8g -jar %s/CollectMultipleMetrics.jar \
+                INPUT=%s REFERENCE_SEQUENCE=%s ASSUME_SORTED=true OUTPUT=%s \
+                PROGRAM=CollectAlignmentSummaryMetrics \
+                PROGRAM=QualityScoreDistribution \
+                PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta, stats_result)
+        bsub("alignment_summary", verbose=True)(cmd)
+
 def macs(samples, resultsdir, controls, cmdstr):
     jobs = []
     for sample in samples:
@@ -180,18 +214,24 @@ def main(args):
     datadir = "/vol1/home/brownj/projects/artinger/data/20121101"
     resultsdir = "/vol1/home/brownj/projects/artinger/results/common"
     fastqc_script="/vol1/home/brownj/opt/fastqc/fastqc"
+    picard = "/vol1/home/brownj/opt/picard-tools-1.79"
     rumindex = "/vol1/home/brownj/ref/rum/zebrafish"
+    reference_fasta = "/vol1/home/brownj/ref/zebrafish/Danio_rerio.Zv9.68.fa"
+    gmapdb = "/vol1/home/brownj/ref/gmapdb"
     
     rumcmd = "rum_runner align -v -i %s -o {} --chunks 5 --dna --nu-limit 2 --variable-length-reads --name {} {}" % rumindex
     macscmd = "macs14 -t {} -c {} -f BAM -n {} -g 1400000000 -w --single-profile"
+    gsnapcmd = "gsnap -D {} -d mm9 --gunzip --npaths=1 --quiet-if-excessive --batch=5 --nofails --nthreads=4 --format=sam {} | samtools view -ShuF 4 - | samtools sort -o - {}.temp -m 9500000000 > {}.bam"
     
     if args.clobber:
         clobber_previous(resultsdir)
     
     fastqc(fastqc_script, samples, datadir)
     bsub.poll(trim(datadir, "*R1_001.fastq.gz"))
-    bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
-    bsub.poll(postprocessrum(resultsdir))
+    # bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
+    # bsub.poll(postprocessrum(resultsdir))
+    bsub.poll(gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
+    alignment_stats(resultsdir, picard, reference_fasta)
     bsub.poll(macs(samples, resultsdir, controls, macscmd))
     cleanup(resultsdir)
     counts(samples, resultsdir)

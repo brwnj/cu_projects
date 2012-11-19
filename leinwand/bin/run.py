@@ -37,7 +37,7 @@ def trimadapter(datadir, adapters):
     """trim adapters using ea-utils"""
     jobs = []
     for fastq in getfilelist(datadir, "*.fastq.gz"):
-        trimresult = op.dirname(fastq) + "/" + op.basename(fastq).split(".fastq", 1)[0] + ".trm.fq.gz"
+        trimresult = op.dirname(fastq) + "/" + op.basename(fastq).split(".fastq", 1)[0] + ".trim.fastq.gz"
         if op.exists(trimresult): continue
         cmd = "fastq-mcf " + adapters + " " + fastq + " | gzip -c > " + trimresult
         jobid = bsub("trim", verbose=True)(cmd)
@@ -169,6 +169,7 @@ def main(args):
                "WT_25_GTAGAG_L003_R1_001",
                "WT_42_GTCCGC_L003_R1_001"]
     datadir = "/vol1/home/brownj/projects/leinwand/data/20121101"
+    adapters = "%s/adapters.fa" % datadir
     resultsdir = "/vol1/home/brownj/projects/leinwand/results/common"
     fastqc_script="/vol1/home/brownj/opt/fastqc/fastqc"
     rumindex = "/vol1/home/brownj/ref/rum/mm9"
@@ -180,7 +181,7 @@ def main(args):
         clobber_previous(resultsdir)
     
     fastqc(fastqc_script, samples, datadir)
-    bsub.poll(trimadapter(datadir, "/vol1/home/brownj/projects/leinwand/data/20121101/adapters.fa"))
+    bsub.poll(trimadapter(datadir, adapters))
     bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
     bsub.poll(postprocessrum(resultsdir))
     bsub.poll(macs(samples, resultsdir, controls, macscmd))

@@ -14,7 +14,7 @@ set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/cambier/bin/cambier.cfg
 
 sample=${SAMPLES[$LSB_JOBINDEX]}
-reads=$DATA/sample.fastq.gz
+reads=$DATA/$sample.fastq.gz
 outdir=$RESULTS/common/$sample
 bam=$outdir/$sample.bam
 stats=$outdir/$sample.stats

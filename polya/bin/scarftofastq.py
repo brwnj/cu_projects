@@ -3,19 +3,13 @@
 """
 convert scarf to fastq.
 """
-import sys
 from toolshed import nopen
 
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
-
 def main(args):
-    """do something amazing"""
     for scarfline in nopen(args.scarf):
         name, seq, qual = scarfline.strip().rsplit(":",2)
+        assert(len(seq) == len(qual))
         print "@%s\n%s\n+\n%s" % (name, seq, qual)
-
 
 if __name__ == "__main__":
     import argparse
