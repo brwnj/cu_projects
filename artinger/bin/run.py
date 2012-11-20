@@ -165,7 +165,7 @@ def counts(samples, result_path):
     # get the consensus peaks
     f = open(result_path + "/peak_coordinates.bed", 'w')
     x = BedTool()
-    consensus = x.multi_intersect(i=getfilelist(result_path, "*h37Rv_peaks.bed"))
+    consensus = x.multi_intersect(i=getfilelist(result_path, "*_peaks.bed"))
     for c in consensus:
         replicate_counts = c.name
         if replicate_counts < 2: continue
@@ -177,7 +177,7 @@ def counts(samples, result_path):
     jobs = []
     countfiles = []
     for sample in samples:
-        bams = getfilelist(result_path, sample + "*H37Rv.bam")
+        bams = getfilelist(result_path, sample + "*.bam")
         assert(len(bams) == 1)
         outdir = result_path.rstrip("/") + "/" + sample
         countsresult = outdir + "/" + sample + ".counts"

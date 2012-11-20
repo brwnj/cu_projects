@@ -2,6 +2,9 @@ library(DESeq)
 
 walterCountTable = read.table("~/projects/walter/data/countsmatrix.txt", header=T, row.names=1)
 
+# tuberculosis
+walterCountTable = read.csv("~/projects/walter/data/sample_counts.csv", header=T, row.names=1)
+
 # full experiment
 walterDesign = data.frame(  
     row.names = colnames( walterCountTable ),
@@ -39,7 +42,7 @@ dev.off()
 png("~/projects/walter/data/pvals_t1.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
 dev.off()
-write.csv(res, file="~/projects/walter/data/result_t1.txt")
+write.csv(res, file="~/projects/walter/data/result_tuberculosis_tuberculosis_t1.txt")
 
 # 2 hours
 t2c = subset(walterCountTable, select = c("E1T2_Inf","E1T2_Uninf",
@@ -63,7 +66,7 @@ dev.off()
 png("~/projects/walter/data/pvals_t2.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
 dev.off()
-write.csv(res, file="~/projects/walter/data/result_t2.txt")
+write.csv(res, file="~/projects/walter/data/result_tuberculosis_t2.txt")
 
 # 8 hours
 t8c = subset(walterCountTable, select = c("E1T8_Inf","E1T8_Uninf",
@@ -87,7 +90,7 @@ dev.off()
 png("~/projects/walter/data/pvals_t8.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
 dev.off()
-write.csv(res, file="~/projects/walter/data/result_t8.txt")
+write.csv(res, file="~/projects/walter/data/result_tuberculosis_t8.txt")
 
 # 24 hours
 t24c = subset(walterCountTable, select = c("E1T24_Inf","E1T24_Uninf",
@@ -111,7 +114,7 @@ dev.off()
 png("~/projects/walter/data/pvals_t24.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
 dev.off()
-write.csv(res, file="~/projects/walter/data/result_t24.txt")
+write.csv(res, file="~/projects/walter/data/result_tuberculosis_t24.txt")
 
 save.image("~/projects/walter/data/deseq_session.RData")
 
