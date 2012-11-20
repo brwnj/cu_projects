@@ -2,17 +2,24 @@ library(DEXSeq)
 library(DESeq)
 setwd("~/projects/polya/data")
 
-annotation_file = "~/projects/polya/data/polya.flattened.gff"
+annotation_file = "~/projects/polya/data/polya_extended.gff"
+
 # 1 to 2 positive strand
-MPdesign1pos = data.frame(row.names = c("MP51pos","MP51posx",
-                                        "MP52pos","MP52posx"),
-                          condition = c("control","control",
-                                        "treatment","treatment"))
-ecsMP1pos = read.HTSeqCounts(countfiles = c("MP51.umi_filtered.pos.counts",
-                                            "MP51.umi_filtered.posx.counts",
-                                            "MP52.umi_filtered.pos.counts",
-                                            "MP52.umi_filtered.posx.counts"), 
-                             design = MPdesign1pos)
+mp1 = data.frame(
+    row.names = c("MP51","MP51x",
+                  "MP52","MP52x"),
+    condition = c(rep("control",2),
+                  rep("treatment",2)),
+    stringsAsFactors = T,
+    check.names = F
+    )
+ecs = read.HTSeqCounts(
+    design = mp1,
+    countfiles = c("MP51.umi_filtered.counts",
+                   "MP51.umi_filteredx.counts",
+                   "MP52.umi_filtered.counts",
+                   "MP52.umi_filteredx.counts")
+    )
 ecsMP1pos = estimateSizeFactors(ecsMP1pos)
 ecsMP1pos = estimateDispersions(ecsMP1pos, minCount = 10)
 ecsMP1pos = fitDispersionFunction(ecsMP1pos)
@@ -24,8 +31,8 @@ write.csv(resMP1pos, file="MP51pos_MP52pos_dexseq.csv")
 # 1 to 2 negative strand
 MPdesign1neg = data.frame(row.names = c("MP51neg","MP51negx",
                                         "MP52neg","MP52negx"),
-                          condition = c("control","control",
-                                        "treatment","treatment"))
+                          condition = c(rep("control", 2),
+                                        rep("treatment", 2)))
 ecsMP1neg = read.HTSeqCounts(countfiles = c("MP51.umi_filtered.neg.counts",
                                             "MP51.umi_filtered.negx.counts",
                                             "MP52.umi_filtered.neg.counts",

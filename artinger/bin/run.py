@@ -4,8 +4,11 @@
 Artinger
 """
 from bsub import bsub
+from pybedtools import BedTool
+from toolshed import reader
 import os
 import os.path as op
+import pandas as pd
 import sys
 import fnmatch
 import shutil
@@ -162,7 +165,7 @@ def counts(samples, result_path):
     # get the consensus peaks
     f = open(result_path + "/peak_coordinates.bed", 'w')
     x = BedTool()
-    consensus = x.multi_intersect(i=getfilelist(result_path, "*peaks.bed.gz"))
+    consensus = x.multi_intersect(i=getfilelist(result_path, "*h37Rv_peaks.bed"))
     for c in consensus:
         replicate_counts = c.name
         if replicate_counts < 2: continue
@@ -170,14 +173,13 @@ def counts(samples, result_path):
         fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % (c.chrom, c.start, c.stop)]
         f.write("\t".join(map(str, fields)))
     f.close()
-    
     # get counts for each sample
     jobs = []
     countfiles = []
     for sample in samples:
-        bams = getfilelist(result_path, sample + "*.bam")
+        bams = getfilelist(result_path, sample + "*H37Rv.bam")
         assert(len(bams) == 1)
-        outdir = resultsdir.rstrip("/") + "/" + sample
+        outdir = result_path.rstrip("/") + "/" + sample
         countsresult = outdir + "/" + sample + ".counts"
         countfiles.append(countsresult)
         if op.exists(countsresult): continue
@@ -185,7 +187,6 @@ def counts(samples, result_path):
         jobid = bsub(sample + "_counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     bsub.poll(jobs)
-    
     # counts to matrix
     allcounts = {}
     for cf in countfiles:

@@ -18,7 +18,8 @@ Poly(A)
 ==============================================================================
 
     samtools view bam | python dexseq_count.py flattened.gff - out.counts
-    awk 'BEGIN{OFS=FS="\t"}{if($2!=0){n=int(rand()*5);print $1,$2+n}else{print $0}}' out.counts > outx.counts
+    rm *x.counts
+    for f in *.counts; do awk 'BEGIN{OFS=FS="\t"}!/^_/{foo=int(rand()*10);if($2!=0){print $1,$2+foo}else{print}}' $f > $(basename $f .counts)x.counts; done
 
 * neg and pos split everything; annotation, bam, etc
 * tracks have to be shown only using 5' read ends
