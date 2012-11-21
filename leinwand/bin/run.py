@@ -47,51 +47,39 @@ def trimadapter(datadir, adapters):
         jobs.append(jobid)
     return jobs
 
-def rum(samples, datadir, resultsdir, cmdstr):
+def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
     """align reads for each sample according to the command string."""
     jobs = []
     for sample in samples:
-        fastqs = getfilelist(datadir, sample + ".trim.fastq.gz")
+        fastqs = getfilelist(reads_path, sample + ".trim.fastq.gz")
         assert(len(fastqs) == 1)
+        fastq = fastqs[0]
         
-        outdir = resultsdir + "/" + sample
+        out = "%s/%s" % (results_path, sample)
+        if not op.exists(out):
+            os.makedirs(out)
         
-        if not op.exists(outdir):
-            os.makedirs(outdir)
+        align_result = "%s/%s.bam" % (out, sample)
+        if op.exists(align_result): continue
         
-        alignresult = outdir + "/" + sample + ".bam"
-        alternatealignresult = outdir + "/RUM.sam"
-        if op.exists(alignresult) or op.exists(alternatealignresult): continue
-        
-        gzipfastq = fastqs[0]
-        fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
-        if not op.exists(fastq):
-            bsub.poll(extract(gzipfastq, fastq))
-        
-        cmd = cmdstr.format(outdir, sample, fastq)
+        cmd = cmd_str.format(gmap_db, fastq, sample, sample)
         jobid = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
 
-def postprocessrum(resultsdir):
-    """take care of the mess left by rum."""
-    jobs = []
-    for sam in getfilelist(resultsdir, "RUM.sam"):
-        outdir = op.dirname(sam)
-        try:
-            [os.remove(fastq) for fastq in getfilelist(outdir, "*.fastq")]
-        except OSError:
-            pass
-        sample = outdir.rsplit("/", 1)[1]
-        
-        cmd = "gzip -f *.fa RUM_Unique RUM_NU RUM_NU.cov RUM_Unique.cov"
-        bsub("gziprumdir", q="idle", cwd=outdir, verbose=True)(cmd)
-        
-        bam = outdir + "/" + sample + ".bam"
-        if op.exists(bam): continue
-        cmd = "samtools view -ShuF 4 " + sam + " | samtools sort -o - " + sample + ".temp -m 9500000000 > " + bam
-        jobs.append(bsub("sam2bam", cwd=outdir, verbose=True)(cmd))
-    return jobs
+def alignment_stats(results_path, picard_path, ref_fasta):
+    for bam in getfilelist(results_path, "*.bam"):
+        stats_result = "%s_stats.txt" % op.splitext(bam)[0]
+        if op.exists("%s.bai" % bam) and op.exists(stats_result): continue
+        cmd = "samtools index %s" % bam
+        jobid = bsub("index", verbose=True)(cmd)
+        bsub.poll(jobid)
+        cmd = "java -Xmx8g -jar %s/CollectMultipleMetrics.jar \
+                INPUT=%s REFERENCE_SEQUENCE=%s ASSUME_SORTED=true OUTPUT=%s \
+                PROGRAM=CollectAlignmentSummaryMetrics \
+                PROGRAM=QualityScoreDistribution \
+                PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta, stats_result)
+        bsub("alignment_summary", verbose=True)(cmd)
 
 def macs(samples, resultsdir, cmdstr):
     jobs = []
@@ -124,7 +112,7 @@ def counts(samples, result_path):
     # get the consensus peaks
     f = open(result_path + "/peak_coordinates.bed", 'w')
     x = BedTool()
-    consensus = x.multi_intersect(i=getfilelist(result_path, "*peaks.bed.gz"))
+    consensus = x.multi_intersect(i=getfilelist(result_path, "*_peaks.bed"))
     for c in consensus:
         replicate_counts = c.name
         if replicate_counts < 2: continue
@@ -132,14 +120,13 @@ def counts(samples, result_path):
         fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % (c.chrom, c.start, c.stop)]
         f.write("\t".join(map(str, fields)))
     f.close()
-    
     # get counts for each sample
     jobs = []
     countfiles = []
     for sample in samples:
         bams = getfilelist(result_path, sample + "*.bam")
         assert(len(bams) == 1)
-        outdir = resultsdir.rstrip("/") + "/" + sample
+        outdir = result_path.rstrip("/") + "/" + sample
         countsresult = outdir + "/" + sample + ".counts"
         countfiles.append(countsresult)
         if op.exists(countsresult): continue
@@ -147,7 +134,6 @@ def counts(samples, result_path):
         jobid = bsub(sample + "_counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     bsub.poll(jobs)
-    
     # counts to matrix
     allcounts = {}
     for cf in countfiles:

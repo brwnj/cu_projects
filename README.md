@@ -29,12 +29,8 @@ Poly(A)
 Walter
 ==============================================================================
 
-* test across the time series
-    * pull out significant
-    * intersect with mirbase19
-    * compare lists
-
-* peaks on tuberculosis
-    * consensus, counts, deseq
-    * tests across time series
-    * send list of anything significant
+* annotate to genbank annotation file
+* sequences appended to deseq results
+* append each basemean for each time series
+* split peaks then form consensus
+* maybe re-run on human
