@@ -11,6 +11,7 @@ Artinger
 Hits-Clip
 ==============================================================================
 
+* correlation of samples among cases
 * ayb with shorter and shorter (less priority)
 
 ==============================================================================
@@ -29,6 +30,7 @@ Poly(A)
 Walter
 ==============================================================================
 
+* genomedata archive!
 * annotate to genbank annotation file
 * sequences appended to deseq results
 * append each basemean for each time series

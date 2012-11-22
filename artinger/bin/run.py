@@ -108,7 +108,7 @@ def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
         align_result = "%s/%s.bam" % (out, sample)
         if op.exists(align_result): continue
         
-        cmd = cmd_str.format(gmap_db, fastq, sample, sample)
+        cmd = cmd_str.format(gmap_db, fastq, sample, align_result)
         jobid = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
@@ -222,7 +222,7 @@ def main(args):
     
     rumcmd = "rum_runner align -v -i %s -o {} --chunks 5 --dna --nu-limit 2 --variable-length-reads --name {} {}" % rumindex
     macscmd = "macs14 -t {} -c {} -f BAM -n {} -g 1400000000 -w --single-profile --call-subpeaks"
-    gsnapcmd = "gsnap -D {} -d mm9 --gunzip --npaths=1 --quiet-if-excessive --batch=5 --nofails --nthreads=4 --format=sam {} | samtools view -ShuF 4 - | samtools sort -o - {}.temp -m 9500000000 > {}.bam"
+    gsnapcmd = "gsnap -D {} -d zebrafish --gunzip --npaths=1 --quiet-if-excessive --batch=5 --nofails --nthreads=4 --format=sam {} | samtools view -ShuF 4 - | samtools sort -o - {}.temp -m 9500000000 > {}"
     
     if args.clobber:
         clobber_previous(resultsdir)

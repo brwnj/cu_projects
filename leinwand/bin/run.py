@@ -51,7 +51,7 @@ def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
     """align reads for each sample according to the command string."""
     jobs = []
     for sample in samples:
-        fastqs = getfilelist(reads_path, sample + ".trim.fastq.gz")
+        fastqs = getfilelist(reads_path, "%s.trim.fastq.gz" % sample)
         assert(len(fastqs) == 1)
         fastq = fastqs[0]
         
@@ -62,15 +62,15 @@ def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
         align_result = "%s/%s.bam" % (out, sample)
         if op.exists(align_result): continue
         
-        cmd = cmd_str.format(gmap_db, fastq, sample, sample)
+        cmd = cmd_str.format(gmap_db, fastq, sample, align_result)
         jobid = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
 
 def alignment_stats(results_path, picard_path, ref_fasta):
     for bam in getfilelist(results_path, "*.bam"):
-        stats_result = "%s_stats.txt" % op.splitext(bam)[0]
-        if op.exists("%s.bai" % bam) and op.exists(stats_result): continue
+        stats_result = op.splitext(bam)[0]
+        if op.exists("%s.bai" % bam) and op.exists("%s.alignment_summary_metrics" % stats_result): continue
         cmd = "samtools index %s" % bam
         jobid = bsub("index", verbose=True)(cmd)
         bsub.poll(jobid)
@@ -81,43 +81,39 @@ def alignment_stats(results_path, picard_path, ref_fasta):
                 PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta, stats_result)
         bsub("alignment_summary", verbose=True)(cmd)
 
-def macs(samples, resultsdir, cmdstr):
+def macs(samples, result_path, cmdstr):
     jobs = []
     for sample in samples:
-        bams = getfilelist(resultsdir, sample + ".bam")
+        bams = getfilelist(result_path, "%s.bam" % sample)
         assert(len(bams) == 1)
-        
-        outdir = resultsdir + "/" + sample
-        macsresult = outdir + "/" + sample + "_peaks.xls"
-        
+        outdir = "%s/%s" % (result_path, sample)
+        macsresult = "%s/%s_peaks.xls" % (outdir, sample)
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
-        
         cmd = cmdstr.format(bams[0], sample)
-        jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
+        jobid = bsub("macs", cwd=outdir,
+                        R="select[mem>16] rusage[mem=16] span[hosts=1]",
+                        verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
 
 def cleanup(path):
     exts = ['bed', 'xls']
     for ext in exts:
-        for f in getfilelist(path, "*." + ext):
-            cmd = "gzip -f " + f
+        for f in getfilelist(path, "*.%s" % ext):
+            cmd = "gzip -f %s" % f
             bsub("zip", q="idle")(cmd)
-    try:
-        [os.remove(sam) for sam in getfilelist(path, "*.sam")]
-    except OSError:
-        pass
 
 def counts(samples, result_path):
     # get the consensus peaks
-    f = open(result_path + "/peak_coordinates.bed", 'w')
+    f = open("%s/peak_coordinates.bed" % result_path, 'w')
     x = BedTool()
     consensus = x.multi_intersect(i=getfilelist(result_path, "*_peaks.bed"))
     for c in consensus:
         replicate_counts = c.name
         if replicate_counts < 2: continue
         
-        fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % (c.chrom, c.start, c.stop)]
+        fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % \
+                    (c.chrom, c.start, c.stop)]
         f.write("\t".join(map(str, fields)))
     f.close()
     # get counts for each sample
@@ -130,8 +126,11 @@ def counts(samples, result_path):
         countsresult = outdir + "/" + sample + ".counts"
         countfiles.append(countsresult)
         if op.exists(countsresult): continue
-        cmd = "bedtools coverage -abam " + bams[0] + " -b " + f.name + " > " + countsresult
-        jobid = bsub(sample + "_counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
+        cmd = "bedtools coverage -abam %s -b %s > %s" % \
+                    (bams[0], f.name, countsresult)
+        jobid = bsub(sample + "_counts", 
+                        R="select[mem>16] rusage[mem=16] span[hosts=1]",
+                        verbose=True)(cmd)
         jobs.append(jobid)
     bsub.poll(jobs)
     # counts to matrix
@@ -139,7 +138,8 @@ def counts(samples, result_path):
     for cf in countfiles:
         cfname = op.basename(cf).split(".bam")[0]
         casecounts = {}
-        for toks in reader(cf, header="chrom start stop name a_overlaps_in_b b_with_nonzero length_b frac_b_nonzero".split()):
+        for toks in reader(cf, header="chrom start stop name a_overlaps_in_b \
+                    b_with_nonzero length_b frac_b_nonzero".split()):
             casecounts[toks['name']] = int(toks['a_overlaps_in_b'])
         allcounts[cfname] = casecounts
     countsdf = pd.DataFrame(allcounts)
@@ -161,25 +161,32 @@ def main(args):
     adapters = "%s/adapters.fa" % datadir
     resultsdir = "/vol1/home/brownj/projects/leinwand/results/common"
     fastqc_script="/vol1/home/brownj/opt/fastqc/fastqc"
-    rumindex = "/vol1/home/brownj/ref/rum/mm9"
+    picard = "/vol1/home/brownj/opt/picard-tools-1.79"
+    reference_fasta = "/vol1/home/brownj/ref/zebrafish/Danio_rerio.Zv9.68.fa"
+    gmapdb = "/vol1/home/brownj/ref/gmapdb"
     
-    rumcmd = "rum_runner align -v -i %s -o {} --chunks 5 --dna --nu-limit 2 --variable-length-reads --name {} {}" % rumindex
-    macscmd = "macs14 -t {} -f BAM -n {} -g mm -w --single-profile"
+    macscmd = "macs14 -t {} -f BAM -n {} -g mm -w --single-profile --call-subpeaks"
+    gsnapcmd = "gsnap -D {} -d mm9 --gunzip --npaths=1 --quiet-if-excessive \
+                --batch=5 --nofails --nthreads=4 --format=sam -v snp128_strict_wholeChrs {} \
+                | samtools view -ShuF 4 - \
+                | samtools sort -o - {}.temp -m 9500000000 > {}"
     
     if args.clobber:
         clobber_previous(resultsdir)
     
     fastqc(fastqc_script, samples, datadir)
     bsub.poll(trimadapter(datadir, adapters))
-    bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
-    bsub.poll(postprocessrum(resultsdir))
+    bsub.poll(gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
+    alignment_stats(resultsdir, picard, reference_fasta)
     bsub.poll(macs(samples, resultsdir, controls, macscmd))
     cleanup(resultsdir)
     counts(samples, resultsdir)
 
 if __name__ == '__main__':
     import argparse
-    p = argparse.ArgumentParser(__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--clobber", action="store_true", help="clear all previous results")
+    p = argparse.ArgumentParser(description=__doc__, 
+                        formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--clobber", action="store_true", 
+                        help="clear all previous results")
     args = p.parse_args()
     main(args)
