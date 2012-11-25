@@ -20,7 +20,7 @@ Version 0.1
 
 import os, sys
 from datetime import datetime
-from Bio      import SeqIO
+from Bio import SeqIO
 
 def gb2gtf( source='gb2gtf',allowedTypes=set(['gene','CDS','tRNA','tmRNA','rRNA','ncRNA']) ):
   """

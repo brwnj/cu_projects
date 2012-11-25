@@ -12,10 +12,6 @@ import os.path as op
 from toolshed import reader
 from collections import defaultdict
 
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
-
 def main(args):
     gm = defaultdict(dict)
     for f in args.files:
@@ -23,11 +19,10 @@ def main(args):
             try:
                 if int(l['abundance']) == 0: continue
                 # gm[<parsed file name>][<miRNA name>] = abundance value
-                gm[op.basename(f).split(".", 1)[0]][l['name']] = l['abundance']
+                gm[op.basename(f).split(".mirna_abundance", 1)[0]][l['name']] = l['abundance']
             except KeyError:
                 # header failed to set l['abundance']
                 pass
-
     # the sample names
     caselist = sorted(gm.keys())
     # only save lines where at least one sample has a positive value
@@ -39,7 +34,7 @@ def main(args):
     mirnas = set(completeset)
     
     # print the matrix
-    print "#mirna_id\t" + "\t".join(k for k in caselist)
+    print "\t".join(k for k in caselist)
     for mirna in mirnas:
         fields = [mirna]
         for c in caselist:
