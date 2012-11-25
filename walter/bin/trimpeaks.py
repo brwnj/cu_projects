@@ -27,25 +27,26 @@ def trim_peaks(results, genomedata, width, reference):
         counts = chromosome[start:stop]
         summit = get_summit(start, counts)
         if not summit: continue
-        start = summit - width / 2
-        stop = summit + width / 2
-        sequence = chromosome.seq[start:stop].tostring()
+        sumstart = summit - width / 2
+        sumstop = summit + width / 2
+        sequence = chromosome.seq[sumstart:sumstop].tostring()
         # annotate the overlap
-        bed = open(tempfile.mktemp(suffix=".bed"), 'w')
-        bed.write('%s\t%d\t%d\n' % (chrom, start, stop))
-        bed.close
+        peak = BedTool("%s\t%s\t%s\n" % (chrom, sumstart, sumstop), from_string=True)
+        try:
+            inter = ref.intersect(peak)
+        except OSError:
+            sys.stderr.write(">> skipping peak at %s:%s-%s\n" % (chrom, start, stop))
+            continue
         genename = ""
-        
-        inter = sp.Popen(["intersectBed", "-wb", "-a", bed.name, "-b", reference], stdout=sp.PIPE, shell=False)
-        for toks in reader(inter.stdout, header="chrom start stop fchrom j feature fstart fstop j fstrand j attrs".split()):
-            if toks['feature'] == "gene":
-                genename = re.findall(r'gene_id "([\w\.]+)"', toks['attrs'])
-        inter.wait()
-        
-        fields = [toks['id'], toks['baseMean'], toks['baseMeanA'],
+        for p in inter:
+            feature = p[2]
+            if feature == "gene":
+                genename += "%s;" % p.attrs.get("gene_id")
+        peak.delete_temporary_history(ask=False)
+        fields = [chrom, start, stop, toks['baseMean'], toks['baseMeanA'],
                     toks['baseMeanB'], toks['foldChange'], toks['log2FoldChange'], 
-                    toks['pval'], toks['padj'], "%s:%s-%s" % (chrom, start, stop), 
-                    genename, sequence]
+                    toks['pval'], toks['padj'], "%s:%s-%s" % (chrom, sumstart, sumstop), 
+                    genename.rstrip(";"), sequence]
         print '\t'.join(map(str, fields))
 
 def get_summit(start, counts):
