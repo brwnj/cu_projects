@@ -1,10 +1,10 @@
 library(DESeq)
 
-walterCountTable = read.table("~/projects/walter/data/countsmatrix.txt", header=T, row.names=1)
+# walterCountTable = read.table("~/projects/walter/data/20121120/countsmatrix.txt", header=T, row.names=1)
 
 # tb
-walterCountTable = read.csv("~/projects/walter/data/sample_counts.csv", header=T, row.names=1)
-
+# walterCountTable = read.csv("~/projects/walter/data/20121120/sample_counts.csv", header=T, row.names=1)
+walterCountTable = read.csv("~/projects/walter/data/20121124/sample_counts.csv", header=T, row.names=1)
 # full experiment
 walterDesign = data.frame(  
     row.names = colnames( walterCountTable ),
@@ -29,7 +29,7 @@ dev.off()
 png("~/projects/walter/data/pvals_tb_full.png", width=2000, height=2000)
 hist(res$pval, breaks=100, col="skyblue", border="slateblue", main="p-val dist")
 dev.off()
-write.csv(res, file="/Users/brownj/projects/walter/data/result_tb_full.csv")
+write.table(res, file="/Users/brownj/projects/walter/data/20121124/result_tb_full.txt", row.names=F)
 
 # normalize, estimate, and test only per time series
 # 1 hour
@@ -140,7 +140,7 @@ library(RColorBrewer)
 library(gplots)
 select = order(rowMeans(counts(cdsFull)), decreasing=T)[1:1000]
 hmcol = colorRampPalette(brewer.pal(9,"GnBu"))(100)
-heatmap.2(exprs(vsdFull)[select,], col = hmcol, trace="none", margin=c(10, 6))
+heatmap.2(exprs(vdsFull)[select,], col = hmcol, trace="none", margin=c(10, 6))
 # sample to sample distances
 dists = dist(t(exprs(vdsFull)))
 mat = as.matrix(dists)

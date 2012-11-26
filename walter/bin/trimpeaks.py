@@ -17,8 +17,11 @@ from toolshed import reader, header
 def trim_peaks(results, genomedata, width, reference):
     # chr1:545523-545821
     ref = BedTool(reference)
+    header = "chrom start stop baseMean baseMeanA baseMeanB foldChange log2FoldChange pval padj trimmedPeak sequence".split()
+    print "\t".join(header)
     genome = Genome(genomedata)
     for toks in reader(results, sep=" "):
+        if toks['padj'] == 'NA' or float(toks['padj']) > 0.01: continue
         chrom, coords = toks['id'].split(":")
         start, stop = coords.split("-")
         start = int(start)
@@ -30,23 +33,10 @@ def trim_peaks(results, genomedata, width, reference):
         sumstart = summit - width / 2
         sumstop = summit + width / 2
         sequence = chromosome.seq[sumstart:sumstop].tostring()
-        # annotate the overlap
-        peak = BedTool("%s\t%s\t%s\n" % (chrom, sumstart, sumstop), from_string=True)
-        try:
-            inter = ref.intersect(peak)
-        except OSError:
-            sys.stderr.write(">> skipping peak at %s:%s-%s\n" % (chrom, start, stop))
-            continue
-        genename = ""
-        for p in inter:
-            feature = p[2]
-            if feature == "gene":
-                genename += "%s;" % p.attrs.get("gene_id")
-        peak.delete_temporary_history(ask=False)
         fields = [chrom, start, stop, toks['baseMean'], toks['baseMeanA'],
                     toks['baseMeanB'], toks['foldChange'], toks['log2FoldChange'], 
                     toks['pval'], toks['padj'], "%s:%s-%s" % (chrom, sumstart, sumstop), 
-                    genename.rstrip(";"), sequence]
+                    sequence]
         print '\t'.join(map(str, fields))
 
 def get_summit(start, counts):
