@@ -3,8 +3,9 @@
 
 #normalized counts table
 library(DESeq)
+# python ../bin/data2matrix.py *MP*mirna_abundance.bed.gz > abundance_by_case.txt
 ct = read.table("~/projects/hits-clip/data/abundance_by_case.txt", header=T, row.names=1)
-cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",9)))
+cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",8)))
 cds = estimateSizeFactors(cds)
 normcounts = counts(cds, normalized=T)
 
@@ -16,4 +17,4 @@ write.csv((mat)^2, file="~/projects/hits-clip/data/correlation_coefficient.csv")
 # plot
 library(corrplot)
 corrplot(mat, method="circle", order="alphabet", cl.lim=c(0,1))
-corrRect(c(3,4,3,2,5), col="red", lwd=2)
+corrRect(c(3,3,3,2,5), col="red", lwd=2)

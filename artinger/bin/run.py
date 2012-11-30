@@ -13,7 +13,6 @@ import sys
 import fnmatch
 import shutil
 
-
 def getfilelist(path, pattern):
     files = []
     for root, dirnames, filenames in os.walk(path):
@@ -47,52 +46,6 @@ def trim(path, pattern):
         jobs.append(bsub("trim", verbose=True)(cmd))
     return jobs
 
-# def rum(samples, datadir, resultsdir, cmdstr):
-#     """align reads for each sample according to the command string."""
-#     jobs = []
-#     for sample in samples:
-#         fastqs = getfilelist(datadir, sample + ".trim.fastq.gz")
-#         assert(len(fastqs) == 1)
-#         
-#         outdir = resultsdir + "/" + sample
-#         
-#         if not op.exists(outdir):
-#             os.makedirs(outdir)
-#         
-#         alignresult = outdir + "/" + sample + ".bam"
-#         alternatealignresult = outdir + "/RUM.sam"
-#         if op.exists(alignresult) or op.exists(alternatealignresult): continue
-#         
-#         gzipfastq = fastqs[0]
-#         fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
-#         if not op.exists(fastq):
-#             bsub.poll(extract(gzipfastq, fastq))
-#         
-#         cmd = cmdstr.format(outdir, sample, fastq)
-#         jobid = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
-#         jobs.append(jobid)
-#     return jobs
-# 
-# def postprocessrum(resultsdir):
-#     """take care of the mess left by rum."""
-#     jobs = []
-#     for sam in getfilelist(resultsdir, "RUM.sam"):
-#         outdir = op.dirname(sam)
-#         try:
-#             [os.remove(fastq) for fastq in getfilelist(outdir, "*.fastq")]
-#         except OSError:
-#             pass
-#         sample = outdir.rsplit("/", 1)[1]
-#         
-#         cmd = "gzip -f *.fa RUM_Unique RUM_NU RUM_NU.cov RUM_Unique.cov"
-#         bsub("gziprumdir", q="idle", cwd=outdir, verbose=True)(cmd)
-#         
-#         bam = outdir + "/" + sample + ".bam"
-#         if op.exists(bam): continue
-#         cmd = "samtools view -ShuF 4 " + sam + " | samtools sort -o - " + sample + ".temp -m 9500000000 > " + bam
-#         jobs.append(bsub("sam2bam", cwd=outdir, verbose=True)(cmd))
-#     return jobs
-
 def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
     """align reads for each sample according to the command string."""
     jobs = []
@@ -115,16 +68,15 @@ def gsnap(samples, reads_path, results_path, gmap_db, cmd_str):
 
 def alignment_stats(results_path, picard_path, ref_fasta):
     for bam in getfilelist(results_path, "*.bam"):
-        stats_result = "%s_stats.txt" % op.splitext(bam)[0]
-        if op.exists("%s.bai" % bam) and op.exists(stats_result): continue
         cmd = "samtools index %s" % bam
-        jobid = bsub("index", verbose=True)(cmd)
-        bsub.poll(jobid)
+        if not op.exists("%s.bai" % bam):
+            jobid = bsub("index", verbose=True)(cmd)
+            bsub.poll(jobid)
         cmd = "java -Xmx8g -jar %s/CollectMultipleMetrics.jar \
-                INPUT=%s REFERENCE_SEQUENCE=%s ASSUME_SORTED=true OUTPUT=%s \
+                INPUT=%s REFERENCE_SEQUENCE=%s ASSUME_SORTED=true OUTPUT=metrics \
                 PROGRAM=CollectAlignmentSummaryMetrics \
                 PROGRAM=QualityScoreDistribution \
-                PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta, stats_result)
+                PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta)
         bsub("alignment_summary", verbose=True)(cmd)
 
 def macs(samples, resultsdir, controls, cmdstr):
@@ -132,13 +84,16 @@ def macs(samples, resultsdir, controls, cmdstr):
     for sample in samples:
         bams = getfilelist(resultsdir, sample + ".bam")
         assert(len(bams) == 1)
-        
+
         # control
         if "Input" in bams[0]: continue
+        print bams[0]
         controlbam = ""
         for control in controls:
-            if control.split("_")[0] == bams[0].split("_")[0]:
+            sampleid = control.split("_")[0]
+            if sampleid in bams[0]:
                 controlbam = getfilelist(resultsdir, control + ".bam")[0]
+        print controlbam
         
         outdir = resultsdir + "/" + sample
         macsresult = outdir + "/" + sample + "_peaks.xls"
@@ -146,6 +101,7 @@ def macs(samples, resultsdir, controls, cmdstr):
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
         
         cmd = cmdstr.format(bams[0], controlbam, sample)
+        print cmd
         jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
@@ -156,10 +112,6 @@ def cleanup(path):
         for f in getfilelist(path, "*." + ext):
             cmd = "gzip -f " + f
             bsub("zip", q="idle")(cmd)
-    # try:
-    #     [os.remove(sam) for sam in getfilelist(path, "*.sam")]
-    # except OSError:
-    #     pass
 
 def counts(samples, result_path):
     # get the consensus peaks
@@ -229,13 +181,11 @@ def main(args):
     
     fastqc(fastqc_script, samples, datadir)
     bsub.poll(trim(datadir, "*R1_001.fastq.gz"))
-    # bsub.poll(rum(samples, datadir, resultsdir, rumcmd))
-    # bsub.poll(postprocessrum(resultsdir))
     bsub.poll(gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
-    alignment_stats(resultsdir, picard, reference_fasta)
+    # alignment_stats(resultsdir, picard, reference_fasta)
     bsub.poll(macs(samples, resultsdir, controls, macscmd))
     cleanup(resultsdir)
-    counts(samples, resultsdir)
+    # counts(samples, resultsdir)
 
 if __name__ == '__main__':
     import argparse

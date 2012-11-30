@@ -1,17 +1,17 @@
 library(DEXSeq)
-library(DESeq)
+# library(DESeq)
 setwd("~/projects/polya/data")
 
 annotation_file = "~/projects/polya/data/polya_extended.gff"
 
 # 1 to 2 positive strand
 mp1 = data.frame(
-    row.names = c("MP51","MP51x",
-                  "MP52","MP52x"),
+    row.names = c("MP51.umi_filtered.counts","MP51.umi_filteredx.counts",
+                  "MP52.umi_filtered.counts","MP52.umi_filteredx.counts"),
     condition = c(rep("control",2),
                   rep("treatment",2)),
-    stringsAsFactors = T,
-    check.names = F
+    stringsAsFactors = TRUE,
+    check.names = FALSE
     )
 ecs = read.HTSeqCounts(
     design = mp1,

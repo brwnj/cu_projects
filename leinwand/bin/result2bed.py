@@ -16,7 +16,7 @@ def main(args):
         if r['pval'] == "NA" or float(r['pval']) > args.pvalue: continue
         chrom, coords = r['id'].split(':')
         start, stop = coords.split('-')
-        fields = [chrom, start, stop, r['id'], ".", r['pval']]
+        fields = [chrom, start, stop, r['id'], ".", r['baseMean'], r['baseMeanA'], r['baseMeanB'], r['foldChange'], r['log2FoldChange'], r['pval'], r['padj']]
         # not sorted
         print "\t".join(map(str, fields))
 

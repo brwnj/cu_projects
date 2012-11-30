@@ -258,7 +258,7 @@ def main():
     removesams("hg19")
             
     # Bowtie
-    bsub.poll(bowtiealign(SAMPLES, matureindex, "mature"))
+    bsub.poll(b owtiealign(SAMPLES, matureindex, "mature"))
     bsub.poll(bowtiealign(SAMPLES, tuberculosisindex, "H37Rv"))
     removefastqs()
     

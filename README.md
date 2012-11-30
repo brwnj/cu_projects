@@ -1,27 +1,47 @@
-============
+==============================================================================
 Peaktools
-============
+==============================================================================
 
 prints None sometimes:
 
     chrY	None	None	MDX_22_AGTTCC_L003_R1_001_pos	None	+
 
-
 ==============================================================================
 Artinger; Zebrafish; ChIP-Seq
 ==============================================================================
-
-* zebrafish!!
-* redo: fix macs genome size!
-* peaks for both groups but eventually it may be interesting to compare between the two
-* ucsc tracks + common deliverables
 
 ==============================================================================
 Hits-Clip
 ==============================================================================
 
-* correlation of samples among cases
+* Align with bowtie suppressing anything that maps to more than one place
+* Filter the bam of anything that aligned overlapping the regions of known rRNAs
+* Deliver tracks
+
 * ayb with shorter and shorter (less priority)
+
+==============================================================================
+Jacobsen; Human; ChIP-Seq
+==============================================================================
+
+To elucidate endogenous binding sites for progesterone receptor-A (PRA) we used
+three different breast cancer cell sublines of T47D cells; PR-negative cells
+(Y cells), cells that constitutively express PRA (YA cells) and cells that 
+inducibly express PRA upon treatment with ponA (YiA cells). These cells were 
+treated with vehicle (EtOH), Progesterone (P4), or an anti-progestin (ZK). We 
+wish to examine the binding of PR to DNA in the absence of any ligand (EtOH), 
+the presence of progesterone (P4), or the presence of anti-progestin (ZK). 
+Labels for the samples are as follows: Y+EtOH YA+EtOH YA+P4 YA+ZK
+(1 hour treatment) YA+ZK (24 hour treatment) YiA+EtOH YiA+ponA+EtOH 
+(cells induced to express PRA) YiA+ponA+ZK (1 hour) YiA+ponA+ZK 
+(24 hour treatment) YiA+ponA+P4 While the cell sublines are different, the 
+two PRA+ cells should be similar with regard to PR binding to target 
+sequences. For example, YA+EtOH should be similar to YiA+ponA+EtOH, YA+P4 
+should be similar to YiA+ponA+P4, YA+ZK 1h is similar to YiA+PonA+ZK 1h, 
+YiA EtOH is similar to Y EtOH etc. One caveat is that because PRA is inducibly 
+expressed in YiA cells, the cells make "leak" and express some PRA 
+(even in the sample only treated with EtOH). Is it possible to analyze the 
+samples first as replicates then in singlicate?
 
 ==============================================================================
 Poly(A)
@@ -39,31 +59,6 @@ Poly(A)
 Walter
 ==============================================================================
 
-* genomedata archive!
-
-    chr1	549717	549726	E1T1_Inf.pos	19.9870524164	+
-    chr1	551813	551823	E1T1_Inf.pos	21.7511656683	+
-    chr1	552338	552340	E1T1_Inf.pos	9.12588568711	+
-    chr1	553000	553002	E1T1_Inf.pos	9.12588568711	+
-    chr1	553106	553115	E1T1_Inf.pos	19.9870524164	+
-    chr1	553478	553489	E1T1_Inf.pos	23.5609476419	+
-    chr1	553850	553858	E1T1_Inf.pos	18.2707417598	+
-    chr1	554500	554509	E1T1_Inf.pos	19.9870524164	+
-    chr1:545523-545821
-    chr1	554629	554640	E1T1_Inf.pos	23.5609476419	+
-    chr1	554972	554990	E1T1_Inf.pos	37.3616240056	+
-    chr1	555650	555664	E1T1_Inf.pos	29.2455161535	+
-    chr1	556651	556664	E1T1_Inf.pos	27.3098517404	+
-    chr1	559206	559217	E1T1_Inf.pos	23.5609476419	+
-    chr1	559605	559615	E1T1_Inf.pos	21.7511656683	+
-
-take the peaks from deseq
-loop over coords, find summit location
-add 30 bp up and downstream from summit
-write out new best guess in addition to deseq input and sequence for the guess
-
-* annotate to genbank annotation file
-* sequences appended to deseq results
-* append each basemean for each time series
-* split peaks then form consensus
-* maybe re-run on human
+* rerun analysis on human samples
+* find where some of the sequences are that are DE in H37Rv -- they be DE in hg19
+* annotate to genome feature, primary interest is 3' UTR
