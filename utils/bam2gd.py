@@ -59,7 +59,7 @@ if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
                     formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('CHROM_SIZES')
+    p.add_argument('CHROM_SIZES', help="chromosome sizes for genome")
     p.add_argument('FASTA', help='reference for whole genome')
     p.add_argument('BAM', nargs="+",
                     help='bam(s) to convert to genomedata archive')

@@ -2,18 +2,6 @@
 # encoding: utf-8
 """
 Walter
-
-test across the time series
-pull out significant
-intersect with miRNA 19
-compare lists
-
-peaks on tuber
-consensus
-counts
-deseq
-time series
-send list of anything significant
 """
 from bsub import bsub
 from subprocess import Popen, PIPE
@@ -258,7 +246,7 @@ def main():
     removesams("hg19")
             
     # Bowtie
-    bsub.poll(b owtiealign(SAMPLES, matureindex, "mature"))
+    bsub.poll(bowtiealign(SAMPLES, matureindex, "mature"))
     bsub.poll(bowtiealign(SAMPLES, tuberculosisindex, "H37Rv"))
     removefastqs()
     
