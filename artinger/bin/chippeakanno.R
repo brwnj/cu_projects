@@ -125,3 +125,87 @@ write.table(
     sep="\t",
     row.names=FALSE
 )
+
+
+
+
+
+
+
+
+
+
+
+library(ChIPpeakAnno)
+table = read.table(
+    "~/remote/projects/artinger/results/common/2Som_peaks.bed",
+    header=FALSE)
+bed = BED2RangedData(table)
+
+# annotation
+mart = useMart(biomart="ensembl", dataset="drerio_gene_ensembl")
+tssanno = getAnnotation(mart, "TSS")
+
+# annotate peaks
+annotatedPeaks = annotatePeakInBatch(bed, AnnotationData=tssanno)
+
+# enriched go terms
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("org.Dr.eg.db")
+library(org.Dr.eg.db)
+go = getEnrichedGO(
+    annotatedPeaks,
+    orgAnn="org.Dr.eg.db",
+    multiAdj=TRUE,
+    minGOterm=10,
+    multiAdjMethod="BH"
+)
+
+ap_withsymbol = addGeneIDs(
+    annotatedPeaks,
+    "org.Dr.eg.db",c("symbol")
+)
+
+write.table(
+    as.data.frame(ap_withsymbol),
+    file="~/remote/projects/artinger/results/common/2Som_peaks.txt.f",
+    sep="\t",
+    row.names=FALSE
+)
+
+library(ChIPpeakAnno)
+table = read.table(
+    "~/remote/projects/artinger/results/common/31hpt_peaks.bed",
+    header=FALSE)
+bed = BED2RangedData(table)
+
+# annotation
+mart = useMart(biomart="ensembl", dataset="drerio_gene_ensembl")
+tssanno = getAnnotation(mart, "TSS")
+
+# annotate peaks
+annotatedPeaks = annotatePeakInBatch(bed, AnnotationData=tssanno)
+
+# enriched go terms
+# source("http://bioconductor.org/biocLite.R")
+# biocLite("org.Dr.eg.db")
+library(org.Dr.eg.db)
+go = getEnrichedGO(
+    annotatedPeaks,
+    orgAnn="org.Dr.eg.db",
+    multiAdj=TRUE,
+    minGOterm=10,
+    multiAdjMethod="BH"
+)
+
+ap_withsymbol = addGeneIDs(
+    annotatedPeaks,
+    "org.Dr.eg.db",c("symbol")
+)
+
+write.table(
+    as.data.frame(ap_withsymbol),
+    file="~/remote/projects/artinger/results/common/31hpt_peaks.txt.f",
+    sep="\t",
+    row.names=FALSE
+)

@@ -87,20 +87,18 @@ def macs(samples, resultsdir, controls, cmdstr):
 
         # control
         if "Input" in bams[0]: continue
-        print bams[0]
-        controlbam = ""
-        for control in controls:
-            sampleid = control.split("_")[0]
-            if sampleid in bams[0]:
-                controlbam = getfilelist(resultsdir, control + ".bam")[0]
-        print controlbam
+        # controlbam = ""
+        # for control in controls:
+        #     sampleid = control.split("_")[0]
+        #     if sampleid in bams[0]:
+        #         controlbam = getfilelist(resultsdir, control + ".bam")[0]
         
         outdir = resultsdir + "/" + sample
         macsresult = outdir + "/" + sample + "_peaks.xls"
         
         if op.exists(macsresult) or op.exists(macsresult + ".gz"): continue
         
-        cmd = cmdstr.format(bams[0], controlbam, sample)
+        cmd = cmdstr.format(bams[0], sample)
         print cmd
         jobid = bsub("macs", cwd=outdir, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)(cmd)
         jobs.append(jobid)
@@ -173,7 +171,7 @@ def main(args):
     gmapdb = "/vol1/home/brownj/ref/gmapdb"
     
     rumcmd = "rum_runner align -v -i %s -o {} --chunks 5 --dna --nu-limit 2 --variable-length-reads --name {} {}" % rumindex
-    macscmd = "macs14 -t {} -c {} -f BAM -n {} -g 1400000000 -w --single-profile --call-subpeaks"
+    macscmd = "macs14 -t {} -f BAM -n {} -g 1400000000 -w --single-profile --call-subpeaks"
     gsnapcmd = "gsnap -D {} -d zebrafish --gunzip --npaths=1 --quiet-if-excessive --batch=5 --nofails --nthreads=4 --format=sam {} | samtools view -ShuF 4 - | samtools sort -o - {}.temp -m 9500000000 > {}"
     
     if args.clobber:

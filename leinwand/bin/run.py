@@ -166,7 +166,7 @@ def main(args):
     gmapdb = "/vol1/home/brownj/ref/gmapdb"
     
     macscmd = "macs14 -t {} -f BAM -n {} -g mm -w --single-profile --call-subpeaks"
-    gsnapcmd = "gsnap -D {} -d mm9 --gunzip --npaths=1 --quiet-if-excessive \
+    gsnapcmd = "gsnap -D {} -d mm9 --gunzip \
                 --batch=5 --nofails --nthreads=4 --format=sam -v snp128_strict_wholeChrs {} \
                 | samtools view -ShuF 4 - \
                 | samtools sort -o - {}.temp -m 9500000000 > {}"
@@ -177,10 +177,10 @@ def main(args):
     fastqc(fastqc_script, samples, datadir)
     bsub.poll(trimadapter(datadir, adapters))
     bsub.poll(gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
-    alignment_stats(resultsdir, picard, reference_fasta)
-    bsub.poll(macs(samples, resultsdir, controls, macscmd))
+    # alignment_stats(resultsdir, picard, reference_fasta)
+    # bsub.poll(macs(samples, resultsdir, controls, macscmd))
     cleanup(resultsdir)
-    counts(samples, resultsdir)
+    # counts(samples, resultsdir)
 
 if __name__ == '__main__':
     import argparse
