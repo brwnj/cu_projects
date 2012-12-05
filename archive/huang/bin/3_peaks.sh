@@ -23,7 +23,7 @@ SAMPLES=(workaround
 
 SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 NAME=$(basename $SAMPLE .bam)
-PROJECT=$HOME/projects/huang
+PROJECT=$HOME/projects/xxxxxxxx
 
 CONTROL=$PROJECT/results/common/1_TCAG_L007_R1_001/1_TCAG_L007_R1_001.bam
 

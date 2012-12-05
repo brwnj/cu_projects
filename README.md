@@ -20,6 +20,13 @@ Hits-Clip
 
 * ayb with shorter and shorter (less priority)
 
+Leinwand
+==============================================================================
+
+* per sample means appended to the DESeq output
+* send more of the deseq output and qc including pca and clustering
+
+
 ==============================================================================
 Jacobsen; Human; ChIP-Seq
 ==============================================================================

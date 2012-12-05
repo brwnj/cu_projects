@@ -26,7 +26,7 @@ SAMPLES=(workaround
 SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 BIDX=$HOME/projects/ref/sacCer3/sacCer3
 NAME=$(basename $SAMPLE .fastq)
-PROJECT=$HOME/projects/huang
+PROJECT=$HOME/projects/xxxxxxxx
 
 if [ ! -f $NAME.bam ]; then
     gunzip $PROJECT/data/20120615/$SAMPLE.gz
