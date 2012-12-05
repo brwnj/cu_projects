@@ -5,21 +5,23 @@ setwd("~/projects/polya/data")
 annotation_file = "~/projects/polya/data/polya_extended.gff"
 
 # 1 to 2 positive strand
-mp1 = data.frame(
-    row.names = c("MP51.umi_filtered.counts","MP51.umi_filteredx.counts",
-                  "MP52.umi_filtered.counts","MP52.umi_filteredx.counts"),
+mp1 = as.matrix(data.frame(
+    row.names = c("MP51","MP51x",
+                  "MP52","MP52x"),
     condition = c(rep("control",2),
                   rep("treatment",2)),
     stringsAsFactors = TRUE,
     check.names = FALSE
-    )
+    ))
+
 ecs = read.HTSeqCounts(
     design = mp1,
-    countfiles = c("MP51.umi_filtered.counts",
+    countfiles = c("mp51test.counts",
                    "MP51.umi_filteredx.counts",
-                   "MP52.umi_filtered.counts",
+                   "mp52test.counts",
                    "MP52.umi_filteredx.counts")
     )
+
 ecsMP1pos = estimateSizeFactors(ecsMP1pos)
 ecsMP1pos = estimateDispersions(ecsMP1pos, minCount = 10)
 ecsMP1pos = fitDispersionFunction(ecsMP1pos)
