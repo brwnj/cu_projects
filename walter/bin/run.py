@@ -194,26 +194,6 @@ def macs(samples, resultsdir):
     return jobs
 
 
-# not working. giving up for now.
-
-# def findconsensus():
-#     """run in the working dir that ran macs
-#     bedtools multiinter -cluster -i *.bed | awk 'BEGIN{OFS=FS="\t"}{print $1,$2,$3,"macs_peak_"NR}' > consensus.bed"""
-#     bedfiles = getfilelist(os.getcwd(), "*_peaks.bed")
-#     cmd = "bedtools multiinter -cluster -i " + " ".join([b for b in bedfiles])
-#     print cmd
-#     mergedbed = Popen(shlex.split(cmd), stdout=PIPE, stderr=PIPE, shell=False)
-#     fout = open("consensus.bed", "wb")
-#     for i, line in enumerate(mergedbed.stdout, start=1):
-#         print line
-#         # line = line.rstrip("\r\n").split("\t")
-#         # chrom = line[0]
-#         # start = line[1]
-#         # stop = line[2]
-#         # fields = [chrom, start, stop, "macs_peak_%d" % i]
-#         # fout.write("\t".join(map(str, fields)))
-
-
 def counts(samples, resultsdir):
     """get counts over peaks regions for each sample"""
     jobs = []
