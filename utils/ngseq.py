@@ -9,6 +9,7 @@ import os
 import os.path as op
 import fnmatch
 import pandas as pd
+from bsub import bsub
 from pybedtools import BedTool
 
 def getfilelist(path, pattern):
@@ -34,13 +35,13 @@ def fastqc(fastqc_path, samples, data_path, read_ext="fastq.gz"):
         cmd = "%s --outdir %s %s" % (script, data_path, fastq)
         sub(cmd)
 
-def counts(samples, result_path, peaks_ext, bam_ext):
+def counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam"):
     # get the consensus peaks
     f = open("%s/peak_coordinates.bed" % result_path, 'w')
     x = BedTool()
     sub = bsub("counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", 
                     verbose=True)
-    consensus = x.multi_intersect(i=getfilelist(result_path, peaks_ext))
+    consensus = x.multi_intersect(i=getfilelist(result_path, "*%s" % peak_ext))
     for c in consensus:
         replicate_counts = c.name
         if replicate_counts < 2: continue
@@ -53,7 +54,7 @@ def counts(samples, result_path, peaks_ext, bam_ext):
     jobs = []
     countfiles = []
     for sample in samples:
-        bams = getfilelist(result_path, sample + bam_ext)
+        bams = getfilelist(result_path, "%s.%s" % (sample, bam_ext))
         assert(len(bams) == 1)
         outdir = result_path + "/" + sample
         countsresult = outdir + "/" + sample + ".counts"
@@ -76,13 +77,11 @@ def counts(samples, result_path, peaks_ext, bam_ext):
     countsdf = pd.DataFrame(allcounts)
     countsdf.to_csv(result_path + "/sample_counts.csv", sep=",", header=True)
 
-def cleanup(path):
-    exts = ['bed', 'xls']
-    sub = bsub("zip", q="idle")
-    for ext in exts:
+def cleanup(path, extensions=['bed', 'xls']):
+    for ext in extensions:
         for f in getfilelist(path, "*.%s" % ext):
             cmd = "gzip -f %s" % f
-            sub(cmd)
+            bsub("zip", q="idle")(cmd)
 
 def macs(samples, result_path, cmdstr):
     jobs = []
@@ -112,7 +111,7 @@ def alignment_stats(results_path, picard_path, ref_fasta):
                 PROGRAM=MeanQualityByCycle" % (picard_path, bam, ref_fasta)
         bsub("alignment_summary", verbose=True)(cmd)
 
-def gsnap(samples, reads_path, read_ext="bam", results_path, gmap_db, cmd_str):
+def gsnap(samples, reads_path, results_path, gmap_db, cmd_str, read_ext="bam"):
     """align reads for each sample according to the command string."""
     jobs = []
     sub = bsub("align", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]",
@@ -144,3 +143,13 @@ def trim(path, pattern, trim_ext="trim.fastq.gz"):
         jobs.append(sub(cmd))
     return jobs
 
+def trim_adapter(datadir, adapters, in_file_ext="fastq.gz", out_file_ext="trim.fastq.gz"):
+    """trim adapters using ea-utils"""
+    jobs = []
+    for fastq in getfilelist(datadir, "*.%s" % file_ext):
+        trimresult = fastq.split(in_file_ext, 1)[0] + out_file_ext
+        if op.exists(trimresult): continue
+        cmd = "fastq-mcf " + adapters + " " + fastq + " | gzip -c > " + trimresult
+        jobid = bsub("trim", verbose=True)(cmd)
+        jobs.append(jobid)
+    return jobs
