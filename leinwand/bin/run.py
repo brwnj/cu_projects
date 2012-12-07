@@ -4,14 +4,7 @@
 Leinwand
 """
 from bsub import bsub
-from pybedtools import BedTool
-from toolshed import reader
-import os
-import os.path as op
-import pandas as pd
 import sys
-import fnmatch
-import shutil
 
 sys.path.append('/vol1/home/brownj/projects/utils')
 import ngseq
@@ -26,16 +19,15 @@ def main(args):
     datadir = "/vol1/home/brownj/projects/leinwand/data/20121101"
     adapters = "%s/adapters.fa" % datadir
     resultsdir = "/vol1/home/brownj/projects/leinwand/results/common"
-    fastqc_script="/vol1/home/brownj/opt/fastqc/fastqc"
+    fastqc_script = "/vol1/home/brownj/opt/fastqc/fastqc"
     picard = "/vol1/home/brownj/opt/picard-tools-1.79"
-    reference_fasta = "/vol1/home/brownj/ref/zebrafish/Danio_rerio.Zv9.68.fa"
+    reference_fasta = "/vol1/home/brownj/ref/mm9/mm9.fa"
     gmapdb = "/vol1/home/brownj/ref/gmapdb"
-    
-    macscmd = "macs14 -t {} -f BAM -n {} -g mm -w --single-profile --call-subpeaks"
     gsnapcmd = "gsnap -D {} -d mm9 --gunzip \
                 --batch=5 --nofails --nthreads=4 --format=sam -v snp128_strict_wholeChrs {} \
                 | samtools view -ShuF 4 - \
                 | samtools sort -o - {}.temp -m 9500000000 > {}"
+    chrom_sizes = "/vol1/home/brownj/ref/mm9/mm9.sizes"
     
     if args.clobber:
         ngseq.clobber_previous(resultsdir)
@@ -43,10 +35,18 @@ def main(args):
     ngseq.fastqc(fastqc_script, samples, datadir)
     bsub.poll(ngseq.trimadapter(datadir, adapters))
     bsub.poll(ngseq.gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
-    # alignment_stats(resultsdir, picard, reference_fasta)
-    # bsub.poll(macs(samples, resultsdir, controls, macscmd))
+    # ngseq.alignment_stats(resultsdir, picard, reference_fasta)
     ngseq.cleanup(resultsdir)
-    # counts(samples, resultsdir)
+
+    # create genomedata archive in results/common
+    bam_pattern = "/vol1/home/brownj/projects/leinwand/results/common/*/*.bam"
+    output_dir = "/vol1/home/brownj/projects/leinwand/results/common"
+    ngseq.bam2gd(chrom_sizes, reference_fasta, bam_pattern, output_dir)
+    
+    # call peaks using genomedata archive
+    # combine positive and negative strand
+    # 
+    # ngseq.counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam")
 
 if __name__ == '__main__':
     import argparse

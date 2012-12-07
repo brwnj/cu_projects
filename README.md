@@ -14,13 +14,10 @@ Artinger; Zebrafish; ChIP-Seq
 Hits-Clip
 ==============================================================================
 
-* Align with bowtie suppressing anything that maps to more than one place
-* Filter the bam of anything that aligned overlapping the regions of known rRNAs
-* Deliver tracks
-
 * ayb with shorter and shorter (less priority)
 
-Leinwand
+==============================================================================
+Leinwand; Mouse
 ==============================================================================
 
 * per sample means appended to the DESeq output

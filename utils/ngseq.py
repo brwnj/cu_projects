@@ -153,3 +153,16 @@ def trim_adapter(datadir, adapters, in_file_ext="fastq.gz", out_file_ext="trim.f
         jobid = bsub("trim", verbose=True)(cmd)
         jobs.append(jobid)
     return jobs
+
+def bam2gd(chrom_sizes, reference_fasta, bam_pattern, output_dir):
+    """create a genome data archive using bam2gd.py
+    
+    the file pattern should be as you would use in shell,
+    so something like:
+    
+    /vol1/home/brownj/projects/leinwand/results/common/*/*.bam
+    
+    """
+    sub = bsub("bam2gd", cwd=output_dir, verbose=True)
+    cmd = "bam2gd %s %s %s" % (chrom_sizes, reference_fasta, bam_pattern)
+    bsub.poll(sub(cmd))
