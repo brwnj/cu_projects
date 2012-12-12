@@ -2,10 +2,10 @@ library(DEXSeq)
 # library(DESeq)
 setwd("~/projects/polya/data")
 
-annotation_file = "~/projects/polya/data/polya_extended.gff"
+annotation_file = "~/projects/polya/data/polya_extended_with_names.gff"
 
 # 1 to 2 positive strand
-mp1 = as.matrix(data.frame(
+MPdesign1pos = as.matrix(data.frame(
     row.names = c("MP51","MP51x",
                   "MP52","MP52x"),
     condition = c(rep("control",2),
@@ -14,12 +14,12 @@ mp1 = as.matrix(data.frame(
     check.names = FALSE
     ))
 
-ecs = read.HTSeqCounts(
+ecsMP1pos = read.HTSeqCounts(
     design = mp1,
-    countfiles = c("mp51test.counts",
-                   "MP51.umi_filteredx.counts",
-                   "mp52test.counts",
-                   "MP52.umi_filteredx.counts")
+    countfiles = c("MP51.pos.counts",
+                   "MP51.posx.counts",
+                   "MP52.pos.counts",
+                   "MP52.posx.counts")
     )
 
 ecsMP1pos = estimateSizeFactors(ecsMP1pos)
@@ -35,10 +35,10 @@ MPdesign1neg = data.frame(row.names = c("MP51neg","MP51negx",
                                         "MP52neg","MP52negx"),
                           condition = c(rep("control", 2),
                                         rep("treatment", 2)))
-ecsMP1neg = read.HTSeqCounts(countfiles = c("MP51.umi_filtered.neg.counts",
-                                            "MP51.umi_filtered.negx.counts",
-                                            "MP52.umi_filtered.neg.counts",
-                                            "MP52.umi_filtered.negx.counts"), 
+ecsMP1neg = read.HTSeqCounts(countfiles = c("MP51.neg.counts",
+                                            "MP51.negx.counts",
+                                            "MP52.neg.counts",
+                                            "MP52.negx.counts"), 
                              design = MPdesign1neg)
 ecsMP1neg = estimateSizeFactors(ecsMP1neg)
 # sizeFactors(ecsMP1neg)
@@ -54,10 +54,10 @@ MPdesign2pos = data.frame(row.names = c("MP51pos","MP51posx",
                                         "MP53pos","MP53posx"),
                           condition = c("control","control",
                                         "treatment","treatment"))
-ecsMP2pos = read.HTSeqCounts(countfiles = c("MP51.umi_filtered.pos.counts",
-                                            "MP51.umi_filtered.posx.counts",
-                                            "MP53.umi_filtered.pos.counts",
-                                            "MP53.umi_filtered.posx.counts"), 
+ecsMP2pos = read.HTSeqCounts(countfiles = c("MP51.pos.counts",
+                                            "MP51.posx.counts",
+                                            "MP53.pos.counts",
+                                            "MP53.posx.counts"), 
                              design = MPdesign2pos)
 ecsMP2pos = estimateSizeFactors(ecsMP2pos)
 ecsMP2pos = estimateDispersions(ecsMP2pos, minCount = 10)
@@ -72,10 +72,10 @@ MPdesign2neg = data.frame(row.names = c("MP51neg","MP51negx",
                                         "MP53neg","MP53negx"),
                           condition = c("control","control",
                                         "treatment","treatment"))
-ecsMP2neg = read.HTSeqCounts(countfiles = c("MP51.umi_filtered.neg.counts",
-                                            "MP51.umi_filtered.negx.counts",
-                                            "MP53.umi_filtered.neg.counts",
-                                            "MP53.umi_filtered.negx.counts"), 
+ecsMP2neg = read.HTSeqCounts(countfiles = c("MP51.neg.counts",
+                                            "MP51.negx.counts",
+                                            "MP53.neg.counts",
+                                            "MP53.negx.counts"), 
                              design = MPdesign2neg)
 ecsMP2neg = estimateSizeFactors(ecsMP2neg)
 # sizeFactors(ecsMP2neg)
@@ -91,10 +91,10 @@ PKdesignpos = data.frame(row.names = c("PK61pos","PK61posx",
                                        "PK62pos","PK62posx"),
                          condition = c("control","control",
                                        "treatment","treatment"))
-ecsPKpos = read.HTSeqCounts(countfiles = c("PK61.umi_filtered.pos.counts",
-                                           "PK61.umi_filtered.posx.counts",
-                                           "PK62.umi_filtered.pos.counts",
-                                           "PK62.umi_filtered.posx.counts"), 
+ecsPKpos = read.HTSeqCounts(countfiles = c("PK61.pos.counts",
+                                           "PK61.posx.counts",
+                                           "PK62.pos.counts",
+                                           "PK62.posx.counts"), 
                             design = PKdesignpos)
 ecsPKpos = estimateSizeFactors(ecsPKpos)
 ecsPKpos = estimateDispersions(ecsPKpos, minCount = 10)
@@ -109,10 +109,10 @@ PKdesignneg = data.frame(row.names = c("PK61neg","PK61negx",
                                        "PK62neg","PK62negx"),
                          condition = c("control","control",
                                        "treatment","treatment"))
-ecsPKneg = read.HTSeqCounts(countfiles = c("PK61.umi_filtered.neg.counts",
-                                           "PK61.umi_filtered.negx.counts",
-                                           "PK62.umi_filtered.neg.counts",
-                                           "PK62.umi_filtered.negx.counts"), 
+ecsPKneg = read.HTSeqCounts(countfiles = c("PK61.neg.counts",
+                                           "PK61.negx.counts",
+                                           "PK62.neg.counts",
+                                           "PK62.negx.counts"), 
                             design = PKdesignneg)
 ecsPKneg = estimateSizeFactors(ecsPKneg)
 ecsPKneg = estimateDispersions(ecsPKneg, minCount = 10)

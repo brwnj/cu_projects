@@ -30,8 +30,3 @@ sizes=/vol1/home/brownj/ref/hg18/hg18.sizes
 
 bam2bw $mpg1bam $sizes
 bam2bw $mp41bam $sizes
-
-# track type=bigWig name='MP41 neg' description='MP41 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/MP41.uniques.neg.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
-# track type=bigWig name='MP41 pos' description='MP41 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/MP41.uniques.pos.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
-# track type=bigWig name='MPG1.ACTG neg' description='MPG1 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/MPG1.uniques.neg.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
-# track type=bigWig name='MPG1.ACTG pos' description='MPG1 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/MPG1.uniques.pos.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full

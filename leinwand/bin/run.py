@@ -41,9 +41,10 @@ def main(args):
     # create genomedata archive in results/common
     bam_pattern = "/vol1/home/brownj/projects/leinwand/results/common/*/*.bam"
     output_dir = "/vol1/home/brownj/projects/leinwand/results/common"
-    ngseq.bam2gd(chrom_sizes, reference_fasta, bam_pattern, output_dir)
+    # ngseq.bam2gd(chrom_sizes, reference_fasta, bam_pattern, output_dir)
     
     # call peaks using genomedata archive
+
     # combine positive and negative strand
     # 
     # ngseq.counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam")

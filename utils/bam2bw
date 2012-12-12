@@ -8,7 +8,7 @@ set -o nounset -o pipefail -o errexit
 function usage () {
     echo "Check your args. This script submits to the normal queue.
          "
-    echo "Usage: sh $0 <BAM> <CHROMOSOME_SIZES>"
+    echo "Usage: sh $0 <BAM> <CHROMOSOME_SIZES> <5'_counts [ FALSE ]>"
     echo "Example: sh $0 MP1.bam ~/reference/hg19/hg19.sizes"
     exit 1
 }
@@ -19,25 +19,37 @@ fi
 
 bam=$1
 chromsizes=$2
-sample=${bam/.bam}
+umicounts=${3:-"FALSE"}
+sample=${bam%.bam}
 runscript="bamtobw.sh"
 
+if [ $umicounts == "FALSE" ]; then
 cat <<runscript >${runscript}
-#BSUB -J bamtobw
-#BSUB -e bamtobw.%J.err
-#BSUB -o bamtobw.%J.out
+#BSUB -J bam2bw
+#BSUB -e bam2bw.%J.err
+#BSUB -o bam2bw.%J.out
 
-bedtools bamtobed -i $sample.bam > $sample.bed
-awk '\$6=="+"' $sample.bed > $sample.pos.bed
-awk '\$6=="-"' $sample.bed > $sample.neg.bed
-bedSort $sample.pos.bed $sample.pos.bed
-bedSort $sample.neg.bed $sample.neg.bed
+bedtools bamtobed -i $sample.bam | gzip -c > $sample.bed.gz
 bedtools genomecov -strand + -bg -ibam $bam -g $chromsizes > $sample.pos.bedgraph
 bedtools genomecov -strand - -bg -ibam $bam -g $chromsizes > $sample.neg.bedgraph
 bedGraphToBigWig $sample.pos.bedgraph $chromsizes $sample.pos.bw
 bedGraphToBigWig $sample.neg.bedgraph $chromsizes $sample.neg.bw
-gzip -f $sample.*.bed $sample.*.bedgraph
+gzip -f $sample.*.bedgraph
 runscript
+else
+cat <<runscript >${runscript}
+#BSUB -J bam2bw
+#BSUB -e bam2bw.%J.err
+#BSUB -o bam2bw.%J.out
+
+bedtools bamtobed -i $sample.bam | gzip -c > $sample.bed.gz
+bedtools genomecov -strand + -bg -5 -ibam $bam -g $chromsizes > $sample.pos.bedgraph
+bedtools genomecov -strand - -bg -5 -ibam $bam -g $chromsizes > $sample.neg.bedgraph
+bedGraphToBigWig $sample.pos.bedgraph $chromsizes $sample.pos.bw
+bedGraphToBigWig $sample.neg.bedgraph $chromsizes $sample.neg.bw
+gzip -f $sample.*.bedgraph
+runscript
+fi
 
 job=$(bsub < $runscript)
 jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')

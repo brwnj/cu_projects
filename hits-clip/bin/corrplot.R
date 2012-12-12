@@ -4,10 +4,10 @@
 #normalized counts table
 library(DESeq)
 # python ../bin/data2matrix.py *MP*mirna_abundance.bed.gz > abundance_by_case.txt
-ct = read.table("~/projects/hits-clip/data/abundance_by_case.txt", header=T, row.names=1)
+ct = read.table("~/projects/hits-clip/data/abundance_by_case.txt", header=TRUE, row.names=1)
 cds = newCountDataSet(ct, conditions=c(rep("t",8),rep("c",8)))
 cds = estimateSizeFactors(cds)
-normcounts = counts(cds, normalized=T)
+normcounts = counts(cds, normalized=TRUE)
 
 # correlation table
 mat = cor(normcounts)

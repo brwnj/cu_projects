@@ -68,7 +68,7 @@ def counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam"):
     # counts to matrix
     allcounts = {}
     for cf in countfiles:
-        cfname = op.basename(cf).split(".bam")[0]
+        cfname = op.basename(cf).split(".counts")[0]
         casecounts = {}
         for toks in reader(cf, header="chrom start stop name a_overlaps_in_b \
                     b_with_nonzero length_b frac_b_nonzero".split()):

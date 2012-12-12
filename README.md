@@ -43,9 +43,20 @@ two PRA+ cells should be similar with regard to PR binding to target
 sequences. For example, YA+EtOH should be similar to YiA+ponA+EtOH, YA+P4 
 should be similar to YiA+ponA+P4, YA+ZK 1h is similar to YiA+PonA+ZK 1h, 
 YiA EtOH is similar to Y EtOH etc. One caveat is that because PRA is inducibly 
-expressed in YiA cells, the cells make "leak" and express some PRA 
+expressed in YiA cells, the cells may "leak" and express some PRA 
 (even in the sample only treated with EtOH). Is it possible to analyze the 
 samples first as replicates then in singlicate?
+
+YA+EtOH & YiA+ponA+EtOH
+YA+P4 & YiA+ponA+P4
+YA+ZK 1h & YiA+PonA+ZK 1h
+YiA EtOH & Y EtOH etc
+
+biological replicates
+2,7
+3,10
+4,9
+2,1
 
 ==============================================================================
 Poly(A)
@@ -53,11 +64,8 @@ Poly(A)
 
     samtools view bam | python dexseq_count.py flattened.gff - out.counts
     rm *x.counts
-    for f in *.counts; do awk 'BEGIN{OFS=FS="\t"}!/^_/{foo=int(rand()*10);if($2!=0){print $1,$2+foo}else{print}}' $f > $(basename $f .counts)x.counts; done
+    for f in *.counts; do awk 'BEGIN{OFS=FS="\t"}{foo=int(rand()*10);if($2!=0){print $1,$2+foo}else{print}}' $f > $(basename $f .counts)x.counts; done
 
-* neg and pos split everything; annotation, bam, etc
-* tracks have to be shown only using 5' read ends
-* re-run dexseq
 
 ==============================================================================
 Walter

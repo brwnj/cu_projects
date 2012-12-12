@@ -14,11 +14,6 @@ import pandas as pd
 from scipy import stats as st
 from toolshed import reader
 
-
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
-
 def builddf(a_fpkm, b_fpkm, verbose=False):
     """converts genes.fpkm_tracking files to dataframe."""
     if verbose: sys.stderr.write(">> Building dataframe.\n")
@@ -45,7 +40,6 @@ def builddf(a_fpkm, b_fpkm, verbose=False):
                 cases[name][c['gene_id']] = float(c['FPKM'])
     return anames, bnames, genenames, pd.DataFrame(cases)
 
-
 def foldchange(a, b):
     amean = np.mean(a)
     bmean = np.mean(b)
@@ -61,7 +55,6 @@ def foldchange(a, b):
         if amean < bmean:
             fc = bmean
     return amean, bmean, fc
-
 
 def main(args):
     anames, bnames, genenames, df = builddf(args.groupa, args.groupb, args.verbose)
@@ -96,11 +89,10 @@ def main(args):
         fields.extend([amean, bmean, fc, pval])
         print args.sep.join(map(str, fields))
 
-
 if __name__ == "__main__":
     import argparse
-    p = argparse.ArgumentParser(__doc__, 
-            # formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    p = argparse.ArgumentParser(description=__doc__, 
+            formatter_class=argparse.RawDescriptionHelpFormatter,
             epilog='Parent directory of genes.fpkm_tracking must be unique. \
             Dependencies are numpy, scipy, pandas, and toolshed.')
     p.add_argument('-a', '--groupa', action='append', required=True,
@@ -108,8 +100,8 @@ if __name__ == "__main__":
     p.add_argument('-b', '--groupb', action='append', required=True,
             help='genes.fpkm_tracking file; use option per file')
     p.add_argument('-s', '--sep', default="\t", 
-            help='optional output field separator')
+            help='optional output field separator [ tab ]')
     p.add_argument('-v', '--verbose', default=False, action='store_true', 
-            help='for maximum verbosity')
+            help='for maximum verbosity [ False ]')
     args = p.parse_args()
     main(args)
