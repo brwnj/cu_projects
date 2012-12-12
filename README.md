@@ -11,9 +11,12 @@ Artinger; Zebrafish; ChIP-Seq
 ==============================================================================
 
 ==============================================================================
-Hits-Clip
+Hits-Clip; hg18
 ==============================================================================
 
+* of peaks in 5'UTR, 3'UTR, and CDS, identify peaks unique to control and e-treated for MCF7 and BT474
+
+* ayb on new (20121210) polya stuff
 * ayb with shorter and shorter (less priority)
 
 ==============================================================================
@@ -23,29 +26,9 @@ Leinwand; Mouse
 * per sample means appended to the DESeq output
 * send more of the deseq output and qc including pca and clustering
 
-
 ==============================================================================
 Jacobsen; Human; ChIP-Seq
 ==============================================================================
-
-To elucidate endogenous binding sites for progesterone receptor-A (PRA) we used
-three different breast cancer cell sublines of T47D cells; PR-negative cells
-(Y cells), cells that constitutively express PRA (YA cells) and cells that 
-inducibly express PRA upon treatment with ponA (YiA cells). These cells were 
-treated with vehicle (EtOH), Progesterone (P4), or an anti-progestin (ZK). We 
-wish to examine the binding of PR to DNA in the absence of any ligand (EtOH), 
-the presence of progesterone (P4), or the presence of anti-progestin (ZK). 
-Labels for the samples are as follows: Y+EtOH YA+EtOH YA+P4 YA+ZK
-(1 hour treatment) YA+ZK (24 hour treatment) YiA+EtOH YiA+ponA+EtOH 
-(cells induced to express PRA) YiA+ponA+ZK (1 hour) YiA+ponA+ZK 
-(24 hour treatment) YiA+ponA+P4 While the cell sublines are different, the 
-two PRA+ cells should be similar with regard to PR binding to target 
-sequences. For example, YA+EtOH should be similar to YiA+ponA+EtOH, YA+P4 
-should be similar to YiA+ponA+P4, YA+ZK 1h is similar to YiA+PonA+ZK 1h, 
-YiA EtOH is similar to Y EtOH etc. One caveat is that because PRA is inducibly 
-expressed in YiA cells, the cells may "leak" and express some PRA 
-(even in the sample only treated with EtOH). Is it possible to analyze the 
-samples first as replicates then in singlicate?
 
 YA+EtOH & YiA+ponA+EtOH
 YA+P4 & YiA+ponA+P4
