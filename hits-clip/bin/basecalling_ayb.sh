@@ -4,23 +4,27 @@
 run ayb with varying number of model iterations
 DOC
 
-set -o nounset -o pipefail -o errexit -x
+set -o nounset -o errexit -x
 
-NOMASK=R57
 MASK=R6I14C36
 ITERATIONS=5
 # L4T1101-2316
+lowerbound=
+upperbound=
+cifs=$HOME/projects/polya/data/20121210/fsfsdfsdf
 
-for (( i = 1101; i < 2317; i++ )); do
+for (( i = $lowerbound; i < $upperbound; i++ )); do
     RUNSCRIPT=ayb.${i}.sh
     echo "#! /usr/bin/env bash" > $RUNSCRIPT
-    echo "#BSUB -J ayb.control.${i}" >> $RUNSCRIPT
+    echo "#BSUB -J ayb.${i}" >> $RUNSCRIPT
     echo "#BSUB -R \"span[hosts=1] select[mem>8] rusage[mem=8]\"" >> $RUNSCRIPT
     echo "#BSUB -e %J.err" >> $RUNSCRIPT
-    echo "#BSUB -q night" >> $RUNSCRIPT
+    echo "#BSUB -q normal" >> $RUNSCRIPT
     echo "
 
-AYB --dataformat cif --format fastq --blockstring $NOMASK --output ayb.${ITERATIONS} --niter ${ITERATIONS} --loglevel debug --input ~/projects/hits-clip/data/intensity_files --runfolder L1T${i} s_+" >> $RUNSCRIPT
+AYB --dataformat cif --format fastq --blockstring $MASK --output ayb \
+--niter $ITERATIONS --loglevel debug --input $cifs \
+--runfolder L1T${i} s_+" >> $RUNSCRIPT
 
    bsub < $RUNSCRIPT
 done
