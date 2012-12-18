@@ -22,3 +22,8 @@ Leinwand; Mouse; miRNA
 * deseq
 * make mirbase annotation for mouse
 * annotate deseq results
+
+fix the nulls
+
+awk '$2!="None"' pos.null neg.null > peaks.null
+cat pos neg > peaks.bed

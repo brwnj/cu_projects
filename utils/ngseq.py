@@ -11,6 +11,7 @@ import fnmatch
 import pandas as pd
 from bsub import bsub
 from pybedtools import BedTool
+from toolshed import reader
 
 def getfilelist(path, pattern):
     files = []
@@ -37,19 +38,22 @@ def fastqc(fastqc_path, samples, data_path, read_ext="fastq.gz"):
 
 def counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam"):
     # get the consensus peaks
-    f = open("%s/peak_coordinates.bed" % result_path, 'w')
-    x = BedTool()
-    sub = bsub("counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", 
-                    verbose=True)
-    consensus = x.multi_intersect(i=getfilelist(result_path, "*%s" % peak_ext))
-    for c in consensus:
-        replicate_counts = c.name
-        if replicate_counts < 2: continue
+    peakcoords = "%s/peak_coordinates.bed" % result_path
+    if not op.exists(peakcoords):
+        f = open(peakcoords, 'w')
+        x = BedTool()
+        sub = bsub("counts", R="select[mem>16] rusage[mem=16] span[hosts=1]", 
+                        verbose=True)
+        consensus = x.multi_intersect(i=getfilelist(result_path, "*%s" % peak_ext))
+        for c in consensus:
+            replicate_counts = c.name
+            if replicate_counts < 2: continue
         
-        fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % \
-                    (c.chrom, c.start, c.stop)]
-        f.write("\t".join(map(str, fields)))
-    f.close()
+            fields = [c.chrom, c.start, c.stop, "%s:%d-%d\n" % \
+                        (c.chrom, c.start, c.stop)]
+            f.write("\t".join(map(str, fields)))
+        f.close()
+    
     # get counts for each sample
     jobs = []
     countfiles = []
@@ -65,6 +69,7 @@ def counts(samples, result_path, peak_ext="_peaks.bed", bam_ext="bam"):
         jobid = sub(cmd)
         jobs.append(jobid)
     bsub.poll(jobs)
+    
     # counts to matrix
     allcounts = {}
     for cf in countfiles:
