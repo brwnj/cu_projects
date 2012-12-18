@@ -1,12 +1,10 @@
 #! /usr/bin/env bash
-#BSUB -J solid2fastq[1-38]
-#BSUB -e solid2fastq.%J.%I.err
-#BSUB -o solid2fastq.%J.%I.out
+#BSUB -J trim[1-38]
+#BSUB -e trim.%J.%I.err
+#BSUB -o trim.%J.%I.out
 #BSUB -q normal
 #BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
 #BSUB -n 1
-
-set -o nounset -o errexit -x
 
 samples=(idx0
 DK13_Dunn_P18_F3
@@ -52,4 +50,4 @@ Dunn3_F5
 sample=${samples[${LSB_JOBINDEX}]}
 reads=/vol1/home/brownj/projects/kamstock/data/20121203
 
-solid2fastq -o $reads/$sample $reads/$sample.csfasta $reads/$sample.qual
+python ~/projects/utils/solid-trimmer.py -c $reads/$sample.csfasta -q $reads/$sample.qual -p $reads/${sample}_trim --min-qual 10 --max-ns 6 --min-read-length 23
