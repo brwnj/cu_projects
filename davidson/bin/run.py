@@ -14,61 +14,11 @@ sample key:
 """
 from bsub import bsub
 import os
+import os.path as op
 import sys
-import fnmatch
-import shutil
 
-
-def getfilelist(datadir, searchpattern):
-    """assumes CASAVA naming convention (sample_index_etc_etc.fastq)"""
-    files = []
-    for root, dirnames, filenames in os.walk(datadir):
-          for filename in fnmatch.filter(filenames, searchpattern):
-              files.append(os.path.join(root, filename))
-    return files
-
-
-def extract(fname, out):
-    """extracts the file in its current directory"""
-    cmd = "zcat " + fname + " > " + out
-    jobid = bsub("unzip", verbose=True)(cmd)
-    return jobid
-
-
-def fastqc(samples, resultsdir, datadir):
-    """qc for single or paired-end data"""
-    fastqc="/vol1/home/brownj/opt/fastqc/fastqc"
-    for sample in samples:
-        outdir = resultsdir + sample
-        
-        if not os.path.exists(outdir):
-            os.makedirs(outdir)
-        
-        for fastq in getfilelist(datadir, sample + "_*.fastq.gz"):
-            # gives full path to data directory, need results/basename
-            qcresult = os.path.splitext(fastq)[0].rstrip(".fastq") + "_fastqc.zip"
-            
-            if os.path.exists(outdir + "/" + os.path.basename(qcresult)): continue
-            
-            cmd = fastqc + " --outdir " + outdir + " --threads 4 " + fastq
-            bsub("fastqc", verbose=True)(cmd)
-
-
-def trim(samples, datadir):
-    """writes to DATA. uses seqtk."""
-    jobs = []
-    for sample in samples:
-        for fastq in getfilelist(datadir, sample + "_*.fastq.gz"):
-            trimresult = fastq.split(".fastq", 1)[0] + ".trm.fq.gz"
-            if os.path.exists(trimresult): continue
-            
-            # https://github.com/lh3/seqtk
-            # trim low qual bases from both ends
-            cmd = "seqtk trimfq " + fastq + " | gzip -c > " + trimresult
-            jobid = bsub("seqtk", verbose=True)(cmd)
-            jobs.append(jobid)
-    return jobs
-
+sys.path.append('/vol1/home/brownj/projects/utils')
+import ngseq
 
 def join(samples, datadir, basedir):
     """joins paired-end data into SSAKE format."""
@@ -79,7 +29,7 @@ def join(samples, datadir, basedir):
         
         # check for output
         joinresult = datadir + "/" + sample + ".jnd.fa.gz"
-        if os.path.exists(joinresult) or os.path.exists(joinresult + ".gz"): continue
+        if op.exists(joinresult) or op.exists(joinresult + ".gz"): continue
         
         assert(len(fastqs) == 2)
         
@@ -89,51 +39,39 @@ def join(samples, datadir, basedir):
         jobs.append(jobid)
     return jobs
 
-
-def assemble(samples, datadir, resultsdir):
-    """assemble using iSSAKE."""
+def assemble(samples, data_dir, results_dir, seed_fa):
+    """assemble using SSAKE."""
     jobs = []
+    sub = bsub("assemble_reads", R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)
     for sample in samples:
         fastas = getfilelist(datadir, sample + ".jnd.fa.gz")
         assert(len(fastas) == 1)
         
         gzipfasta = fastas[0]
+        outdir = "%s/%s" % (results_dir, sample)
         
-        outdir = resultsdir + sample
+        fasta = outdir + "/" + op.splitext(op.basename(gzipfasta))[0]
+        if not op.exists(fasta):
+            bsub.poll(ngseq.extract(gzipfasta, fasta))
         
-        #contigresult = getfilelist(resultsdir, sample + "_*.contigs")
-        #if len(contigresult) > 1: continue
-        
-        fasta = outdir + "/" + os.path.splitext(os.path.basename(gzipfasta))[0]
-        if not os.path.exists(fasta):
-            bsub.poll(extract(gzipfasta, fasta))
-        
-        cmd = "iSSAKE -f " + fasta + " -m 15 -o 2 -r 0.7 -t 0 -c -b " + sample + " -z 50 -p 1 -v 1 -d 200 -e 0.75 -k 2 -a 0.7"
-        jobid = bsub("assemble_reads", R="select[mem>20] rusage[mem=20] span[hosts=1]", verbose=True)(cmd)
-        jobs.append(jobid)
+        cmd = "SSAKE -f " + fasta + " -s " + seed_fa + " -m 40 -o 50 -r 0.8 -b " + sample + " -p 1 -v 1 -d 200 -e 0.75 -k 10 -a 0.5 -x 50"
+        jobs.append(sub(cmd))
     return jobs
-
-
-def removefastas(resultsdir):
-    try:
-        [os.remove(fasta) for fasta in getfilelist(resultsdir, "*.fasta")]
-    except OSError:
-        pass
-
 
 def main():
     base = "/vol1/home/brownj/projects/davidson"
     data = base + "/data/20120924"
-    results = base + "/results/common/"
+    results = base + "/results/common"
     samples = ["1","2","3","4","5","6"]
+    beta = "path to trbv.fa"
+    alpha = "path to trav.fa"
     
-    fastqc(samples, base + "/results/common/", data)
-    bsub.poll(trim(samples, data))
-    bsub.poll(join(samples, data, base))
-    bsub.poll(assemble(samples, data, results))
-    #atexit.register
-    removefastas(base + "/results/common")
-
+    # fastqc(samples, base + "/results/common/", data)
+    # bsub.poll(trim(samples, data))
+    # bsub.poll(join(samples, data, base))
+    assemble(samples, data, results, beta)
+    assemble(samples, data, results, alpha)
+    # removefastas(base + "/results/common")
 
 if __name__ == '__main__':
     main()

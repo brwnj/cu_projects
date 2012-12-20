@@ -8,9 +8,7 @@ prints None sometimes:
 Davidson; Human; T-Cell repertoire
 ==============================================================================
 
-* try assembling strictly, align to get average coverage, quantify
-* or attempt to do some sort of transcript assembly
-* look at chime
+* SSAKE
 
 
 Hits-Clip; hg18
@@ -79,4 +77,4 @@ DK6_DLM8_2DG
 
 
 chipseq chrhmm regions; run intervals based on regions specific to their region file;
-plot p-vals for each group; 
+plot p-vals for each group;
