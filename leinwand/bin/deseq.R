@@ -1,8 +1,8 @@
 library(DESeq)
 
-countTable = read.table(
-    "~/projects/leinwand/data/sample_counts.txt",
-    header=T,
+countTable = read.csv(
+    "~/projects/leinwand/data/sample_counts.csv",
+    header=TRUE,
     row.names=1)
 
 design = data.frame(  
@@ -13,7 +13,7 @@ design = data.frame(
 
 rs = rowSums(countTable)
 rm = rowMeans(countTable)
-use = countTable[rm>2,]
+use = countTable[rm>5,]
 
 cds = newCountDataSet(use, design$condition)
 cds = estimateSizeFactors(cds)
@@ -34,7 +34,7 @@ hist(res$pval,
      border="slateblue",
      main="p-val dist")
 dev.off()
-write.table(res, file="~/projects/leinwand/data/RESULT_mdx_vs_wt.txt", row.names=F)
+write.table(res, file="~/projects/leinwand/data/RESULT_mdx_vs_wt.txt", sep="\t", row.names=FALSE)
 save.image("~/projects/leinwand/data/deseq_session.RData")
 
 # QC
@@ -45,6 +45,7 @@ library(gplots)
 select = order(rowMeans(counts(cds)), decreasing=T)[1:1000]
 hmcol = colorRampPalette(brewer.pal(9,"GnBu"))(100)
 heatmap.2(exprs(vdsFull)[select,], col = hmcol, trace="none", margin=c(10, 6))
+
 # sample to sample distances
 dists = dist(t(exprs(vdsFull)))
 mat = as.matrix(dists)
@@ -53,5 +54,14 @@ heatmap.2(mat, trace="none", col = rev(hmcol), margin=c(13, 13))
 
 # case view
 plotPCA(vdsFull, intgroup=c("condition"))
-# replicate view
-plotPCA(vdsFull, intgroup=c("condition", "libType"))
+
+# corrplot
+library(corrplot)
+cdsNorm = newCountDataSet(use, conditions=c(rep("t",3),c(rep("c",3))))
+cdsNorm = estimateSizeFactors(cdsNorm)
+normcounts = counts(cdsNorm, normalized=TRUE)
+write.table(normcounts, file="normalized_counts.txt", sep="\t", row.names=FALSE)
+
+cor(normcounts)
+mat = cor(normcounts)
+corrplot(mat, method="circle", order="alphabet", cl.lim=c(0,1))
