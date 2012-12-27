@@ -33,13 +33,6 @@ genetrix, genetricks - snRNA
 * ayb with shorter and shorter (less priority)
 
 
-Leinwand; mm9
-==============================================================================
-
-* per sample means appended to the DESeq output
-* send more of the deseq output and qc including pca and clustering
-
-
 Kamstock; mm9
 ==============================================================================
 
@@ -74,7 +67,3 @@ DK27_DLM8
 DK29_DLM8_2DG
 DK31_DLM8_2DG
 DK6_DLM8_2DG
-
-
-chipseq chrhmm regions; run intervals based on regions specific to their region file;
-plot p-vals for each group;
