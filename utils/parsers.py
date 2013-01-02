@@ -18,15 +18,15 @@ def fastqparser(fastq):
             yield record[0][1:], record[1], record[3]
 
 
-class ReadFastq(object):
-    """Untested fastq class. Yields name, seq, qual."""
+class Read_Fastq(object):
+    """Yields name, seq, qual."""
     def __init__(self, fq):
-        super(FastqReader, self).__init__()
+        super(Read_Fastq, self).__init__()
 
     def __iter__(self):
-        id1  = fq.next().strip()
-        seq  = fq.next().strip()
-        id2  = fq.next().strip()
+        id1 = fq.next().strip()
+        seq = fq.next().strip()
+        id2 = fq.next().strip()
         qual = fq.next().strip()
         if qual == "":
             if id1 != "":
