@@ -20,6 +20,12 @@ def getfilelist(path, pattern):
               files.append(op.join(root, filename))
     return files
 
+def extract(fname, out):
+    """extracts the file in its current directory"""
+    cmd = "zcat " + fname + " > " + out
+    jobid = bsub("unzip", verbose=True)(cmd)
+    return jobid
+
 def clobber_previous(results_path):
     import shutil
     shutil.rmtree(results_path)
