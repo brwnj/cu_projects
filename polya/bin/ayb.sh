@@ -15,7 +15,7 @@ set -o nounset -o errexit -x
 # lanes=("idx0" "6" "7")
 # lane=${lanes[${LSB_JOBINDEX}]}
 
-bs=R6I14C37
+bs=R6I14C37 # barcode is 3'; UMI is 5'
 cifs=/vol1/home/brownj/projects/polya/data/20121210
 out=/vol1/home/brownj/projects/polya/results/20121214
 

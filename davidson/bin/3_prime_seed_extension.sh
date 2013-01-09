@@ -4,7 +4,6 @@
 #BSUB -o %J.out
 #BSUB -q normal
 #BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
-#BSUB -n 4
 #BSUB -cwd /vol1/home/brownj/projects/davidson/results/common/1
 
 <<DOC
@@ -24,4 +23,4 @@ if [[ ! -f $fasta ]]; then
     zcat $gzip_fasta > $fasta
 fi
 
-SSAKE -f $fasta -s $seed_fa -m 40 -o 50 -r 0.8 -b s1 -p 1 -v 1 -d 200 -e 0.75 -k 10 -a 0.5 -x 50
+SSAKE -f $fasta -s $seed_fa -w 1 -m 20 -o 2 -r 0.8 -b s1 -p 1 -e 0.75 -k 4 -a 0.5

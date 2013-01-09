@@ -36,12 +36,14 @@ def main(args):
     r2 = fastqtodict(args.R2, args.verbose)
     if args.verbose:
         sys.stderr.write(">> Joining reads...\n")
+    seqcounter = 1
     for name, seq, qual in FastqReader(args.R1):
         try:
             r2seq = r2.get(name)
-            print ">%s:%d\n%s:%s" % (name, args.insert, seq, r2seq)
+            print ">seq_%d:%d\n%s:%s" % (seqcounter, args.insert, seq, r2seq)
+            seqcounter+=1
         except KeyError:
-            sys.stderr.write(">> No match found for: %s\n" % read)
+            sys.stderr.write(">> No match found for: %s\n" % name)
 
 if __name__ == "__main__":
     import argparse

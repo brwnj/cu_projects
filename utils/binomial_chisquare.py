@@ -50,22 +50,18 @@ def trackvals(bedtool, genome, controltrack, treattrack, sfactora, sfactorb):
     
     return scaledcontrol, scaledtreat
 
-
-def scalingfactor(a, b):
-    """returns scaling factor for each sample"""
-    a = float(a)
-    if a > b:
-        return b / a, 1.0
-    else:
-        return 1.0, a / b
-
+#normalizing a matrix
+df_norm = (df - df.mean()) / (df.max() - df.min())
 
 def main(args):
     annotation = BedTool(args.annotation)
     genome = Genome(args.genomedata)
     
-    libsize = dict(zip(genome.tracknames_continuous, genome.sums))
-    sfa, sfb = scalingfactor(libsize[args.tracka], libsize[args.trackb])
+    # get the values into a dataframe - the future will have replicates
+    # normalize the data in the dataframe
+    # binomial test and resultant pvalue for each known polya site
+    # with the pvalues, run qvality
+    # loop through 3'UTRs, saving only ones having multiple with significant qvalues 
     
     # pvals = defaultdict(list)
     avals = defaultdict(list)
