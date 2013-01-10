@@ -1,0 +1,46 @@
+#! /usr/bin/env bash
+<<DOC
+given refFlat, fastas directory, and read length, generate a transcriptome.
+DOC
+
+set -o nounset -o errexit
+
+function usage () {
+    echo "Check your args. This script submits to the normal queue.
+         "
+    echo "Usage: sh $0 <FASTAS_DIR> <REFFLAT> <READ_LENGTH>"
+    echo "Example: sh $0 ~/ref/hg19/fa_per_chr ~/ref/hg19/refFlat_hg19_ensembl.txt.gz 100"
+    exit 1
+}
+
+if [ $# -lt 3 ]; then
+    usage
+fi
+
+fastas=$1
+
+if [ ! -d $fastas ]; then
+    echo ">> Fasta referenced was not a directory.\n"
+    usage
+fi
+
+refflat=$2
+# errors out with non-numeric argument
+read_length=$(expr $3 - 4 )
+
+runscript=maketranscriptome.sh
+
+cat <<runscript >${runscript}
+#BSUB -J maketranscriptome
+#BSUB -e maketranscriptome.%J.err
+#BSUB -o maketranscriptome.%J.out
+#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
+
+java -jar -Xmx22G /vol1/home/brownj/opt/useq/Apps/MakeTranscriptome -f $fastas -u $refflat -r $read_length
+runscript
+
+job=$(bsub < $runscript)
+jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
+
+mv maketranscriptome.sh maketranscriptome.$jobid.sh
+echo $jobid
