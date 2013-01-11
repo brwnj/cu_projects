@@ -17,11 +17,10 @@ sample=${samples[$LSB_JOBINDEX]}
 
 novoidx=/vol1/home/brownj/ref/mirbase/19/mature.mmu.novoidx
 fastq=/vol1/home/brownj/projects/leinwand/data/20121101/$sample.fastq.gz
-adapter=TGGAATTCTCGGGTGCCAAGG
+adapter=/vol1/home/brownj/projects/leinwand/data/20121101/adapters.fa
 results=/vol1/home/brownj/projects/leinwand/results/common/$sample
 bam=$results/$sample.bam
 
-# won't work until licensed.
 novoalign -d $novoidx -f $fastq -a $adapter -s 2 -l 16 -o SAM -r Random -c 8 \
     -k -K $results/mismatches.txt \
     | samtools view -ShuF4 - \
