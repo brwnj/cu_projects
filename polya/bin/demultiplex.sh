@@ -15,14 +15,9 @@ set -o nounset -o errexit -x
 SAMPLES=(idx0 6 7)
 SAMPLE=${SAMPLES[$LSB_JOBINDEX]}
 
-# had to trim 1 base from the 3' end due to AYB cycles
-# then complement the bases of the given indexes
+barcodes=$HOME/projects/polya/data/20130104/L00${SAMPLE}.txt
+fastq=$HOME/projects/polya/results/20130110/${SAMPLE}.fq.gz
 
-nbt29 TGTCAC
-ts21 CGGTTA
-nbt39 GTCTAG
-ts28 TGAACT
-nbt89 CTAGTC
-ts57 ATCGAA
+fastq-multx -B $barcodes -m 1 $fastq -o %.fq
 
-fastq-multx -B L006_complement.txt -m 2 6.fastq.gz -o %.fq
+GATCTG

@@ -21,7 +21,7 @@ adapter=/vol1/home/brownj/projects/leinwand/data/20121101/adapters.fa
 results=/vol1/home/brownj/projects/leinwand/results/common/$sample
 bam=$results/$sample.bam
 
-novoalign -d $novoidx -f $fastq -a $adapter -s 2 -l 16 -o SAM -r Random -c 8 \
-    -k -K $results/mismatches.txt \
+novoalign -d $novoidx -f $fastq -a $adapter -s 2 -l 16 -o SAM -r Random \
+    -c 8 -k 2> $sample.align_stats.txt \
     | samtools view -ShuF4 - \
     | samtools sort -o - $sample.temp -m 9500000000 > $bam

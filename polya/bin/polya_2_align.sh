@@ -7,22 +7,25 @@
 #BSUB -n 1
 
 <<DOC
-Align using Bowtie, suppressing all reads that align more than once.
+Align using Novoalign, suppressing all reads that align more than once.
 DOC
 
 set -o nounset -o pipefail -o errexit -x
 
-SAMPLES=(idx0 MP51 MP52 MP53 PK61 PK62)
-SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
+# SAMPLES=(idx0 MP51 MP52 MP53 PK61 PK62)
+# SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 
-BIDX=/vol3/home/jhessel/projects/bowtie/indices/hg18
+samples=()
+sample=${samples[${LSB_JOBINDEX}]}
 
-READS=/vol1/home/brownj/projects/polya/data/20121008
+fastq=$HOME/projects/polya/data/??????????
 
-gunzip $READS/$SAMPLE.umi.fq.gz
-# bowtie -p4 -q -m1 --sam $BIDX $READS/$SAMPLE.umi.fq | samtools view -ShuF4 - | samtools sort -o - $SAMPLE.temp -m 9500000000 > $SAMPLE.has_umi.bam
-gzip $READS/$SAMPLE.umi.fq
-samtools index $SAMPLE.has_umi.bam
+novoidx=$HOME/projects/hits-clip/data/common/novoalign/hg18
+umibam
+bam
 
-python $HOME/projects/utils/umitools-process-bam.py $SAMPLE.has_umi.bam $SAMPLE.umi_filtered.bam
-samtools index $SAMPLE.umi_filtered.bam
+ | samtools view -ShuF4 - | samtools sort -o - $SAMPLE.temp -m 9500000000 > $SAMPLE.has_umi.bam
+
+samtools index $umibam
+python $HOME/projects/utils/umitools-process-bam.py $umibam $bam
+samtools index $bam

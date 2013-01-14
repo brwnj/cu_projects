@@ -13,12 +13,15 @@ function usage () {
     exit 1
 }
 
+# if the number of arguments is less than 3, run usage and exit with non-zero
 if [ $# -lt 3 ]; then
     usage
 fi
 
 fastas=$1
 
+# fastas should be a directory, so send a message to the user and exit if 
+# supplied with something else
 if [ ! -d $fastas ]; then
     echo ">> Fasta referenced was not a directory.\n"
     usage
@@ -26,10 +29,12 @@ fi
 
 refflat=$2
 # errors out with non-numeric argument
+# this should be fixed to catch the error and send a message to the user
 read_length=$(expr $3 - 4 )
 
 runscript=maketranscriptome.sh
 
+# write script to submit to queue
 cat <<runscript >${runscript}
 #BSUB -J maketranscriptome
 #BSUB -e maketranscriptome.%J.err
@@ -39,8 +44,12 @@ cat <<runscript >${runscript}
 java -jar -Xmx22G /vol1/home/brownj/opt/useq/Apps/MakeTranscriptome -f $fastas -u $refflat -r $read_length
 runscript
 
+# submit job to queue and capture output
 job=$(bsub < $runscript)
+# parse the output using sed to capture only the digits of the job id
 jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
 
+# rename the script using the job id
 mv maketranscriptome.sh maketranscriptome.$jobid.sh
+# echo the job's id to the user
 echo $jobid

@@ -105,3 +105,38 @@ maketranscriptome fasta_dir refFlat read_length
 create index for novoalign
 
 novoindex mm9.mrna.novoidx refFlatRad45Num60kMin10Splices.fasta.gz refFlatRad45Num60kMin10Transcripts.fasta.gz
+
+
+Walter
+==============================================================================
+
+The big picture background is that we enrolled subjects in four groups:
+Tuberculosis (TB)
+Latent tuberculosis infection (LTBI)
+Pneumonia (PNA)
+No infection (No Infn)
+ 
+We collected both whole blood (PAXgene) and PBMC. For preliminary data we
+put 48 paired specimens from 48 subjects (12 from each group) on HuGene ST
+1.1 arrays. These are the data we have available. This was paired in the sense 
+that each individual subject had a PAXgene and PBMC specimen. The 48 PAXgene 
+specimens are in an eset called PAXset.  The 48 PBMC specimens are in an eset 
+called PBMCset.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
