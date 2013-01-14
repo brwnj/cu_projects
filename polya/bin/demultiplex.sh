@@ -19,5 +19,3 @@ barcodes=$HOME/projects/polya/data/20130104/L00${SAMPLE}.txt
 fastq=$HOME/projects/polya/results/20130110/${SAMPLE}.fq.gz
 
 fastq-multx -B $barcodes -m 1 $fastq -o %.fq
-
-GATCTG
