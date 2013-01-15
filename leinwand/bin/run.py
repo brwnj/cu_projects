@@ -32,9 +32,9 @@ def main(args):
     if args.clobber:
         ngseq.clobber_previous(resultsdir)
     
-    ngseq.fastqc(fastqc_script, samples, datadir)
+    # ngseq.fastqc(fastqc_script, samples, datadir)
     bsub.poll(ngseq.trimadapter(datadir, adapters))
-    bsub.poll(ngseq.gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
+    # bsub.poll(ngseq.gsnap(samples, datadir, resultsdir, gmapdb, gsnapcmd))
     # ngseq.alignment_stats(resultsdir, picard, reference_fasta)
     ngseq.cleanup(resultsdir)
 
