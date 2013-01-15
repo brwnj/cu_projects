@@ -22,8 +22,10 @@ sample=${samples[${LSB_JOBINDEX}]}
 fastq=$HOME/projects/polya/data/20130114/$sample.umi.fq.gz
 novoidx=$HOME/projects/hits-clip/data/common/novoalign/hg18
 umibam=$HOME/projects/polya/results/common/$sample/$sample.UMIs_not_removed.bam
-bam=$sample.bam
+bam=$HOME/projects/polya/results/common/$sample/$sample.bam
 bin=$HOME/devel/umitools/umitools
+
+mkdir -p $HOME/projects/polya/results/common/$sample
 
 novoalign -d $novoidx -f $fastq -o SAM -l 20 -s 5 -r None -c 4 -k \
     2> $sample.alignment.txt \

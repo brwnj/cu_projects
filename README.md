@@ -1,10 +1,3 @@
-Peaktools
-==============================================================================
-
-prints None sometimes:
-    
-    chrY	None	None	MDX_22_AGTTCC_L003_R1_001_pos	None	+
-
 Davidson; Human; T-Cell repertoire
 ==============================================================================
 
@@ -13,8 +6,6 @@ Davidson; Human; T-Cell repertoire
 
 Hits-Clip; hg18
 ==============================================================================
-
-* ayb on index 51-56 only
 
 * polya - cdc6; more to come from peter
 * sum up the signal between annotated peaks
@@ -27,47 +18,12 @@ Hits-Clip; hg18
 * remap new 3' piece
 * associate read name with both sequences to give some idea of miRNA to mRNA binding
 
-* do anything with trimming from the 3' end?
 
-genetrix, genetricks - snRNA
-
-* ayb with shorter and shorter (less priority)
-
-
-Kamstock; mm9
+Kamstock; rnaseq; mm9
 ==============================================================================
 
-Next generation sequencing was conducted on triplicate RNA samples of 
-nonmetastatic Dunn and the Fidler selected metastatic DLM8 subline. These 
-samples were extracted from both cells grown in culture and tumors grown in 
-mice. The samples were purified using dual rounds of OligodT column 
-purification. In addition, DLM8 cells were treated in culture with 
-2-deoxyglucose to determine the effect of this agent on cellular function.
+* analyze cuffdiff results
 
-Dunn13
-Dunn1
-Dunn2
-Dunn3
-
-DK15_Dunn_Tumor2
-DK16_Dunn_Tumor3
-DK17_Dunn_Tumor4
-
-DK19_DLM8_Tumor1
-DK20_DLM8_Tumor2
-DK21_DLM8_Tumor3
-
-DK23_Dunn_P9
-DK25_Dunn_P10 *
-DK13_Dunn_P18 *
-
-DK1_DLM8
-DK2_DLM8
-DK27_DLM8
-
-DK29_DLM8_2DG
-DK31_DLM8_2DG
-DK6_DLM8_2DG *
 
 Novoalign
 ==============================================================================
@@ -106,37 +62,57 @@ create index for novoalign
 
 novoindex mm9.mrna.novoidx refFlatRad45Num60kMin10Splices.fasta.gz refFlatRad45Num60kMin10Transcripts.fasta.gz
 
+align
+
+parse alignment
+
 
 Walter
 ==============================================================================
 
-The big picture background is that we enrolled subjects in four groups:
-Tuberculosis (TB)
-Latent tuberculosis infection (LTBI)
-Pneumonia (PNA)
-No infection (No Infn)
- 
-We collected both whole blood (PAXgene) and PBMC. For preliminary data we
-put 48 paired specimens from 48 subjects (12 from each group) on HuGene ST
-1.1 arrays. These are the data we have available. This was paired in the sense 
-that each individual subject had a PAXgene and PBMC specimen. The 48 PAXgene 
-specimens are in an eset called PAXset.  The 48 PBMC specimens are in an eset 
-called PBMCset.
+functions in R
+
+Williams; chipseq; 
+==============================================================================
+
+concatenate
+map
+peaks
+ucsc
+
+#!/usr/bin/env bash
+#BSUB -J jobname[1-2]
+#BSUB -e %J.%I.err
+#BSUB -o %J.%I.out
+#BSUB -q normal
+#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
+#BSUB -n 4
+
+<<DOC
+something meaningful
+DOC
+
+set -o nounset -o pipefail -o errexit -x
+
+SAMPLES=(idx0 sample1 sample2)
+SAMPLE=${SAMPLES[$LSB_JOBINDEX]}
+
+#!/usr/bin/env python
+# encoding: utf-8
+"""
+
+"""
+import sys
+
+
+def main(args):
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == "__main__":
+    import argparse
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument('', metavar='', help='')
+    args = p.parse_args()
+    
+    main(args)
