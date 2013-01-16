@@ -45,7 +45,7 @@ def main(args):
                 int(mapping_stats['total_reads']) * 100)
     df = pd.DataFrame(stats)
     df = df.ix[["total_reads","aligned","percent_aligned","uniquely_aligned","percent_unique"]]
-    df.to_csv(sys.stdout, sep="\t")
+    df.to_csv(args.out, sep="\t")
 
 if __name__ == "__main__":
     import argparse
@@ -53,5 +53,6 @@ if __name__ == "__main__":
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("files", metavar="FILES", nargs="+", 
             help="stderr of novoalign mapping")
+    p.add_argument("-o", "--out", default="stats.txt", help="output [ stats.txt ]")
     args = p.parse_args()
     main(args)
