@@ -31,6 +31,9 @@ def load_genome(bgs, fasta):
     """loads data into a genome archive with sequence data."""
     tracks = "".join(["-t %s=%s " \
                     % (op.splitext(op.basename(bg))[0], bg) for bg in bgs])
+    # need to split this by chrs present in bg
+    # doing so means the user needs to supply a directory containing per chr
+    # fastas
     cmd = "genomedata-load -v --directory-mode -s %s %s genomedata" \
                     % (fasta, tracks)
     print cmd
@@ -63,5 +66,4 @@ if __name__ == "__main__":
     p.add_argument('FASTA', help='reference for whole genome')
     p.add_argument('BAM', nargs="+",
                     help='bam(s) to convert to genomedata archive')
-    args = p.parse_args()
-    main(args)
+    main(p.parse_args())
