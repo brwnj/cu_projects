@@ -146,11 +146,11 @@ def main():
 
     trimming = p.add_argument_group('trimming', 'options for trimming')
     trimming.add_argument("--min-qual", dest="minq", help="bases with quality"
-            " below this value will be trimmed from the end",
+            " below this value will be trimmed from the end. default: %(default)i",
             type=int, default=12)
 
     trimming.add_argument("--max-ns", dest="maxn", help="reads with"
-            " more than this number of '.'s are chopped",
+            " more than this number of '.'s are chopped. default: %(default)i",
             type=int, default=12)
 
     trimming.add_argument("--moving-average", dest="ma", default=None, type=str,

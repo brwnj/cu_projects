@@ -229,13 +229,6 @@ def main():
     bsub.poll(bowtiealign(SAMPLES, matureindex, "mature"))
     bsub.poll(bowtiealign(SAMPLES, tuberculosisindex, "H37Rv"))
     removefastqs()
-    
-    # MACS (peak calling)
-    bsub.poll(macs(SAMPLES, RESULTS))
-    # use bedtools merge to create a consensus of peaks
-    # i did this manually using the command in the docstring of the following method
-    # bsub.poll(findconsensus())
-    bsub.poll(counts(SAMPLES, RESULTS))
 
 
 if __name__ == '__main__':

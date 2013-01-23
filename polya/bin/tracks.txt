@@ -14,6 +14,7 @@ track type=bigWig name='PK61 neg' description='PK61 neg' bigDataUrl=http://amc-s
 track type=bigWig name='PK62 pos' description='PK62 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/PK62.umi_filtered.pos.bw maxHeightPixels=15:50:35 color=231,41,138 visibility=full
 track type=bigWig name='PK62 neg' description='PK62 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20121207/PK62.umi_filtered.neg.bw maxHeightPixels=15:50:35 color=231,41,138 visibility=full
 
+#UMI has been filtered
 track type=bigWig name='100-3 pos' description='100-3 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/100-3.pos.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
 track type=bigWig name='100-3 neg' description='100-3 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/100-3.neg.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
 track type=bigWig name='86-7 pos' description='86-7 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/86-7.pos.bw maxHeightPixels=15:50:35 color=217,95,2 visibility=full
@@ -38,3 +39,29 @@ track type=bigWig name='nbt89 pos' description='nbt89 pos' bigDataUrl=http://amc
 track type=bigWig name='nbt89 neg' description='nbt89 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/nbt89.neg.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
 track type=bigWig name='ts57 pos' description='ts57 pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/ts57.pos.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
 track type=bigWig name='ts57 neg' description='ts57 neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130115/ts57.neg.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
+
+#with UMIs
+track type=bigWig name='100-3 pos UMI' description='100-3 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/100-3.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name='100-3 neg UMI' description='100-3 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/100-3.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name='86-7 pos UMI' description='86-7 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/86-7.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=217,95,2 visibility=full
+track type=bigWig name='86-7 neg UMI' description='86-7 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/86-7.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=217,95,2 visibility=full
+track type=bigWig name='93-1 pos UMI' description='93-1 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/93-1.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=117,112,179 visibility=full
+track type=bigWig name='93-1 neg UMI' description='93-1 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/93-1.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=117,112,179 visibility=full
+track type=bigWig name='93-3 pos UMI' description='93-3 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/93-3.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=231,41,138 visibility=full
+track type=bigWig name='93-3 neg UMI' description='93-3 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/93-3.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=231,41,138 visibility=full
+track type=bigWig name='m+c pos UMI' description='m+c pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/m+c.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=102,166,30 visibility=full
+track type=bigWig name='m+c neg UMI' description='m+c neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/m+c.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=102,166,30 visibility=full
+track type=bigWig name='m+e2 pos UMI' description='m+e2 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/m+e2.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=230,171,2 visibility=full
+track type=bigWig name='m+e2 neg UMI' description='m+e2 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/m+e2.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=230,171,2 visibility=full
+track type=bigWig name='nbt29 pos UMI' description='nbt29 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt29.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='nbt29 neg UMI' description='nbt29 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt29.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name='nbt39 pos UMI' description='nbt39 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt39.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name='nbt39 neg UMI' description='nbt39 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt39.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name='ts21 pos UMI' description='ts21 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts21.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='ts21 neg UMI' description='ts21 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts21.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=77,175,74 visibility=full
+track type=bigWig name='ts28 pos UMI' description='ts28 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts28.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='ts28 neg UMI' description='ts28 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts28.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name='nbt89 pos UMI' description='nbt89 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt89.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+track type=bigWig name='nbt89 neg UMI' description='nbt89 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt89.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
+track type=bigWig name='ts57 pos UMI' description='ts57 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts57.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
+track type=bigWig name='ts57 neg UMI' description='ts57 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts57.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
