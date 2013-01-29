@@ -1,11 +1,12 @@
 library(DESeq)
 
 countTable = read.csv(
-    "~/projects/leinwand/data/sample_counts.csv",
-    header=TRUE,
+    "~/remote/projects/leinwand/results/common/counts_table.txt",
+    header=TRUE, sep="\t",
     row.names=1)
-
-design = data.frame(  
+# replace NA with zeroes
+countTable[is.na(countTable)] = 0
+design = data.frame(
     row.names = colnames(countTable),
     condition = c("mdx","mdx","mdx",
                   "wt","wt","wt")
@@ -15,7 +16,7 @@ rs = rowSums(countTable)
 rm = rowMeans(countTable)
 use = countTable[rm>5,]
 
-cds = newCountDataSet(use, design$condition)
+cds = newCountDataSet(countTable, design$condition)
 cds = estimateSizeFactors(cds)
 cds = estimateDispersions(cds)
 plotDispEsts(cds)
@@ -42,7 +43,7 @@ cdsBlind = estimateDispersions(cds, method="blind")
 vdsFull = varianceStabilizingTransformation(cdsBlind)
 library(RColorBrewer)
 library(gplots)
-select = order(rowMeans(counts(cds)), decreasing=T)[1:1000]
+select = order(rowMeans(counts(cds)), decreasing=T)[1:100]
 hmcol = colorRampPalette(brewer.pal(9,"GnBu"))(100)
 heatmap.2(exprs(vdsFull)[select,], col = hmcol, trace="none", margin=c(10, 6))
 
@@ -57,7 +58,7 @@ plotPCA(vdsFull, intgroup=c("condition"))
 
 # corrplot
 library(corrplot)
-cdsNorm = newCountDataSet(use, conditions=c(rep("t",3),c(rep("c",3))))
+cdsNorm = newCountDataSet(countTable, conditions=c(rep("t",3),c(rep("c",3))))
 cdsNorm = estimateSizeFactors(cdsNorm)
 normcounts = counts(cdsNorm, normalized=TRUE)
 write.table(normcounts, file="normalized_counts.txt", sep="\t", row.names=FALSE)
