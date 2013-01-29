@@ -12,5 +12,7 @@ DOC
 
 results=$HOME/projects/williams/results/common/all
 bam=$results/all.bam
-
 macs14 -t $bam -n all -f BAM -g mm -S
+
+bam=$results/all.rmd.bam
+macs14 -t $bam -n all_rmd -f BAM -g mm -S
