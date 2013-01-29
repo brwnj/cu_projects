@@ -1,0 +1,7 @@
+track type=bigWig name='all pos' description='all pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all.pos.bw maxHeightPixels=15:50:35 color=178,24,43 visibility=full
+track type=bigWig name='all neg' description='all neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all.pos.bw maxHeightPixels=15:50:35 color=214,96,77 visibility=full
+track type=bigWig name='all rmd pos' description='all rmd pos' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all.rmd.pos.bw maxHeightPixels=15:50:35 color=33,102,172 visibility=full
+track type=bigWig name='all rmd neg' description='all rmd neg' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all.rmd.pos.bw maxHeightPixels=15:50:35 color=67,147,195 visibility=full
+
+http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all_peaks.track.bed.gz
+http://amc-sandbox.ucdenver.edu/~brownj/williams/20130125/all_rmd_peaks.track.bed.gz
