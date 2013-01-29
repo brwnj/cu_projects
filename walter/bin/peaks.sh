@@ -18,9 +18,9 @@ samples=(idx0 E1T1_Inf E1T1_Uninf E1T24_Inf E1T24_Uninf E1T2_Inf E1T2_Uninf
             E3T24_Inf E3T24_Uninf E3T2_Inf E3T2_Uninf E3T8_Inf E3T8_Uninf)
 
 sample=${samples[$LSB_JOBINDEX]}
-gd=/vol1/home/brownj/projects/walter/results/common/genomedata_hg19
-peaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.hg19.peaks.bed
-shuffledpeaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.hg19.peaks.shuffle.bed
+gd=/vol1/home/brownj/projects/walter/results/common/genomedata_novo
+peaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.novo.peaks.bed
+shuffledpeaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.novo.peaks.shuffle.bed
 
 strands=(pos neg)
 symbols=(+ -)
@@ -30,4 +30,4 @@ for (( i = 0; i < 2; i++ )); do
     python ~/devel/peaktools/peaktools/identify_peaks.py -w 60 \
         -t $sample.novo_${strands[$i]} -s ${symbols[$i]} --shuffle-data $gd >> $shuffledpeaks
 done
-gzip $gd $peaks
+gzip $peaks $shuffledpeaks
