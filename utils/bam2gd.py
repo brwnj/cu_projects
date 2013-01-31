@@ -6,6 +6,7 @@ along the way.
 """
 import os
 import sys
+import fnmatch
 import os.path as op
 from bsub import bsub
 from itertools import izip
@@ -27,17 +28,25 @@ def bg2bw(bgs, csizes):
     for bg in bgs:
         sub("bedGraphToBigWig %s %s %s.bw" % (bg, csizes, op.splitext(bg)[0]))
 
-def load_genome(bgs, fasta):
+def load_genome(bgs, seqdir, out):
     """loads data into a genome archive with sequence data."""
+    sub = bsub("genomedata", verbose=True)
+    # reference files
+    fastas = []
+    for root, dirnames, filenames in os.walk(seqdir):
+          # allows for .fasta, .fa, and .gz variants
+          for filename in fnmatch.filter(filenames, "*.fa*"):
+              fastas.append(op.join(root, filename))
+    # track names
     tracks = "".join(["-t %s=%s " \
                     % (op.splitext(op.basename(bg))[0], bg) for bg in bgs])
-    # need to split this by chrs present in bg
-    # doing so means the user needs to supply a directory containing per chr
-    # fastas
-    cmd = "genomedata-load -v --directory-mode -s %s %s genomedata" \
-                    % (fasta, tracks)
-    print cmd
-    return bsub("genomedata", verbose=True)(cmd)
+    # job ids in order to wait until completion
+    jobs = []
+    for fasta in fastas:
+        cmd = "genomedata-load -v --directory-mode -s %s %s %s" \
+                        % (fasta, tracks, out)
+        jobs.append(sub(cmd))
+    return jobs
 
 def cleanup(bgs):
     """gzips the bedgraphs."""
@@ -53,8 +62,8 @@ def main(args):
                     % (op.splitext(bam)[0], strand) \
                     for bam in args.BAM for strand in "neg pos".split()]
     bg2bw(bgs, args.CHROM_SIZES)
-    # load genomedata
-    bsub.poll(load_genome(bgs, args.FASTA))
+    # bedgraphs -> genomedata
+    bsub.poll(load_genome(bgs, args.SEQDIR, args.output))
     # gzip the bedgraphs    
     cleanup(bgs)
 
@@ -63,7 +72,9 @@ if __name__ == "__main__":
     p = argparse.ArgumentParser(description=__doc__,
                     formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('CHROM_SIZES', help="chromosome sizes for genome")
-    p.add_argument('FASTA', help='reference for whole genome')
+    p.add_argument('SEQDIR', help='folder containing fasta(s)')
     p.add_argument('BAM', nargs="+",
                     help='bam(s) to convert to genomedata archive')
+    p.add_argument('-o', '--output', default="genomedata",
+                    help="genomedata archive name [ genomedata ]")
     main(p.parse_args())
