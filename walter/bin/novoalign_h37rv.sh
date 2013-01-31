@@ -7,7 +7,7 @@
 #BSUB -n 4
 
 <<DOC
-realign only to mirbase
+align to h37rv using novoalign
 DOC
 
 set -o nounset -o pipefail -o errexit -x
@@ -19,12 +19,13 @@ samples=(idx0 E1T1_Inf E1T1_Uninf E1T24_Inf E1T24_Uninf E1T2_Inf E1T2_Uninf
 
 sample=${samples[$LSB_JOBINDEX]}
 
-novoidx=$HOME/ref/hg19/hg19.9606.novoidx
-fastq= # this is the fastq from the tb alignments
+novoidx=$HOME/ref/tuberculosis/H37Rv.novoidx
+# adapter are already trimmed
+fastq=$HOME/projects/walter/data/20121005/$sample.trm.fq.gz
 results=$HOME/projects/walter/results/common/$sample
-bam=$results/$sample.tb2hg19.novo.bam
+bam=$results/$sample.tb.novo.bam
 
-novoalign -d $novoidx -f $fastq -o SAM -r A \
-    -c 4 -k 2> $sample.hg19.align_stats.txt \
+novoalign -d $novoidx -f $fastq -s 2 -l 17 -o SAM -r A \
+    -c 4 -k 2> $sample.tb.align_stats.txt \
     | samtools view -ShuF4 - \
     | samtools sort -o - $sample.temp -m 9500000000 > $bam

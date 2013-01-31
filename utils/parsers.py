@@ -14,7 +14,7 @@ class FastqReader(object):
             qual = fq.next().strip()
             if qual == "":
                 if id1 != "":
-                    sys.stderr.write(">> Incomplete fastq... skipping.\n")
+                    sys.stderr.write(">> Incomplete record... skipping.\n")
                 break
             yield id1[1:], seq, qual
 

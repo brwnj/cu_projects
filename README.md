@@ -70,49 +70,5 @@ parse alignment
 Walter
 ==============================================================================
 
-functions in R
-
-Williams; chipseq; 
-==============================================================================
-
-concatenate
-map
-peaks
-ucsc
-
-#!/usr/bin/env bash
-#BSUB -J jobname[1-2]
-#BSUB -e %J.%I.err
-#BSUB -o %J.%I.out
-#BSUB -q normal
-#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
-#BSUB -n 4
-
-<<DOC
-something meaningful
-DOC
-
-set -o nounset -o pipefail -o errexit -x
-
-SAMPLES=(idx0 sample1 sample2)
-SAMPLE=${SAMPLES[$LSB_JOBINDEX]}
-
-#!/usr/bin/env python
-# encoding: utf-8
-"""
-
-"""
-import sys
-
-
-def main(args):
-
-
-
-if __name__ == "__main__":
-    import argparse
-    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument('', metavar='', help='')
-    args = p.parse_args()
-    
-    main(args)
+of the reads that mapped to tb, map those to human, call peaks, send bed for
+each sample
