@@ -1,7 +1,35 @@
 Davidson; Human; T-Cell repertoire
 ==============================================================================
 
-* SSAKE
+tcr matching based on tags created from known sequence of v and j regions
+results in nothing
+
+iSSAKE without seeds doesn't seem to work entirely and run for 3 months
+iSSAKE with artificial seeds don't extend -- seeds were created from 3' most
+end of known v and j sequence
+this method was taken from the paper we referenced earlier, but they used
+their own reads as the seed sequence -- i don't see how that makes any difference
+
+strategies for moving forward:
+should we find tag sequence from the 5' end?
+would that make any difference?
+should we create and attempt to extend tags from j and d regions in addition 
+to v?
+
+conclusion right now is that these reads don't represent tcr sequences since
+there is little extension of v or j regions and very few tag matches when
+analyzing each read individually.
+
+find reads that hit the tag and use those as seeds... label with source
+
+create a new fastq finding things that overlap the end...
+
+1alpha
+2beta
+3alpha
+4beta
+5alpha and 
+6beta were spiked with some known sequence
 
 
 Hits-Clip; hg18
