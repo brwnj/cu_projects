@@ -18,12 +18,13 @@ samples=(idx0 E1T1_Inf E1T1_Uninf E1T24_Inf E1T24_Uninf E1T2_Inf E1T2_Uninf
             E3T24_Inf E3T24_Uninf E3T2_Inf E3T2_Uninf E3T8_Inf E3T8_Uninf)
 sample=${samples[$LSB_JOBINDEX]}
 
-data=$HOME/projects/walter/data/20130131
+data=$HOME/projects/walter/data/20130204
 if [ ! -d $data ]; then
     mkdir -p $data
 fi
 fastq=$data/$sample.tb.fq
-results=$HOME/projects/walter/results/common/$sample
-bam=$results/$sample.tb.novo.bam
+bam=$HOME/projects/walter/results/common/$sample/$sample.tb.novo.bam
 
-bam2fastx --fastq --mapped-only -o $fastq $bam
+java -jar ~/opt/picard-tools-1.79/SamToFastq.jar I=$bam F=$fastq RC=true
+
+gzip $fastq
