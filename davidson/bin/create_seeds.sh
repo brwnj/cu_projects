@@ -14,12 +14,12 @@ set -o nounset -o pipefail -o errexit -x
 
 sample=$LSB_JOBINDEX
 
+bin=$HOME/devel/iSSAKE
+len=35
 data=$HOME/projects/davidson/data
 tags=$data/trbv.tags.fa
-reads=$data/20120924/${sample}_*.trm.fq.gz
-len=35
-bin=$HOME/devel/iSSAKE
-seeds=$data/${sample}_${len}_seeds.fa.gz
+reads=$data/20120924/$sample.trm.fa.gz
+seeds=$data/20120924/$sample.$len.seeds.fa.gz
 
 python $bin/create_tags.py -v -l $len $tags \
     | python $bin/find_seeds.py -v - $reads \
