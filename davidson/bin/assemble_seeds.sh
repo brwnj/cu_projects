@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J tcr_repertoire[1-6]
+#BSUB -J tcr_repertoire[2,4,6]
 #BSUB -e tcr_repertoire.%J.%I.err
 #BSUB -o tcr_repertoire.%J.%I.out
 #BSUB -q normal
@@ -8,6 +8,8 @@
 
 <<DOC
 create tags and find seeds among the reads.
+1, 3, and 5 are alpha
+2, 4, and 6 are beta
 DOC
 
 set -o nounset -o pipefail -o errexit -x
