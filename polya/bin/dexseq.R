@@ -6,6 +6,44 @@ setwd("~/projects/polya/data")
 
 annotation_file = "~/projects/polya/data/polya_extended_with_names.gff"
 
+d_norm_tum_pos = data.frame(row.names = c("nbt29","nbt39","nbt89",
+                                            "ts21","ts28","ts57"),
+                            condition = c("normal","normal","normal",
+                                            "tumor","tumor","tumor"))
+cds = read.HTSeqCounts(countfiles = c("nbt29.pos.counts",
+                                        "nbt39.pos.counts",
+                                        "nbt89.pos.counts",
+                                        "ts21.pos.counts",
+                                        "ts28.pos.counts",
+                                        "ts57.pos.counts"),
+                        design = d_norm_tum_pos)
+cds = estimateSizeFactors(cds)
+cds = estimateDispersions(cds, minCount = 1)
+cds = fitDispersionFunction(cds)
+cds = testForDEU(cds)
+cds = estimatelog2FoldChanges(cds)
+res = DEUresultTable(cds)
+write.csv(res, file="normal_tumor_pos_dexseq_cutoff1.csv")
+
+d_norm_tum_neg = data.frame(row.names = c("nbt29","nbt39","nbt89",
+                                            "ts21","ts28","ts57"),
+                            condition = c("normal","normal","normal",
+                                            "tumor","tumor","tumor"))
+cds = read.HTSeqCounts(countfiles = c("nbt29.neg.counts",
+                                        "nbt39.neg.counts",
+                                        "nbt89.neg.counts",
+                                        "ts21.neg.counts",
+                                        "ts28.neg.counts",
+                                        "ts57.neg.counts"),
+                        design = d_norm_tum_neg)
+cds = estimateSizeFactors(cds)
+cds = estimateDispersions(cds, minCount = 1)
+cds = fitDispersionFunction(cds)
+cds = testForDEU(cds)
+cds = estimatelog2FoldChanges(cds)
+res = DEUresultTable(cds)
+write.csv(res, file="normal_tumor_neg_dexseq_cutoff1.csv")
+
 # 1 to 2 positive strand
 MPdesign1pos = as.matrix(data.frame(
     row.names = c("MP51","MP51x",
