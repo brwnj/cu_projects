@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#BSUB -J tcr_repertoire[2,4,6]
+#BSUB -J tcr_repertoire[1-6]
 #BSUB -e tcr_repertoire.%J.%I.err
 #BSUB -o tcr_repertoire.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>2] rusage[mem=2] span[hosts=1]"
+#BSUB -R "select[mem>12] rusage[mem=12] span[hosts=1]"
 #BSUB -n 1
 
 <<DOC
