@@ -3,7 +3,7 @@
 #BSUB -e peaktools.%J.%I.err
 #BSUB -o peaktools.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
+#BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
 #BSUB -n 1
 
 <<DOC
@@ -18,16 +18,16 @@ samples=(idx0 E1T1_Inf E1T1_Uninf E1T24_Inf E1T24_Uninf E1T2_Inf E1T2_Uninf
             E3T24_Inf E3T24_Uninf E3T2_Inf E3T2_Uninf E3T8_Inf E3T8_Uninf)
 
 sample=${samples[$LSB_JOBINDEX]}
-gd=/vol1/home/brownj/projects/walter/results/common/genomedata_novo
-peaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.novo.peaks.bed
-shuffledpeaks=/vol1/home/brownj/projects/walter/results/common/$sample/$sample.novo.peaks.shuffle.bed
+gd=$HOME/projects/walter/data/20130204/genomedata_tb2hg19
+peaks=$HOME/projects/walter/results/common/$sample/$sample.tb2hg19.peaks.bed
+shuffledpeaks=$HOME/projects/walter/results/common/$sample/$sample.tb2hg19.peaks.shuffle.bed
 
 strands=(pos neg)
 symbols=(+ -)
 for (( i = 0; i < 2; i++ )); do
-    python ~/devel/peaktools/peaktools/identify_peaks.py -w 60 \
-        -t $sample.novo_${strands[$i]} -s ${symbols[$i]} --trim-peaks $gd >> $peaks
-    python ~/devel/peaktools/peaktools/identify_peaks.py -w 60 \
-        -t $sample.novo_${strands[$i]} -s ${symbols[$i]} --shuffle-data $gd >> $shuffledpeaks
+    python ~/devel/peaktools/peaktools/identify_peaks.py -w 45 \
+        -t $sample.tb2hg19.novo_${strands[$i]} -s ${symbols[$i]} --trim-peaks $gd >> $peaks
+    python ~/devel/peaktools/peaktools/identify_peaks.py -w 45 \
+        -t $sample.tb2hg19.novo_${strands[$i]} -s ${symbols[$i]} --shuffle-data $gd >> $shuffledpeaks
 done
 gzip $peaks $shuffledpeaks
