@@ -22,7 +22,6 @@ each sample
 
 
 
-
 #Novoalign
 
 ##making an index

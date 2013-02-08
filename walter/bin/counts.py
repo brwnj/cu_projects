@@ -22,7 +22,7 @@ def counts(samples, result_path, peak_ext, bam_ext):
     x = BedTool()
     consensus = x.multi_intersect(i=getfilelist(result_path, "*%s" % peak_ext))
     for c in consensus:
-        # fixing formatting from bedtool object
+        # peak must be found in more than one sample
         replicate_counts = c.name
         if replicate_counts < 2: continue
         
