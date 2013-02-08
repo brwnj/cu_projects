@@ -9,10 +9,6 @@
 
 #Hits-Clip; hg18
 
-#Kamstock; rnaseq; mm9
-
-* analyze cuffdiff results
-
 #Poly(A)
 
 1. hybrids, run against mirbase. trim. mask. align to peaks. (what jay did)
@@ -23,8 +19,6 @@
 
 of the reads that mapped to tb, map those to human, call peaks, send bed for
 each sample
-
-
 
 
 
