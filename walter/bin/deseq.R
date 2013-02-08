@@ -1,13 +1,9 @@
 library(DESeq)
 
-# walterCountTable = read.table("~/projects/walter/data/20121120/countsmatrix.txt", header=T, row.names=1)
-
-# tb
-# walterCountTable = read.csv("~/projects/walter/data/20121120/sample_counts.csv", header=T, row.names=1)
-walterCountTable = read.csv("~/projects/walter/data/20121124/sample_counts.csv", header=T, row.names=1)
+walterCountTable <- read.table("~/projects/walter/data/20130208/tb2hg19_counts.txt", header=TRUE, row.names=1, sep="\t")
 # full experiment
-walterDesign = data.frame(  
-    row.names = colnames( walterCountTable ),
+walterDesign <- data.frame(
+    row.names = colnames(walterCountTable),
     condition = c("inf","uninf","inf","uninf","inf",
                   "uninf","inf","uninf","inf","uninf",
                   "inf","uninf","inf","uninf","inf",
@@ -21,8 +17,8 @@ walterDesign = data.frame(
 cds = newCountDataSet(walterCountTable, walterDesign$condition)
 cds = estimateSizeFactors(cds)
 cds = estimateDispersions(cds)
-plotDispEsts(cds)
 res = nbinomTest(cds, "uninf", "inf")
+plotDispEsts(cds)
 png("~/projects/walter/data/ma_tb_full.png", width=2000, height=2000)
 plotMA(res)
 dev.off()
