@@ -3,7 +3,7 @@
 #BSUB -e process_assemblies.%J.%I.err
 #BSUB -o process_assemblies.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
+#BSUB -R "select[mem>32] rusage[mem=32] span[hosts=1]"
 #BSUB -n 1
 
 <<DOC
@@ -16,26 +16,34 @@ set -o nounset -o pipefail -o errexit -x
 
 sample=$LSB_JOBINDEX
 
-data=
-results=
-bin=
+data=$HOME/projects/davidson/data/20120924
+results=$HOME/projects/davidson/results/20130206
+bin=$HOME/devel/iSSAKE
 
 rem=$(( $sample % 2 ))
 if [ $rem -eq 0 ]; then
   # even number
-  target=trbj.fa
+  target=$data/trbj.fa
 else
   # odd number
-  target=traj.fa
+  target=$data/traj.fa
 fi
 
-contigs=
-exonerate_out=
-annotated_fasta=
-metadata=
-aligned_fasta=
+contigs=$results/$sample.contigs
+annotated_fasta=$results/$sample.filtered.fa
+metadata=$results/$sample.metadata
+aligned_fasta=$results/$sample.aligned.fa
 
-exonerate -q $contigs -t $target --bestn 1 --ryo ">%qi|%ti\n%qs" --showalignment FALSE --showvulgar FALSE > $exonerate_out
-grep -v "Command line:\|Hostname:\|-- completed" $exonerate_out > $annotated_fasta
-python $bin reads2meta.py $annotated_fasta > $metadata
+exonerate \
+    -q $contigs \
+    -t $target \
+    --bestn 1 \
+    --ryo ">%qi|%ti\n%qs" \
+    --showalignment FALSE \
+    --showvulgar FALSE \
+    | grep -v "Command line:\|Hostname:\|-- completed" \
+    > $annotated_fasta
+python $bin/reads2meta.py $annotated_fasta > $metadata
 muscle -in $annotated_fasta -out $aligned_fasta
+
+gzip $contigs $annotated_fasta $metadata $aligned_fasta
