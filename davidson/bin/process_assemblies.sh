@@ -3,7 +3,7 @@
 #BSUB -e process_assemblies.%J.%I.err
 #BSUB -o process_assemblies.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>32] rusage[mem=32] span[hosts=1]"
+#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
 #BSUB -n 1
 
 <<DOC
@@ -17,7 +17,7 @@ set -o nounset -o pipefail -o errexit -x
 sample=$LSB_JOBINDEX
 
 data=$HOME/projects/davidson/data/20120924
-results=$HOME/projects/davidson/results/20130206
+results=$HOME/projects/davidson/results/common/$sample
 bin=$HOME/devel/iSSAKE
 
 rem=$(( $sample % 2 ))
@@ -34,16 +34,22 @@ annotated_fasta=$results/$sample.filtered.fa
 metadata=$results/$sample.metadata
 aligned_fasta=$results/$sample.aligned.fa
 
-exonerate \
-    -q $contigs \
-    -t $target \
-    --bestn 1 \
-    --ryo ">%qi|%ti\n%qs" \
-    --showalignment FALSE \
-    --showvulgar FALSE \
-    | grep -v "Command line:\|Hostname:\|-- completed" \
-    > $annotated_fasta
-python $bin/reads2meta.py $annotated_fasta > $metadata
-muscle -in $annotated_fasta -out $aligned_fasta
+if [[ ! -f $annotated_fasta ]]; then
+    exonerate \
+        -q $contigs \
+        -t $target \
+        --bestn 1 \
+        --ryo ">%qi|%ti\n%qs" \
+        --showalignment FALSE \
+        --showvulgar FALSE \
+        | grep -v "Command line:\|Hostname:\|-- completed" \
+        > $annotated_fasta
+fi
+if [[ ! -f $metadata ]]; then
+    python $bin/reads2meta.py $annotated_fasta > $metadata
+fi
+if [[ ! -f $aligned_fasta ]]; then
+    muscle -maxiters 1 -diags -in $annotated_fasta -out $aligned_fasta
+fi
 
 gzip $contigs $annotated_fasta $metadata $aligned_fasta
