@@ -15,5 +15,4 @@ if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(__doc__)
     p.add_argument('scarf')
-    args = p.parse_args()
-    main(args)
+    main(p.parse_args())
