@@ -1,11 +1,11 @@
 #! /usr/bin/env bash
-#BSUB -J clip[1-2]
-#BSUB -e %J.%I.err
-#BSUB -o %J.%I.out
+#BSUB -J clip[1-3]
+#BSUB -e clip.%J.%I.err
+#BSUB -o clip.%J.%I.out
 #BSUB -q normal
+#BSUB -P hits-clip
 
 <<DOC
-
 samtools rmdup -s helaa.bam helaa.rmd.bam
 bedtools bamtobed -i helaa.bam | gzip -c > helaa.bed.gz
 bedtools bamtobed -i helaa.rmd.bam | gzip -c > helaa.rmd.bed.gz
@@ -14,9 +14,9 @@ zcat helaa.rmd.bed.gz | awk '$6=="-"' > helaa.rmd.neg.bed
 zcat helaa.bed.gz | awk '$6=="+"' > helaa.pos.bed
 zcat helaa.bed.gz | awk '$6=="-"' > helaa.neg.bed
 bedSort helaa.pos.bed helaa.pos.bed
-bedSort helaa.neg.bed helaa.neg.bed 
+bedSort helaa.neg.bed helaa.neg.bed
 bedSort helaa.rmd.pos.bed helaa.rmd.pos.bed
-bedSort helaa.rmd.neg.bed helaa.rmd.neg.bed 
+bedSort helaa.rmd.neg.bed helaa.rmd.neg.bed
 bedItemOverlapCount -chromSize=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes hg18 stdin < helaa.pos.bed > helaa.pos.bedgraph
 bedItemOverlapCount -chromSize=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes hg18 stdin < helaa.neg.bed > helaa.neg.bedgraph
 bedItemOverlapCount -chromSize=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes hg18 stdin < helaa.rmd.pos.bed > helaa.rmd.pos.bedgraph
@@ -45,19 +45,18 @@ SAMPLEIDS=(MP1 MP10 MP11 MP2 MP20 MP21 MP22 MP23 MP24 MP30 MP31 MP34 MP35 MP36
             MP38 MP39.ACTG MP39.TCGA MP40 MP41 MP42.ACTG MP42.TCGA MP43.ACTG 
             MP43.TCGA MP44.ACTG MP44.TCGA MP45.ACTG MP45.TCGA MP7 MP9 PK11 
             PK12 PK21 PK22 PK23 PK24 PK31 PK32 PK33 PK41 PK42 PK51 PK52 PK53 
-            PK54)
-SAMPLEIDS=(helaa helab)
-SAMPLE_IDX=$(expr $LSB_JOBINDEX - 1)
-# Individual sample
+            PK54 helaa helab)
+SAMPLEIDS=(PK61 PK62 PK63)
+SAMPLE_IDX=$(($LSB_JOBINDEX - 1))
 SAMPLE=${SAMPLEIDS[$SAMPLE_IDX]}
 
-BCFTOBEDGRAPH=/vol1/home/brownj/projects/hits-clip/src/bcf-identify-cims.py
+# BCFTOBEDGRAPH=/vol1/home/brownj/projects/hits-clip/src/bcf-identify-cims.py
 FASTA=/vol3/home/jhessel/projects/encode/data/hg18/fasta/combined/hg18.fa
-CHROMSIZES=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes
+CHROMSIZES=$HOME/ref/hg18/hg18.sizes
 
 # All links created in advance
-RAWDATA="/vol1/home/brownj/projects/hits-clip/data/common/$(echo $SAMPLE | cut -d'.' -f1)"
-RUNDIR="/vol1/home/brownj/projects/hits-clip/results/common/samples/$SAMPLE"
+RAWDATA=$HOME/projects/hits-clip/data/common/$(echo $SAMPLE | cut -d'.' -f1)
+RUNDIR=$HOME/projects/hits-clip/results/common/samples/$SAMPLE
 mkdir $RUNDIR
 
 BAM=$SAMPLE.bam
@@ -77,17 +76,15 @@ else
     echo "#BSUB -n 1" >> $RUNSCRIPT
     echo "#BSUB -R \"span[hosts=1]\"" >> $RUNSCRIPT
     echo "#BSUB -e %J.err" >> $RUNSCRIPT
+    echo "#BSUB -P hits-clip" >> $RUNSCRIPT
     echo "
-NOVOALIGN=$(which novoalign)
-NOVOINDEX=/vol1/home/brownj/projects/hits-clip/data/common/novoalign/hg18
-SAMTOOLS=$(which samtools)
+
+NOVOINDEX=$HOME/projects/hits-clip/data/common/novoalign/hg18
 FASTQ=$RAWDATA/$SAMPLE.fastq.gz
-gunzip \$FASTQ
-FASTQ=$RAWDATA/$SAMPLE.fastq
 OPTIONS=\"-d \$NOVOINDEX -f \$FASTQ -a -o SAM -r A 20 -e 100 -s 2 -l 16\"
 
-\$NOVOALIGN \$OPTIONS | \$SAMTOOLS view -Sb - > $SAMPLE.unsorted.bam
-\$SAMTOOLS sort $SAMPLE.unsorted.bam $SAMPLE
+novoalign \$OPTIONS | samtools view -Sb - > $SAMPLE.unsorted.bam
+samtools sort $SAMPLE.unsorted.bam $SAMPLE
 rm -f $SAMPLE.unsorted.bam
 " >> $RUNSCRIPT
 
@@ -106,11 +103,14 @@ else
     echo "#BSUB -e %J.err" >> $RUNSCRIPT
     echo "#BSUB -n 1" >> $RUNSCRIPT
     echo "#BSUB -R \"span[hosts=1]\"" >> $RUNSCRIPT
+    echo "#BSUB -P hits-clip" >> $RUNSCRIPT
     echo "
 samtools rmdup -s $BAM $RBAM
 bedtools bamtobed -i $RBAM | gzip -c > $RBED
 " >> $RUNSCRIPT
+    
     WAIT=$(bjobs -w | grep $SAMPLE.align | awk '{print $1}' | sort | uniq)
+    
     if [ x$WAIT == "x" ]; then
         bsub -cwd $RUNDIR < $RUNSCRIPT 
     else
@@ -130,6 +130,7 @@ else
     echo "#BSUB -e %J.err" >> $RUNSCRIPT
     echo "#BSUB -n 1" >> $RUNSCRIPT
     echo "#BSUB -R \"span[hosts=1]\"" >> $RUNSCRIPT
+    echo "#BSUB -P hits-clip" >> $RUNSCRIPT
     echo "
 COMBINEDBED=$RBED
 POSBED=$SAMPLE.pos.rmd.bed
@@ -156,8 +157,8 @@ gzip *.bedgraph
 bedtools genomecov -bg -ibam $RBAM -g $CHROMSIZES | gzip -c > $SAMPLE.rmd.bedgraph.gz
 " >> $RUNSCRIPT
 
-    # Have this job submitted, but wait on the alignment
     WAIT=$(bjobs -w | grep $SAMPLE.collapse | awk '{print $1}' | sort | uniq)
+
     if [ x$WAIT == "x" ]; then
         bsub -q normal -cwd $RUNDIR < $RUNSCRIPT 
     else
