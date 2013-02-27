@@ -17,7 +17,7 @@
 
 #Tamim
 * exome and genome to do cnv calls
-* conifer (http://conifer.sourceforge.net/tutorial.html); varscan
+* conifer (http://conifer.sourceforge.net/tutorial.html)
 * 100-150 per year for 5 years; possibly whole genome
 * early exome data didn't correlate with array data
 * use existing exome data to see if we can find common cnvs using some software
