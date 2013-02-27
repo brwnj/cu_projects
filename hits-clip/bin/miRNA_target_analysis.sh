@@ -2,7 +2,7 @@
 #BSUB -J "mirna_targets[1-29]%8"
 #BSUB -o mirna_targets.%J.%I.out
 #BSUB -e mirna_targets.%J.%I.err
-#BSUB -R "span[hosts=1]"
+#BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
 #BSUB -n 8
 #BSUB -P hits-clip
 
@@ -27,7 +27,7 @@ FASTQ=$HOME/projects/hits-clip/data/common/$id/$id.fastq.gz
 MIRBASE_IDX=/vol3/home/jhessel/projects/hits-clip/data/20130121/mature.hsa.mirbase19.ndx
 MIRBASE_ALIGN=$id.mirbase19.bam
 
-MIRBASE_FASTQ=$id.mirbase19.fastq
+MIRBASE_FASTQ=$id.mirbase19.fastq.gz
 
 GENOME_IDX=$HOME/projects/hits-clip/data/common/novoalign/hg18
 GENOME_ALIGN=$id.genome.bam
@@ -40,9 +40,9 @@ PEAKS_IDX=/vol3/home/jhessel/projects/hits-clip/data/20130130/$id.peaks.nidx
 # align to mirbase
 if [[ ! -f $MIRBASE_ALIGN ]]; then
     novoalign -d $MIRBASE_IDX -f $FASTQ \
-            -a -o SAM -r A -e 100 -s 2 -l 14 -c 12 \
+            -a -o SAM -r A -e 100 -s 2 -l 14 -c 8 \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $sample.temp -m 9500000000 \
+        | samtools sort -o - $id.temp -m 9500000000 \
         > $MIRBASE_ALIGN
 fi
 if [[ ! -f $MIRBASE_ALIGN.bai ]]; then
@@ -50,18 +50,18 @@ if [[ ! -f $MIRBASE_ALIGN.bai ]]; then
 fi
 
 # convert to fastq and align to genome (-r None)
-if [[ ! -f $MIRBASE_FASTQ.gz ]]; then
+if [[ ! -f $MIRBASE_FASTQ ]]; then
     java -jar ~/opt/picard-tools-1.79/SamToFastq.jar \
-        I=$MIRBASE_ALIGN F=$MIRBASE_FASTQ RC=true
-    gzip $MIRBASE_FASTQ
+        I=$MIRBASE_ALIGN F=${MIRBASE_FASTQ%.gz} RC=true
+    gzip ${MIRBASE_FASTQ%.gz}
 fi
 
 # align to whole genome, discarding multiple aligners
 if [[ ! -f $GENOME_ALIGN ]]; then
     novoalign -d $GENOME_IDX -f $MIRBASE_FASTQ \
-            -a -o SAM -r A -e 100 -s 2 -l 14 -c 12 \
+            -a -o SAM -r A -e 100 -s 2 -l 14 -c 8 \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $sample.temp -m 9500000000 \
+        | samtools sort -o - $id.temp -m 9500000000 \
         > $GENOME_ALIGN
 fi
 if [[ ! -f $GENOME_ALIGN.bai ]]; then
@@ -79,9 +79,9 @@ fi
 # realign to hg18 knownGenes
 if [[ ! -f $PEAKS_ALIGN ]]; then
     novoalign -d $PEAKS_IDX -f $MASK_FASTQ \
-            -a -o SAM -r None -s 2 -l 14 -c 12 \
+            -a -o SAM -r None -s 2 -l 14 -c 8 \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $sample.temp -m 9500000000 \
+        | samtools sort -o - $id.temp -m 9500000000 \
         > $PEAKS_ALIGN
 fi
 if [[ ! -f $PEAKS_ALIGN.bai ]]; then
