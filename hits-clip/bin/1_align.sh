@@ -38,12 +38,3 @@ fi
 if [[ ! -f $RBAM ]]; then
     samtools rmdup -s $BAM $RBAM
 fi
-
-# gets created when making genomedata archive
-# # assume if this exists, they all do
-# BW=$RESULTS/$SAMPLE.pos.bw
-# if [[ ! -f $BW ]]; then
-#     SIZES=$HOME/ref/hg18/hg18.sizes
-#     bam2bw $BAM $SIZES
-#     bam2bw $RBAM $SIZES
-# fi
