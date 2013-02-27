@@ -8,7 +8,7 @@ set -o nounset -o errexit -o pipefail -x
 # will include duplicate and non-duplicate bams
 archive=$HOME/projects/hits-clip/data/gd_20130227
 sizes=$HOME/ref/hg18/hg18.sizes
-fasta=$HOME/ref/hg18/hg18.fa
-bams=$HOME/projects/hits-clip/results/common/samples/*/*.bam
+fasta=$HOME/ref/hg18/fa_per_chr
+bams="$HOME/projects/hits-clip/results/common/samples/*/*.bam"
 
-bam2gd -o $archive 
+bam2gd -o $archive $sizes $fasta $bams
