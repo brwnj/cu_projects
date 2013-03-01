@@ -9,6 +9,9 @@
 
 #Hits-Clip; hg18
 
+* peaks with sequence, ensure the peak length is exactly 50 bp
+* MIRZA requires 50 bp peaks
+
 #Poly(A)
 
 1. hybrids, run against mirbase. trim. mask. align to peaks. (what jay did)
