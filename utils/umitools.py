@@ -13,6 +13,9 @@ def get_umi(name):
             return tok.lstrip("UMI_")
 
 def process_bam(args):
+    r"""input bam with mapped reads gets duplicate reads, characterized by
+    their UMI, at any read start location reduced to only one.
+    """
     from pysam import Samfile
     samfile = Samfile(args.abam, 'rb')
     with Samfile(args.bbam, 'wb', template=samfile) as bamfile:
@@ -39,6 +42,7 @@ def process_bam(args):
                 bamfile.write(alignedread)
 
 def read_fastq(fq):
+    r"""fastq parser that returns name, seq, and qual."""
     fh = nopen(fq)
     while True:
         values = list(islice(fh, 4))
@@ -71,6 +75,10 @@ def valid_umi(iupac, umi):
     return True
 
 def process_fastq(args):
+    r"""reads in fastq with UMI still in the sequence, verifies the UMI as 
+    valid, then trims the UMI, incorporating the sequence into the read
+    name.
+    """
     from itertools import izip, islice
     from toolshed import nopen
 
@@ -84,22 +92,19 @@ def process_fastq(args):
             print >> sys.stderr, ">> Read %s ignored. Invalid UMI (%s)\n" % \
                 (label, umi)
 
-def main(args):
-    args.func(args)
-
 if __name__ == "__main__":
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--version', action="version", version="%(prog)s " + __version__)
-    subp = p.add_subparsers(help='command to run')
+    subp = p.add_subparsers()
     # bam processing
     process_bam = subp.add_parser('process_bam', help="remove duplicate UMI \
             entries at originating from all start positions")
     process_bam.add_argument('abam', metavar='INPUT_BAM', help='bam with UMI in \
             read name')
     process_bam.add_argument('bbam', metavar='OUTPUT_BAM', help="bam with no \
-            duplicate UMIs at any given 5 location")
+            duplicate UMIs at any given 5' location")
     process_bam.set_defaults(func=process_bam)
     # fastq processing
     process_fastq = subp.add_parser('process_fastq', help="trim 5' UMI and \
@@ -109,4 +114,5 @@ if __name__ == "__main__":
     process_fastq.add_argument('umi', metavar='UMI', help='IUPAC UMI sequence, \
             e.g. NNNNNV')
     process_fastq.set_defaults(func=process_fastq)
-    main(p.parse_args())
+    args = p.parse_args()
+    args.func(args)
