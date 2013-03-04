@@ -3,6 +3,8 @@
 """
 Converts bam(s) to genomedata archive, saving stranded bedgraphs and bigwigs
 along the way. File names are parsed to create the stranded track names.
+
+You must supply a project ID to track cluster usage.
 """
 import os
 import sys
@@ -17,9 +19,9 @@ def extract(fname, out):
     cmd = "zcat " + fname + " > " + out
     return sub(cmd)
 
-def bam2bg(bams, csizes, clobber):
+def bam2bg(bams, csizes, clobber, projectid):
     """given bams and chromosome sizes, writes two stranded bedgraph files."""
-    sub = bsub("bam2bg", q="short", verbose=True)
+    sub = bsub("bam2bg", q="short", P=projectid, verbose=True)
     jobs = []
     for bam in bams:
         for symbol, strand in izip("- +".split(), "neg pos".split()):
@@ -33,17 +35,17 @@ def bam2bg(bams, csizes, clobber):
             jobs.append(sub(cmd))
     return jobs
 
-def bg2bw(bgs, csizes, clobber):
+def bg2bw(bgs, csizes, clobber, projectid):
     """convert bedgraphs to bigwigs using bedGraphToBigWig."""
-    sub = bsub("bg2bw", q="short", verbose=True)
+    sub = bsub("bg2bw", q="short", P=projectid, verbose=True)
     for bg in bgs:
         bw = "%s.bw" % op.splitext(bg)[0]
         if op.exists(bw) and not clobber: continue
         sub("bedGraphToBigWig %s %s %s" % (bg, csizes, bw))
 
-def load_genome(bgs, fasta_or_dir, out):
+def load_genome(bgs, fasta_or_dir, out, projectid):
     """loads data into a genome archive with sequence data."""
-    sub = bsub("genomedata", verbose=True)
+    sub = bsub("genomedata", P=projectid, verbose=True)
     # reference files
     fastas = []
     if op.isdir(fasta_or_dir):
@@ -64,24 +66,24 @@ def load_genome(bgs, fasta_or_dir, out):
         jobs.append(sub(cmd))
     return jobs
 
-def cleanup(bgs):
+def cleanup(bgs, projectid):
     """gzips the bedgraphs."""
-    sub = bsub("zip", q="short", verbose=True)
+    sub = bsub("zip", q="gzip", P=projectid, verbose=True)
     for bg in bgs:
         sub("gzip -f %s" % bg)
 
 def main(args):
     # bam -> bedgraph
-    bsub.poll(bam2bg(args.BAM, args.CHROM_SIZES, args.clobber))
+    bsub.poll(bam2bg(args.BAM, args.CHROM_SIZES, args.clobber, args.projectid))
     # bedgraph -> bw
     bgs = ["%s_%s.bedgraph" \
                     % (op.splitext(bam)[0], strand) \
                     for bam in args.BAM for strand in "neg pos".split()]
-    bg2bw(bgs, args.CHROM_SIZES, args.clobber)
+    bg2bw(bgs, args.CHROM_SIZES, args.clobber, args.projectid)
     # bedgraphs -> genomedata
-    bsub.poll(load_genome(bgs, args.FASTA, args.output))
+    bsub.poll(load_genome(bgs, args.FASTA, args.output, arg.projectid))
     # gzip the bedgraphs
-    cleanup(bgs)
+    cleanup(bgs, args.projectid)
 
 if __name__ == "__main__":
     import argparse
@@ -93,6 +95,8 @@ if __name__ == "__main__":
                     help='bam(s) to convert to genomedata archive')
     p.add_argument('-o', '--output', default="genomedata",
                     help="genomedata archive name [ %(default)s ]")
+    p.add_argument('-p', '--projectid', required=True,
+                    help="project id for usage tracking")
     p.add_argument('--clobber', action="store_true",
                     help="overwrite existing intermediate files [ %(default)s ]")
     main(p.parse_args())

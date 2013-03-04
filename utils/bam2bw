@@ -8,18 +8,19 @@ set -o nounset -o pipefail -o errexit
 function usage () {
     echo "Check your args. This script submits to the normal queue.
          "
-    echo "Usage: sh $0 <BAM> <CHROMOSOME_SIZES> <5'_counts [ FALSE ]>"
-    echo "Example: sh $0 MP1.bam ~/reference/hg19/hg19.sizes"
+    echo "Usage: sh $0 <BAM> <CHROMOSOME_SIZES> <PROJECT_ID> <5'_counts [ FALSE ]>"
+    echo "Example: sh $0 MP1.bam ~/reference/hg19/hg19.sizes hits-clip"
     exit 1
 }
 
-if [ $# -lt 2 ]; then
+if [ $# -lt 3 ]; then
     usage
 fi
 
 bam=$1
 chromsizes=$2
-umicounts=${3:-"FALSE"}
+projectid=$3
+umicounts=${4:-"FALSE"}
 sample=${bam%.bam}
 runscript="bamtobw.sh"
 
@@ -28,6 +29,7 @@ cat <<runscript >${runscript}
 #BSUB -J bam2bw
 #BSUB -e bam2bw.%J.err
 #BSUB -o bam2bw.%J.out
+#BSUB -P $projectid
 
 bedtools bamtobed -i $sample.bam | gzip -c > $sample.bed.gz
 bedtools genomecov -strand + -bg -ibam $bam -g $chromsizes > $sample.pos.bedgraph
@@ -41,6 +43,7 @@ cat <<runscript >${runscript}
 #BSUB -J bam2bw
 #BSUB -e bam2bw.%J.err
 #BSUB -o bam2bw.%J.out
+#BSUB -P $projectid
 
 bedtools bamtobed -i $sample.bam | gzip -c > $sample.bed.gz
 bedtools genomecov -strand + -bg -5 -ibam $bam -g $chromsizes > $sample.pos.bedgraph

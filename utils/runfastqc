@@ -4,19 +4,18 @@ set -o nounset -o errexit
 function usage () {
     echo "Run fastqc on supplied fastq. This script submits to the normal queue.
     "
-    echo ">> Check your args...
-    "
-    echo "Usage: $(basename $0) <fastq> <out [ optional ]>"
+    echo "Usage: $(basename $0) <fastq> <projectid> <out [ optional ]>"
     exit 1
 }
 
-if [ $# -lt 1 ]; then
+if [ $# -lt 2 ]; then
     usage
 fi
 
 fastqc=/vol1/home/brownj/opt/fastqc/fastqc
 fastq=$1
-out=${2:-"."}
+projectid=$2
+out=${3:-"."}
 sample=${fastq%.f*}
 runscript="fastqc.sh"
 
@@ -25,6 +24,7 @@ cat <<runscript >${runscript}
 #BSUB -J fastqc
 #BSUB -e fastqc.%J.err
 #BSUB -o fastqc.%J.out
+#BSUB -P $projectid
 
 $fastqc --outdir=$out $fastq
 runscript
