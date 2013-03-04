@@ -263,3 +263,18 @@ http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/BT474herc.neg.peaks.t
 http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20120423/PK23.peaks.track.001.bed.gz
 track type=bigWig name='PK23.rmd.pos.align' description='PK23 Novoalign alignment pos (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.pos.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
 track type=bigWig name='PK23.rmd.neg.align' description='PK23 Novoalign alignment neg (20120410)' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/PK23.neg.rmd.bw maxHeightPixels=15:50:35 color=37,52,148 visibility=full
+
+
+
+track type=bigWig name=PK61.neg description=PK61.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK61.neg.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name=PK61.pos description=PK61.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK61.pos.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name=PK61.rmd.neg description=PK61.rmd.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK61.rmd.neg.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name=PK61.rmd.pos description=PK61.rmd.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK61.rmd.pos.bw maxHeightPixels=15:50:35 color=228,26,28 visibility=full
+track type=bigWig name=PK62.neg description=PK62.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK62.neg.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name=PK62.pos description=PK62.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK62.pos.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name=PK62.rmd.neg description=PK62.rmd.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK62.rmd.neg.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name=PK62.rmd.pos description=PK62.rmd.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK62.rmd.pos.bw maxHeightPixels=15:50:35 color=55,126,184 visibility=full
+track type=bigWig name=PK63.neg description=PK63.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK63.neg.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=PK63.pos description=PK63.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK63.pos.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=PK63.rmd.neg description=PK63.rmd.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK63.rmd.neg.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=PK63.rmd.pos description=PK63.rmd.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/hits-clip/20130304/PK63.rmd.pos.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
