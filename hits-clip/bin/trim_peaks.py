@@ -10,12 +10,13 @@ assumptions about your genomedata archive:
 1. your genomedata archive only has this sample once
 2. sample names terminate with a period character, then list strand, e.g. 
 MP1.pos.rmd
+<sample>.<strand>.<...>
 
 The assumptions concerning your peaks file is that it starts with the sample name
 and is delimited by periods:
 
 MP1.peaks.rmd.bed
-
+<sample>.peaks.<...>
 """
 
 import os
@@ -73,16 +74,23 @@ def get_mid(start, counts):
     # return midpoint among the max intensities
     return int(maxpositions[len(maxpositions) / 2])
 
-def get_track_idx(gd, sample):
+def get_track_idx(gd, sample, verbose):
     """returns dict of strand:index"""
     indexes = {}
-    # parse the sample name
-    sample = sample.split(".", 1)[0]
+    # parse the file name
+    sample = sample.split(".peaks")[0]
     with Genome(gd) as genome:
         for i, track in enumerate(genome.tracknames_continuous):
-            t_sample, strand, extraneous = track.split(".", 2)
+            # t_sample, strand, extraneous = track.split(".", 2)
+            if "neg" in track:
+                t_sample = track.split(".neg")[0]
+                strand = "-"
+            else:
+                t_sample = track.split(".pos")[0]
+                strand = "+"
             if sample == t_sample:
-                indexes["-" if strand == "neg" else "+"] = i
+                if verbose: sys.stderr.write(">> found track: %s\n" % track)
+                indexes[strand] = i
     # should only have one pos and one neg for a sample
     assert(len(indexes.keys()) == 2)
     return indexes
@@ -91,7 +99,7 @@ def main(args):
     # pytables via genomedata raises warn PerformanceWarning
     if not args.warnings:
         warnings.simplefilter("ignore")
-    track_idx = get_track_idx(args.genomedata, os.path.basename(args.peaks))
+    track_idx = get_track_idx(args.genomedata, os.path.basename(args.peaks), args.verbose)
     kwargs = {'bed':args.peaks,
               'genomedata':args.genomedata,
               'track_idx':track_idx,
