@@ -1,38 +1,48 @@
 #! /usr/bin/env bash
-#BSUB -J novoalign[1-12]
-#BSUB -e novoalign.%J.%I.err
-#BSUB -o novoalign.%J.%I.out
+#BSUB -J align[1-22]
+#BSUB -e align.%J.%I.err
+#BSUB -o align.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
-#BSUB -n 4
+#BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
+#BSUB -n 8
 
 <<DOC
-Align using Novoalign, suppressing all reads that align more than once.
+Trim the UMI from the FASTQ, align trimmed reads using Novoalign suppressing 
+all reads that align more than once, then remove UMI duplicates from the
+alignment.
 DOC
 
 set -o nounset -o pipefail -o errexit -x
 
-# SAMPLES=(idx0 MP51 MP52 MP53 PK61 PK62)
-# SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
+source $HOME/projects/polya/bin/project.cfg
+sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
-samples=(idx0 100-3 86-7 93-1 93-3 m+c m+e2
-            nbt29 nbt39 nbt89 ts21 ts28 ts57)
-sample=${samples[${LSB_JOBINDEX}]}
+unprocessed_fastq=$DATA/something!!!!!
+fastq=$DATA/$sample.umi.fq.gz
+# trim the UMI
+if [[ ! -f $fastq ]]; then
+    umitools process_fastq $unprocessed_fastq NNNNNV | gzip -c > $fastq
+fi
 
-fastq=$HOME/projects/polya/data/20130114/$sample.umi.fq.gz
-novoidx=$HOME/projects/hits-clip/data/common/novoalign/hg18
-umibam=$HOME/projects/polya/results/common/$sample/$sample.UMIs_not_removed.bam
-bam=$HOME/projects/polya/results/common/$sample/$sample.bam
-bin=$HOME/devel/umitools/umitools
+results=$RESULT/$sample
+if [[ ! -d $results ]]; then
+    mkdir -p $results
+fi
 
-mkdir -p $HOME/projects/polya/results/common/$sample
+umibam=$RESULT/$sample/$sample.UMIs_not_removed.bam
+bam=$results/$sample.bam
 
-novoalign -d $novoidx -f $fastq -o SAM -l 20 -s 5 -r None -c 4 -k \
-    2> $sample.alignment.txt \
-    | samtools view -ShuF4 - \
-    | samtools sort -o - $sample.temp -m 9500000000 \
-    > $umibam
-
-samtools index $umibam
-python $bin/process_bam.py $umibam $bam
-samtools index $bam
+# align the reads
+if [[ ! -f $umibam ]]; then
+    novoalign -d $NOVOIDX -f $fastq -o SAM -l 20 -s 5 -r None -c 4 -k \
+        2> $sample.alignment.txt \
+        | samtools view -ShuF4 - \
+        | samtools sort -o - $sample.temp -m 9500000000 \
+        > $umibam
+    samtools index $umibam
+fi
+# process the UMIs
+if [[ ! -f $bam ]]; then
+    umitools process_bam $umibam $bam
+    samtools index $bam
+fi
