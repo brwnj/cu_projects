@@ -55,13 +55,10 @@ done
 
 # wait for completion
 python -m bsub $jobids
-# concatenate into one fastq
+# concatenate into one gzipped fastq
 cat $cifs/*.fastq | gzip -c > $fastq
+#remove individual, non-gzipped fastqs from ayb
+rm $cifs/?_?_*.fastq
 # demultiplex
-fastq-multx -B $barcodes -m 2 -e $fastq -o %.fq
-gzip $cifs/*.fq
-
-# qc the reads of individual samples
-for f in $cifs/*.fq.gz; do
-    runfastqc $f $PROJECTID $cifs
-done
+fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq
+gzip $DATA/*.fq
