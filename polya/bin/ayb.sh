@@ -18,23 +18,18 @@ bs=R6I14C86
 # Expected folder structure:
 # $HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
 cifs=$HOME/projects/polya/data/20130305
+# to ensure proper tiles
+cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
 fastq=$cifs/20130226_L00${lane}.fastq.gz
 barcodes=$cifs/barcodes.txt
 
 jobids=""
 # you need a for loop here because some seg fault
 
-tiles=$(seq 1101 1116)
-tiles="$tiles $(seq 1201 1216)"
-tiles="$tiles $(seq 1301 1316)"
-tiles="$tiles $(seq 2101 2116)"
-tiles="$tiles $(seq 2201 2216)"
-tiles="$tiles $(seq 2301 2316)"
-
-for i in $tiles; do
-    RUNSCRIPT=ayb.${i}.$lane.sh
+for tile in `ls $cifs_dir | sed -rn 's/._._([0-9]+).cif/\1/p'`; do
+    RUNSCRIPT=ayb.${tile}.$lane.sh
     echo "#! /usr/bin/env bash" > $RUNSCRIPT
-    echo "#BSUB -J ayb_slave.${i}.$lane" >> $RUNSCRIPT
+    echo "#BSUB -J ayb_slave.${tile}.$lane" >> $RUNSCRIPT
     echo "#BSUB -R \"span[hosts=1] select[mem>8] rusage[mem=8]\"" >> $RUNSCRIPT
     echo "#BSUB -e ayb.%J.$lane.err" >> $RUNSCRIPT
     echo "#BSUB -o ayb.%J.$lane.out" >> $RUNSCRIPT
@@ -43,7 +38,7 @@ for i in $tiles; do
     echo "#BSUB -P pillai_kabos_polya" >> $RUNSCRIPT
     echo "
 
-AYB -b $bs -d cif -l debug -o $cifs -p 8 -i $cifs -r L${lane}T${i} --format fastq
+AYB -b $bs -d cif -l debug -o $cifs -p 8 -i $cifs -r L${lane}T${tile} --format fastq
 " >> $RUNSCRIPT
     
     # submit the job
