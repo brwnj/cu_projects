@@ -23,7 +23,15 @@ barcodes=$cifs/barcodes.txt
 
 jobids=""
 # you need a for loop here because some seg fault
-for (( i = 1101; i < 2320; i++ )); do
+
+tiles=$(seq 1101 1116)
+tiles="$tiles $(seq 1201 1216)"
+tiles="$tiles $(seq 1301 1316)"
+tiles="$tiles $(seq 2101 2116)"
+tiles="$tiles $(seq 2201 2216)"
+tiles="$tiles $(seq 2301 2316)"
+
+for i in $tiles; do
     RUNSCRIPT=ayb.${i}.$lane.sh
     echo "#! /usr/bin/env bash" > $RUNSCRIPT
     echo "#BSUB -J ayb_slave.${i}.$lane" >> $RUNSCRIPT
