@@ -14,7 +14,7 @@ DOC
 
 set -o nounset -o pipefail -o errexit -x
 
-source $HOME/projects/polya/bin/project.cfg
+source $HOME/projects/polya/bin/config.sh
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
 unprocessed_fastq=$DATA/something!!!!!
