@@ -55,5 +55,5 @@ python -m bsub $jobids
 # concatenate into one fastq
 cat $cifs/*.fastq | gzip -c > $fastq
 # demultiplex
-fastq-multx -B $barcodes -m 2 -e $fastq -o %.fastq
+fastq-multx -B $barcodes -m 2 -e $fastq -o %.fq
 gzip $cifs/*.fastq
