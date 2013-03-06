@@ -8,8 +8,8 @@ set -o nounset -o pipefail -o errexit
 function usage () {
     echo "Check your args. This script submits to the normal queue.
          "
-    echo "Usage: sh $0 <BAM> <CHROMOSOME_SIZES> <PROJECT_ID> <5'_counts [ FALSE ]>"
-    echo "Example: sh $0 MP1.bam ~/reference/hg19/hg19.sizes hits-clip"
+    echo "Usage: $(basename $0) <BAM> <CHROMOSOME_SIZES> <PROJECT_ID> <5'_counts [ FALSE ]>"
+    echo "Example: $(basename $0) MP1.bam ~/reference/hg19/hg19.sizes hits-clip"
     exit 1
 }
 
