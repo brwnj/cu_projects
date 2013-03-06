@@ -5,6 +5,7 @@
 #BSUB -q normal
 #BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
 #BSUB -n 8
+#BSUB -P pillai_kabos_polya
 
 <<DOC
 Trim the UMI from the FASTQ, align trimmed reads using Novoalign suppressing 
@@ -17,7 +18,7 @@ set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/polya/bin/config.sh
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
-unprocessed_fastq=$DATA/something!!!!!
+unprocessed_fastq=$DATA/$sample.fq.gz
 fastq=$DATA/$sample.umi.fq.gz
 # trim the UMI
 if [[ ! -f $fastq ]]; then
@@ -40,9 +41,13 @@ if [[ ! -f $umibam ]]; then
         | samtools sort -o - $sample.temp -m 9500000000 \
         > $umibam
     samtools index $umibam
+    # create bw
+    bam2bw $umibam $CHROM_SIZES pillai_kabos_poya TRUE
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
     umitools process_bam $umibam $bam
     samtools index $bam
+    # create bw
+    bam2bw $bam $CHROM_SIZES pillai_kabos_poya TRUE 
 fi
