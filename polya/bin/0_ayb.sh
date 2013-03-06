@@ -11,6 +11,9 @@ DOC
 
 set -o nounset -o errexit -o pipefail -x
 
+source $HOME/projects/polya/bin/config.sh
+
+# leaving this because sometimes there are multiple lanes
 lane=3
 
 # 50 bp
@@ -56,4 +59,9 @@ python -m bsub $jobids
 cat $cifs/*.fastq | gzip -c > $fastq
 # demultiplex
 fastq-multx -B $barcodes -m 2 -e $fastq -o %.fq
-gzip $cifs/*.fastq
+gzip $cifs/*.fq
+
+# qc the reads of individual samples
+for f in $cifs/*.fq.gz; do
+    runfastqc $f $PROJECTID $cifs
+done
