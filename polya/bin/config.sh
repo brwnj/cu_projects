@@ -1,7 +1,6 @@
-# rows of 10
 PROJECTID=pillai_kabos_polya
-SAMPLES=(MP51 MP52 MP53 PK61 PK62 100-3 86-7 93-1 93-3 m+c
-            m+e2 nbt29 nbt39 nbt89 ts21 ts28 ts57 MP54 MP55 MP56
+SAMPLES=(MP51 MP52 MP53 PK61 PK62 100-3 86-7 93-1 93-3 m+c              #10
+            m+e2 nbt29 nbt39 nbt89 ts21 ts28 ts57 MP54 MP55 MP56        #20
             MP57 MP58)
 NOVOIDX=$HOME/projects/hits-clip/data/common/novoalign/hg18
 RESULT=$HOME/projects/polya/results/common
