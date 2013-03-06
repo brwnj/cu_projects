@@ -42,12 +42,12 @@ if [[ ! -f $umibam ]]; then
         > $umibam
     samtools index $umibam
     # create bw
-    bam2bw $umibam $CHROM_SIZES pillai_kabos_poya TRUE
+    bam2bw $umibam $CHROM_SIZES $PROJECTID TRUE
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
     umitools process_bam $umibam $bam
     samtools index $bam
     # create bw
-    bam2bw $bam $CHROM_SIZES pillai_kabos_poya TRUE 
+    bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
 fi
