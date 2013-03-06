@@ -13,7 +13,9 @@ set -o nounset -o errexit -o pipefail -x
 
 lane=3
 
+# 50 bp
 # bs=R6I14C36
+# 100 bp
 bs=R6I14C86
 # Expected folder structure:
 # $HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
@@ -25,7 +27,6 @@ barcodes=$cifs/barcodes.txt
 
 jobids=""
 # you need a for loop here because some seg fault
-
 for tile in `ls $cifs_dir | sed -rn 's/._._([0-9]+).cif/\1/p'`; do
     RUNSCRIPT=ayb.${tile}.$lane.sh
     echo "#! /usr/bin/env bash" > $RUNSCRIPT
