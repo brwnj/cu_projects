@@ -14,9 +14,7 @@
 
 #Poly(A)
 
-1. hybrids, run against mirbase. trim. mask. align to peaks. (what jay did)
-2. after filtering to miRNA off, align to genome -r None, convert bam to fastq, realign to peak regions
-3. run mirza on the output. figure out everything that jay just said...
+* run mirza on the output. figure out everything that jay just said...
 
 #Tamim
 * exome and genome to do cnv calls
