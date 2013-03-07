@@ -9,6 +9,12 @@
 
 <<DOC
 Align using Novoalign, suppressing all reads that align more than once.
+
+1=  1,2,9 pooled = Pit-1 Wildtype
+2= 3,4,10 pooled = Pit-1 T220A
+3= 5,6,11 pooled = Pit-1 T220D
+4= 7,8 pooled = Pit-1 T220E
+I would expect Wildtype and T220A (unphosphorylatable form) to be more similar and T220D and T220E ( both phosphorylation mimics) to be similar. 
 DOC
 
 set -o nounset -o pipefail -o errexit -x
