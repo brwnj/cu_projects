@@ -61,4 +61,5 @@ cat $cifs/*.fastq | gzip -c > $fastq
 rm $cifs/?_?_*.fastq
 # demultiplex
 fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq
+# leaving unmatched.fq for troubleshooting
 gzip $DATA/*.fq
