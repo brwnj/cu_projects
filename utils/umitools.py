@@ -3,6 +3,12 @@
 """
 Tools to handle reads sequenced with unique molecular identifiers (UMIs).
 """
+import sys
+import argparse
+from pysam import Samfile
+from toolshed import nopen
+from itertools import islice, izip
+
 __version__ = "v0.1"
 
 def get_umi(name):
@@ -16,7 +22,6 @@ def process_bam(args):
     r"""input bam with mapped reads gets duplicate reads, characterized by
     their UMI, at any read start location reduced to only one.
     """
-    from pysam import Samfile
     samfile = Samfile(args.abam, 'rb')
     with Samfile(args.bbam, 'wb', template=samfile) as bamfile:
         reads = []
@@ -79,11 +84,8 @@ def process_fastq(args):
     valid, then trims the UMI, incorporating the sequence into the read
     name.
     """
-    from itertools import izip, islice
-    from toolshed import nopen
-
     umi_length = len(args.umi)
-    for label, seq, qual in FastqReader(args.fastq):
+    for label, seq, qual in read_fastq(args.fastq):
         umi = seq[:umi_length]
         if valid_umi(args.umi, umi):
             print "@%s:UMI_%s\n%s\n+\n%s" % \
@@ -92,27 +94,28 @@ def process_fastq(args):
             print >> sys.stderr, ">> Read %s ignored. Invalid UMI (%s)\n" % \
                 (label, umi)
 
+def main(args):
+    args.func(args)
+
 if __name__ == "__main__":
-    import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('--version', action="version", version="%(prog)s " + __version__)
-    subp = p.add_subparsers()
+    subp = p.add_subparsers(help='commands')
     # bam processing
-    process_bam = subp.add_parser('process_bam', help="remove duplicate UMI \
+    bam = subp.add_parser('rmdup', help="remove duplicate UMI \
             entries at originating from all start positions")
-    process_bam.add_argument('abam', metavar='INPUT_BAM', help='bam with UMI in \
+    bam.add_argument('abam', metavar='INPUT_BAM', help='bam with UMI in \
             read name')
-    process_bam.add_argument('bbam', metavar='OUTPUT_BAM', help="bam with no \
+    bam.add_argument('bbam', metavar='OUTPUT_BAM', help="bam with no \
             duplicate UMIs at any given 5' location")
-    process_bam.set_defaults(func=process_bam)
+    bam.set_defaults(func=process_bam)
     # fastq processing
-    process_fastq = subp.add_parser('process_fastq', help="trim 5' UMI and \
+    fastq = subp.add_parser('trim', help="trim 5' UMI and \
             incorporate sequence into read name")
-    process_fastq.add_argument('fastq', metavar='FASTQ', help='reads with \
+    fastq.add_argument('fastq', metavar='FASTQ', help='reads with \
             untrimmed UMI')
-    process_fastq.add_argument('umi', metavar='UMI', help='IUPAC UMI sequence, \
+    fastq.add_argument('umi', metavar='UMI', help='IUPAC UMI sequence, \
             e.g. NNNNNV')
-    process_fastq.set_defaults(func=process_fastq)
-    args = p.parse_args()
-    args.func(args)
+    fastq.set_defaults(func=process_fastq)
+    main(p.parse_args())
