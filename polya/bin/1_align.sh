@@ -35,7 +35,7 @@ bam=$results/$sample.bam
 
 # align the reads
 if [[ ! -f $umibam ]]; then
-    novoalign -d $NOVOIDX -f $fastq -o SAM -l 20 -s 5 -r None -c 4 -k \
+    novoalign -d $NOVOIDX -f $fastq -o SAM -n 50 -s 5 -l 20 -r None -c 4 -k \
         2> $sample.alignment.txt \
         | samtools view -ShuF4 - \
         | samtools sort -o - $sample.temp -m 9500000000 \
