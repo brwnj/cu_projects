@@ -9,6 +9,7 @@ todo: minimum summit height to be considered
 import sys
 import warnings
 from scipy.stats import poisson
+from scipy.misc import factorial
 from genomedata import Genome
 from numpy import nansum, isnan
 
@@ -20,8 +21,8 @@ def call_peaks(genomedata, track, width, p_cutoff, verbose):
         size = sum([chrom.end for chrom in genome])
         # coverage across all chromosome for one track
         coverage = genome.sums[track_idx] / size
-        # global lambda
-        g_lambda = coverage * width
+        # global lambda: number of events / number of units
+        g_lambda = coverage / width
         if verbose:
             sys.stderr.write(">> effective genome size: %f\n" % size)
             sys.stderr.write(">> observed coverage: %f\n" % coverage)
@@ -41,7 +42,15 @@ def call_peaks(genomedata, track, width, p_cutoff, verbose):
                     # skip where no reads
                     if isnan(nansum(counts)): continue
                     # calculate p-value
-                    p = poisson.pmf(nansum(counts), g_lambda)
+                    e = 2.718
+                    p = ((g_lambda**nansum(counts)) * (e**-g_lambda)) / factorial(counts)
+                    print p
+                    # print t
+                    # print g_lambda
+                    print poisson.pmf(nansum(counts), g_lambda)
+                    print poisson.pmf(counts, g_lambda)
+                    sys.exit()
+
                     # ignore garbage
                     if p > p_cutoff: continue
                     i += 1
@@ -75,7 +84,7 @@ if __name__ == '__main__':
                     formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument('genomedata', help="genomedata archive")
     p.add_argument('track', help='name of the track to call peaks across')
-    p.add_argument('-p', '--p-value', dest="p_value", default=0.00001, type=int, 
+    p.add_argument('-p', '--p-value', dest="p_value", default=0.01, type=int, 
                     help="ignore peaks above this cutoff [ %(default)s ]")
     p.add_argument('-w', '--width', default=50, type=int,
                     help="window size or close to expected peak width \
