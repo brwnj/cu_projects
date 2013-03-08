@@ -22,7 +22,7 @@ unprocessed_fastq=$DATA/$sample.fq.gz
 fastq=$DATA/$sample.umi.fq.gz
 # trim the UMI
 if [[ ! -f $fastq ]]; then
-    umitools process_fastq $unprocessed_fastq NNNNNV | gzip -c > $fastq
+    umitools trim $unprocessed_fastq NNNNNV | gzip -c > $fastq
 fi
 
 results=$RESULT/$sample
@@ -46,7 +46,7 @@ if [[ ! -f $umibam ]]; then
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    umitools process_bam $umibam $bam
+    umitools rmdup $umibam $bam
     samtools index $bam
     # create bw
     bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
