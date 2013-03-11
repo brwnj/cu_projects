@@ -5,6 +5,7 @@
 #BSUB -q normal
 #BSUB -R "select[mem>2] rusage[mem=2] span[hosts=1]"
 #BSUB -n 1
+#BSUB -P davidson
 
 <<DOC
 create tags and find seeds among the reads.
