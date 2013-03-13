@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J tcr_repertoire[2,4,6]
+#BSUB -J tcr_repertoire[1,3,5]
 #BSUB -e tcr_repertoire.%J.%I.err
 #BSUB -o tcr_repertoire.%J.%I.out
 #BSUB -q normal
