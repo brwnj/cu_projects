@@ -19,3 +19,22 @@ barplot(dt$coverage,
         main=title,
         horiz=TRUE)
 dev.off()
+
+library(ggplot2)
+dt = read.table("~/projects/davidson/data/1/1.metadata", header=TRUE, row.names=1)
+# bar plot
+q <- qplot(dt$v_region)
+# label rotation
+q + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+q <- qplot(dt$v_region, dt$coverage)
+q + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+
+p <- ggplot(dt, aes(v_region))
+p <- p + geom_histogram(binwidth=2, fill="steelblue")
+p <- p + geom_point(aes(v_region, coverage), alpha=I(1/50))
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p
+
+d <- ggplot(dt, aes(reads))
+d + geom_histogram()
