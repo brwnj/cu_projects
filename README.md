@@ -7,34 +7,61 @@
 5alpha and 
 6beta were spiked with some known sequence
 
+sameple:total reads
+1:51307090
+2:45512106
+3:38216696
+4:61373826
+5:48097530
+6:42528694
+
 #Hits-Clip; hg18
+* peter -- correlate microarray abundance to miRNA abundance levels
+    predicted network
+    miRNA9 high miRNA193 low
+    targets appear to be regulated by a given miRNA
+    do we see genes going up, down, etc...
+    erp+
+    contigency table
+            9   193
+    dead
+    alive
+    chi-square test
+    contigency table
+                    miRNA_high  miRNA_low
+    dead_outcome
+    alive_outcome
+    
+    * define which miRNAs are implicated in regulating estrogen and tamoxiphen
+    PK63 is tamoxiphen resistant
+* continue getting PK samples through the pipeline
 
-* peaks with sequence, ensure the peak length is exactly 50 bp
-* MIRZA requires 50 bp peaks
+#Poly(A); hg18
+* with and without umi mapped reads counts
+* for each gene, contigency table to run fishers exact test
+            gene p1 p2 p3 p4
+c1
+c2
+c3
 
-#Poly(A)
+* testing gene level changes -- one condition versus one other
+* testing counts with and without umi -- does it make a difference?
+* can we run something faster like bowtie and get the same result as novoalign
 
-* run mirza on the output. figure out everything that jay just said...
+### finding novel poly(a) sites
+* see paper from jay
+* compare for each site then for each gene
+* a[a,t]taaa
+if 8 or more As follow the 3 As, class 2
+class one has fewer than 8 As after that stretch
+* classifying the other groups (3, 4) -- call peaks and classify
+
+could just call peaks, remove those within 50 bp from known polya sites
+filter out peaks without characterization or around long stretches of As
+doesn't get you all possible peaks though...
 
 #Tamim
-* exome and genome to do cnv calls
-* conifer (http://conifer.sourceforge.net/tutorial.html)
-* 100-150 per year for 5 years; possibly whole genome
-* early exome data didn't correlate with array data
-* use existing exome data to see if we can find common cnvs using some software
-* run conifer; see what it identifies
-
-###some talk about pipelines
-* james has been using galaxy and whatnot; he doesn't script so much
-* we use unified genotyper, etc.
-
-###array data
-* process data from tamim's custom array
-* database of cnv calls to identify common artifacts; reference: http://projects.tcag.ca/variation/
-
-###moving forward
-* 6 families, call variants, identify causal variant
-* figure out what to do with conifer
+* conifer on different samples and compare to microarray data
 
 #Walter
 

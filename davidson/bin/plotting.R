@@ -21,6 +21,7 @@
 # dev.off()
 
 library(ggplot2)
+library(plyr)
 dt = read.table("~/projects/davidson/data/246_metadata.txt", header=TRUE)
 
 # bar plot
@@ -32,5 +33,19 @@ p <- p + geom_histogram(binwidth=2, position=position_dodge())
 # white background
 p <- p + theme_bw()
 # rotate the labels
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p
+
+# average coverage
+ac <- ggplot(dt, aes(v_region, coverage, color=sample))
+ac <- ac + geom_boxplot(alpha=0.3, position=position_dodge(), outlier.colour=NA)
+ac <- ac + theme_bw()
+ac <- ac + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+ac
+
+# percentage of reads per contig
+p <- ggplot(dt, aes(x=v_region, fill=sample))
+p <- p + geom_histogram(binwidth=1, aes(weight=percent_total_reads), position=position_dodge())
+p <- p + theme_bw()
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
