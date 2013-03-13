@@ -1,5 +1,5 @@
-#! /usr/bin/env bash
-#BSUB -J align[1-22]
+#!/usr/bin/env bash
+#BSUB -J align[1-5]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -16,6 +16,7 @@ DOC
 set -o nounset -o pipefail -o errexit -x
 
 source $HOME/projects/polya/bin/config.sh
+SAMPLES=(MP54 MP55 MP56 MP57 MP58)
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
 unprocessed_fastq=$DATA/$sample.fq.gz
@@ -30,12 +31,12 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 
-umibam=$RESULT/$sample/$sample.UMIs_not_removed.bam
-bam=$results/$sample.bam
+umibam=$RESULT/$sample/$sample.UMIs_not_removed.no_trimming.bam
+bam=$results/$sample.no_trimming.bam
 
 # align the reads
 if [[ ! -f $umibam ]]; then
-    novoalign -d $NOVOIDX -f $fastq -o SAM -n 50 -s 5 -l 20 -r None -c 4 -k \
+    novoalign -d $NOVOIDX -f $fastq -o SAM -n 50 -r None -c 4 -k \
         2> $sample.alignment.txt \
         | samtools view -ShuF4 - \
         | samtools sort -o - $sample.temp -m 9500000000 \
