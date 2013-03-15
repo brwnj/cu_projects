@@ -34,6 +34,10 @@ sameple:total reads
     
     * define which miRNAs are implicated in regulating estrogen and tamoxiphen
     PK63 is tamoxiphen resistant
+
+    * from rnaseq data, overlap gene list in an effort to correlate the abundance
+    of hits-discovered networks to those same genes in the rnaseq set
+
 * continue getting PK samples through the pipeline
 
 #Poly(A); hg18
