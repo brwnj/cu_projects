@@ -13,9 +13,10 @@ TODO: handle null via --null [column_number]
 import tempfile
 import subprocess as sp
 import sys
-import bisect
+import bisect 
 from itertools import izip
 from array import array
+from toolshed import nopen
 
 def qvality(pvals, null=None, **kwargs):
     f = open(tempfile.mktemp(suffix=".qvality"), "w")
@@ -58,7 +59,7 @@ def main(f_pvals, column_no, sep="\t"):
     pvals = []
     has_header = False
     for i, toks in enumerate(l.rstrip("\r\n").split(sep) 
-                                    for l in open(f_pvals)):
+                                    for l in nopen(f_pvals)):
         if i == 0:
             try:
                 float(toks[col])
@@ -67,8 +68,8 @@ def main(f_pvals, column_no, sep="\t"):
                 continue
         pvals.append(float(toks[col]))
     assert all(0 <= p <= 1 for p in pvals)
-
-    fh = open(f_pvals)
+    
+    fh = nopen(f_pvals)
     if has_header:
         print "%s%sPEP%sq-value" % (fh.readline().rstrip("\r\n"), sep, sep)
 
@@ -83,7 +84,8 @@ if __name__ == "__main__":
     p.add_argument("--column", default=-1,
                    help="column number the file containing p-values \
                    (default = -1)", type=int)
-    p.add_argument("--sep", default="\t", help='input and output file separator')
+    p.add_argument("--sep", default="\t",
+                   help='input and output file separator (default = [tab])')
     p.add_argument("pvals", help='file to annotate')
 
     args = p.parse_args()
