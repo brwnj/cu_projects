@@ -65,3 +65,12 @@ track type=bigWig name='nbt89 pos UMI' description='nbt89 pos UMI' bigDataUrl=ht
 track type=bigWig name='nbt89 neg UMI' description='nbt89 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/nbt89.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=255,127,0 visibility=full
 track type=bigWig name='ts57 pos UMI' description='ts57 pos UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts57.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
 track type=bigWig name='ts57 neg UMI' description='ts57 neg UMI' bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130122/ts57.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=51,160,44 visibility=full
+
+track type=bigWig name=MP57.neg description=MP57.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP57.neg.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name=MP57.pos description=MP57.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP57.pos.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name=MP57.UMIs_not_removed.neg description=MP57.UMIs_not_removed.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP57.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name=MP57.UMIs_not_removed.pos description=MP57.UMIs_not_removed.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP57.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=27,158,119 visibility=full
+track type=bigWig name=MP58.neg description=MP58.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP58.neg.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=MP58.pos description=MP58.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP58.pos.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=MP58.UMIs_not_removed.neg description=MP58.UMIs_not_removed.neg bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP58.UMIs_not_removed.neg.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
+track type=bigWig name=MP58.UMIs_not_removed.pos description=MP58.UMIs_not_removed.pos bigDataUrl=http://amc-sandbox.ucdenver.edu/~brownj/polya/20130314/MP58.UMIs_not_removed.pos.bw maxHeightPixels=15:50:35 color=152,78,163 visibility=full
