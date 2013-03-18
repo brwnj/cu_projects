@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#BSUB -J process_assemblies[1-6]
+#BSUB -J process_assemblies[1,3,5]
 #BSUB -e process_assemblies.%J.%I.err
 #BSUB -o process_assemblies.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
+#BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
 #BSUB -n 1
 
 <<DOC
@@ -31,8 +31,9 @@ fi
 
 contigs=$results/$sample.contigs
 annotated_fasta=$results/$sample.filtered.fa
+renamed_fasta=$results/$sample.filtered.renamed.fa
 metadata=$results/$sample.metadata
-aligned_fasta=$results/$sample.aligned.fa
+#aligned_fasta=$results/$sample.aligned.fa
 
 if [[ ! -f $annotated_fasta ]]; then
     exonerate \
@@ -46,10 +47,10 @@ if [[ ! -f $annotated_fasta ]]; then
         > $annotated_fasta
 fi
 if [[ ! -f $metadata ]]; then
-    python $bin/reads2meta.py $annotated_fasta > $metadata
+    python $bin/reads2meta.py $annotated_fasta $renamed_fasta $metadata
 fi
-if [[ ! -f $aligned_fasta ]]; then
-    muscle -maxiters 1 -diags -in $annotated_fasta -out $aligned_fasta
-fi
+# if [[ ! -f $aligned_fasta ]]; then
+#     muscle -maxiters 1 -diags -in $annotated_fasta -out $aligned_fasta
+# fi
 
-gzip $contigs $annotated_fasta $metadata $aligned_fasta
+gzip -f $contigs $annotated_fasta $metadata $renamed_fasta # $aligned_fasta
