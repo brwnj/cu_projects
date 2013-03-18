@@ -21,8 +21,8 @@
 # dev.off()
 
 library(ggplot2)
-library(plyr)
 dt = read.table("~/projects/davidson/data/246_metadata.txt", header=TRUE)
+dt = read.table("~/projects/davidson/data/135_metadata.txt", header=TRUE)
 
 # bar plot
 p <- ggplot(dt, aes(v_region, fill=sample))
