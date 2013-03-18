@@ -22,7 +22,7 @@ data=$HOME/projects/davidson/data/20120924
 region=$data/${regions[$(($LSB_JOBINDEX - 1))]}
 reads=$data/$sample.trm.fa.gz
 seeds=$data/$sample.$len.seeds.fa.gz
+tags=$data/$sample.tags
 
-python $bin/create_tags.py -v -l $len $region \
-    | python $bin/find_seeds.py -v - $reads \
-    | gzip -c > $seeds
+python $bin/create_tags.py -v -l $len $region > $tags
+python $bin/find_seeds.py -v $tags $reads | gzip -c > $seeds
