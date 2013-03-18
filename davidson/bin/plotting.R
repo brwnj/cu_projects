@@ -21,9 +21,11 @@
 # dev.off()
 
 library(ggplot2)
-dt = read.table("~/projects/davidson/data/246_metadata.txt", header=TRUE)
-dt = read.table("~/projects/davidson/data/135_metadata.txt", header=TRUE)
+setwd("~/projects/davidson/data/20130314/")
+dte = read.table("246_metadata.txt", header=TRUE)
+dto = read.table("135_metadata.txt", header=TRUE)
 
+# plots for v region
 # bar plot
 p <- ggplot(dt, aes(v_region, fill=sample))
 # add the histogram
@@ -37,7 +39,7 @@ p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
 
 # average coverage
-ac <- ggplot(dt, aes(v_region, coverage, color=sample))
+ac <- ggplot(dt, aes(v_region, avg_coverage, color=sample))
 ac <- ac + geom_boxplot(alpha=0.3, position=position_dodge(), outlier.colour=NA)
 ac <- ac + theme_bw()
 ac <- ac + theme(axis.text.x = element_text(angle = 90, hjust = 1))
@@ -49,3 +51,12 @@ p <- p + geom_histogram(binwidth=1, aes(weight=percent_total_reads), position=po
 p <- p + theme_bw()
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
+
+# plots for j region
+# bar plot
+p <- ggplot(dte, aes(j_region, fill=sample))
+p <- p + geom_histogram(binwidth=2, position=position_dodge())
+p <- p + theme_bw()
+p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p
+
