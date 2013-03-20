@@ -21,15 +21,6 @@ QC
 Alignment
 ==============================================================================
 
-gsnap aligner info::
-
-    brownj at amc-tesla in ~/projects/pearson/results/20120816
-    $ gsnap --version
-    GSNAP version 2012-07-20 called with args: gsnap --version
-
-    GSNAP: Genomic Short Nucleotide Alignment Program
-
-
 Alignment stats
 ------------------------------------------------------------------------------
 
