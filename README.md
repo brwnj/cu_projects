@@ -15,32 +15,24 @@ sameple:total reads
 5:48097530
 6:42528694
 
++ comparisons between 1, 3, 5 included in metadata as fold change
++ also include the sequence
+
 #Hits-Clip; hg18
-* peter -- correlate microarray abundance to miRNA abundance levels
-    predicted network
-    miRNA9 high miRNA193 low
-    targets appear to be regulated by a given miRNA
-    do we see genes going up, down, etc...
-    erp+
-    contigency table
-            9   193
-    dead
-    alive
-    chi-square test
-    contigency table
-                    miRNA_high  miRNA_low
-    dead_outcome
-    alive_outcome
-    
-    * define which miRNAs are implicated in regulating estrogen and tamoxiphen
-    PK63 is tamoxiphen resistant
-
-    * from rnaseq data, overlap gene list in an effort to correlate the abundance
-    of hits-discovered networks to those same genes in the rnaseq set
-
 * continue getting PK samples through the pipeline
+* peter:
+
+    * define which miRNAs are implicated in regulating estrogen and tamoxifen (PK63 is tamoxiphen resistant)
+
+    * from rnaseq data(?), overlap gene list to correlate the abundance of 
+    hits-discovered networks to those same genes in the rnaseq set
 
 #Poly(A); hg18
+
+* rerun using all 5 samples
+* investigate counts as to why some may be over the UMI threshold
+* 61 and 62 through fisher
+
 * with and without umi mapped reads counts
 * for each gene, contigency table to run fishers exact test
             gene p1 p2 p3 p4
@@ -50,9 +42,13 @@ c3
 
 * testing gene level changes -- one condition versus one other
 * testing counts with and without umi -- does it make a difference?
-* can we run something faster like bowtie and get the same result as novoalign
 
 ### finding novel poly(a) sites
++ est libraries that polya primed
++ high confidence peaks at the 3' end of est as another class in addition to the other way
++ look near the annotated peak for new polya site
+
+
 * see paper from jay
 * compare for each site then for each gene
 * a[a,t]taaa
@@ -68,6 +64,9 @@ doesn't get you all possible peaks though...
 * conifer on different samples and compare to microarray data
 
 #Walter
+
+* qc microarray using expression console by nick
+* batch affects between the batches from a year ago to today -- see if brent knows a good package
 
 * of the reads that mapped to tb, map back to hg19 only the reads that fell in DE peaks
 * peak counts for all samples
