@@ -59,4 +59,3 @@ p <- p + geom_histogram(binwidth=2, position=position_dodge())
 p <- p + theme_bw()
 p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
 p
-
