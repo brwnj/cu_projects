@@ -16,16 +16,23 @@ sameple:total reads
 6:42528694
 
 + comparisons between 1, 3, 5 included in metadata as fold change
+                      2, 4, 6
 + also include the sequence
 
 #Hits-Clip; hg18
 * continue getting PK samples through the pipeline
 * peter:
+    * table of mir-9-5p to peter to see if there is a sample we can remove in order to get significant p
+        * send him the list and miR values
+
+    * look whether high mi9 networks correlate with their rnaseq
+    * of the nodes, pull out those genes, see if they're moving in the direction of expectation
+    * simple comparison of networks, maybe like a venn diagram
 
     * define which miRNAs are implicated in regulating estrogen and tamoxifen (PK63 is tamoxiphen resistant)
 
     * from rnaseq data(?), overlap gene list to correlate the abundance of 
-    hits-discovered networks to those same genes in the rnaseq set
+        hits-discovered networks to those same genes in the rnaseq set
 
 #Poly(A); hg18
 
