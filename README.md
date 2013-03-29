@@ -22,8 +22,13 @@ sameple:total reads
 #Hits-Clip; hg18
 * continue getting PK samples through the pipeline
 * peter:
-    * table of mir-9-5p to peter to see if there is a sample we can remove in order to get significant p
-        * send him the list and miR values
+
+high low samples for 9-5
+pull out high low of genes
+ar
+rar
+er
+ppar
 
     * look whether high mi9 networks correlate with their rnaseq
     * of the nodes, pull out those genes, see if they're moving in the direction of expectation
@@ -33,6 +38,7 @@ sameple:total reads
 
     * from rnaseq data(?), overlap gene list to correlate the abundance of 
         hits-discovered networks to those same genes in the rnaseq set
+    * km plot from er+, get high and low on er+ only
 
 #Poly(A); hg18
 
@@ -72,14 +78,12 @@ doesn't get you all possible peaks though...
 
 #Walter
 
-* qc microarray using expression console by nick
-* batch affects between the batches from a year ago to today -- see if brent knows a good package
-
-* of the reads that mapped to tb, map back to hg19 only the reads that fell in DE peaks
-* peak counts for all samples
-* reads counts for all samples
-* average read length
-* average width of peaks being tested in DESeq
++ nick is going to make a pca to observe batch effects
++ pbmcset isn't working in the diff_probes
++ follow paper to determine how to best implement testing across groups
++ normalizing groups to normal's median for visualization
++ probe by probe u test; counts less than alpha
++ don't care about initial test, maybe just use ttest for now
 
 * form consensus peak file from infected only; give number of total regions
 * unafold to see nearby peaks form a stem-loop structure (http://www.idtdna.com/UNAFold)
