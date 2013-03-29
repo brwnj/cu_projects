@@ -10,7 +10,7 @@ def main(args):
     df = pd.io.parsers.read_csv(args.series_matrix, sep="\t")
     ilmn_ids = df.columns
     for ilmn_id in ilmn_ids:
-        if not ilmn_id.startswith("ILMN"): continue
+        if not ilmn_id.startswith("gene:"): continue
         df = df.sort(ilmn_id)
         for i, (k, v) in enumerate(df[ilmn_id].iteritems()):
             if i < (len(df) / 2):
