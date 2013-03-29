@@ -14,6 +14,23 @@ plotsurv <- function(fit, miR, ER, lty, names, p){
     dev.off()
 }
 
+# redoing stuff in order to get significant p-value
+# setwd("~/projects/hits-clip/data/20130328/")
+# df = read.table("mir9-erpos.txt", header=TRUE, row.names=1)
+# 
+# mir = "hsa-miR-9-5p__logrank"
+# fit = survfit(Surv(Time, Relapse)~miR.9.5, data=df, rho=0)
+# sdf = survdiff(Surv(Time, Relapse)~miR.9.5, data=df, rho=0)
+# sdf
+# p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+# plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
+# 
+# fit = survfit(Surv(Time, Relapse)~miR.9.5, data=df)
+# sdf = survdiff(Surv(Time, Relapse)~miR.9.5, data=df)
+# sdf
+# p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+# plotsurv(fit, mir, "neg", lty=1:2, c("low", "high"), p)
+
 # ILMN_3167194 = hsa-miR-9-3p
 mir = "hsa-miR-9-3p"
 fit = survfit(Surv(Time, Relapse)~ILMN_3167194, data=erpos)
@@ -32,6 +49,20 @@ plotsurv(fit, mir, "neg", lty=1:2, c("low", "high"), p)
 mir = "hsa-miR-9-5p"
 fit = survfit(Surv(Time, Relapse)~ILMN_3167447, data=erpos)
 sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447, data=erpos)
+sdf
+p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
+
+fit = survfit(Surv(Time, Relapse)~ILMN_3167447, data=erneg)
+sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447, data=erneg)
+sdf
+p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+plotsurv(fit, mir, "neg", lty=1:2, c("low", "high"), p)
+
+# again but with log-rank
+mir = "hsa-miR-9-5p__petopeto"
+fit = survfit(Surv(Time, Relapse)~ILMN_3167447, data=erpos)
+sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447, data=erpos, rho=1)
 sdf
 p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
 plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
@@ -131,3 +162,44 @@ sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168282 + ILMN_3167787, d
 sdf
 p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
 plotsurv(fit, mir, "neg", lty=1:8, names, p)
+
+
+# 20130328
+setwd("~/projects/hits-clip/data/20130328/")
+df = read.table("ditzel_highlow.txt", header=TRUE, row.names=1, na.strings="", sep="\t")
+
+attach(df)
+
+# plotsurv <- function(fit, miR, lty, names, p){
+#     pdf(paste0(miR, ".pdf"), width=6, height=8)
+#     plot(fit, lty=lty, mark.time=TRUE)
+#     legend(.1, .1, names, lty=lty)
+#     title(main=miR, sub=paste('p =', p), xlab="Time to Relapse")
+#     dev.off()
+# }
+# 
+# mir <- "Ditzel__hsa-miR-9-5p"
+# names <- c("low", "high")
+# fit <- survfit(Surv(timerec, relapse)~hsa.miR.9.5p, data=df)
+# sdf <- survdiff(Surv(timerec, relapse)~hsa.miR.9.5p, data=df)
+# sdf
+# p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+# plotsurv(fit, mir, lty=1:2, names, p)
+
+df = read.table("combined_erpos.txt", header=TRUE, row.names=1, sep="\t")
+attach(df)
+
+plotsurv <- function(fit, miR, ER, lty, names, p){
+    pdf(paste0(miR, "__", ER, ".pdf"), width=6, height=8)
+    plot(fit, lty=lty, mark.time=TRUE)
+    legend(.1, .1, names, lty=lty)
+    title(main=paste0(miR, " (ER ", ER, ")"), sub=paste('p =', p), xlab="Time to Relapse")
+    dev.off()
+}
+
+mir = "combined_all_hsa-miR-9-5p"
+fit = survfit(Surv(Time, Relapse)~hsa.miR.9.5p, data=df)
+sdf = survdiff(Surv(Time, Relapse)~hsa.miR.9.5p, data=df)
+sdf
+p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
