@@ -19,16 +19,29 @@ sameple:total reads
                       2, 4, 6
 + also include the sequence
 
+condense the sequence into the most minimal
+sort of kind of need trees
+imgt cdr region lookup does it come up with fr-imgt
+v-quest
+
 #Hits-Clip; hg18
+
+PK61-PK63 the last run
+++ still need to be run!
+heatmap of all miRNA
+
+visualize all data to pick miRs to order
+trying to find which are different across datasets
+
+new plots of combinations without the clutter -- only plot h-h-h l-l-l
+++ not possible
+
+try chi-square per gene to see if you can find distributions that are not 50:50
+also note which way they are skewed
+
+
 * continue getting PK samples through the pipeline
 * peter:
-
-high low samples for 9-5
-pull out high low of genes
-ar
-rar
-er
-ppar
 
     * look whether high mi9 networks correlate with their rnaseq
     * of the nodes, pull out those genes, see if they're moving in the direction of expectation
