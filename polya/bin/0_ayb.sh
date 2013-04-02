@@ -14,18 +14,19 @@ set -o nounset -o errexit -o pipefail -x
 source $HOME/projects/polya/bin/config.sh
 
 # leaving this because sometimes there are multiple lanes
-lane=3
+lane=5
+date=20130402
 
 # 50 bp
-# bs=R6I14C36
+bs=R6I14C36
 # 100 bp
-bs=R6I14C86
+# bs=R6I14C86
 # Expected folder structure:
 # $HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
-cifs=$HOME/projects/polya/data/20130305
+cifs=$HOME/projects/polya/data/$date
 # to ensure proper tiles
 cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
-fastq=$cifs/20130226_L00${lane}.fastq.gz
+fastq=$cifs/${date}_L00${lane}.fastq.gz
 barcodes=$cifs/barcodes.txt
 
 jobids=""
@@ -62,4 +63,4 @@ rm $cifs/?_?_*.fastq
 # demultiplex
 fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq
 # leaving unmatched.fq for troubleshooting
-gzip $DATA/*.fq
+gzip -f $DATA/*.fq
