@@ -36,6 +36,7 @@ stats=$results/$sample.alignment.txt
 
 # align the reads
 if [[ ! -f $umibam ]]; then
+    # just map the reads; no iterative trimming
     novoalign -d $NOVOIDX -f $fastq -o SAM -n 50 -r None -c 12 -k \
         2> $stats \
         | samtools view -ShuF4 - \
