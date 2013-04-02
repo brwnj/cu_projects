@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-22]
+#BSUB -J align[1-27]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -22,7 +22,7 @@ unprocessed_fastq=$DATA/$sample.fq.gz
 fastq=$DATA/$sample.umi.fq.gz
 # trim the UMI
 if [[ ! -f $fastq ]]; then
-    umitools trim $unprocessed_fastq NNNNNV | gzip -c > $fastq
+    umitools trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
 fi
 
 results=$RESULT/$sample
@@ -47,7 +47,7 @@ if [[ ! -f $umibam ]]; then
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    umitools rmdup $umibam $bam
+    umitools rmdup $umibam $bam $UMI
     samtools index $bam
     # create bw
     bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
