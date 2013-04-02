@@ -203,3 +203,8 @@ sdf = survdiff(Surv(Time, Relapse)~hsa.miR.9.5p, data=df)
 sdf
 p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
 plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
+
+# playing with binomial test for genes that are regulated by miR
+fail <- 53 + (105 - 51)
+success <- (105 - 53) + 51
+binom.test(c(107,103), p=0.5)
