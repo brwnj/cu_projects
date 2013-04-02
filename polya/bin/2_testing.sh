@@ -25,5 +25,5 @@ for strand in pos neg; do
     bgb=$RESULT/$sampleb/$sampleb.$strand.bedgraph.gz
     test_result=$RESULT/ac_fisher/${samplea}_${sampleb}.$strand.txt
 
-    python $BIN/polyac.py $REFBED $bga $bgb > $test_result
+    polyac.py $REFBED $bga $bgb > $test_result
 done
