@@ -1,5 +1,6 @@
 #Davidson; Human; T-Cell repertoire
 
+```
 1alpha
 2beta
 3alpha
@@ -14,15 +15,9 @@ sameple:total reads
 4:61373826
 5:48097530
 6:42528694
+```
 
-+ comparisons between 1, 3, 5 included in metadata as fold change
-                      2, 4, 6
-+ also include the sequence
-
-condense the sequence into the most minimal
-sort of kind of need trees
-imgt cdr region lookup does it come up with fr-imgt
-v-quest
++ imgt cdr region lookup does it come up with fr-imgt
 
 #Hits-Clip; hg18
 
