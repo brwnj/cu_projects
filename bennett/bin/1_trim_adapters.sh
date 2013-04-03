@@ -21,5 +21,7 @@ r2=$READS/${sample}_R2.filtered.fastq.gz
 r1trimmed=$READS/${sample}_R1.filtered.trimmed.fastq
 r2trimmed=$READS/${sample}_R2.filtered.trimmed.fastq
 
-python $BIN/trim_adapters.py $r1 $r2 $R1PRIMERS $R2PRIMERS $r1trimmed $r2trimmed
-gzip $r1trimmed $r2trimmed
+if [[ ! -f $r1trimmed.gz ]]; then
+    python $BIN/trim_adapters.py $r1 $r2 $R1PRIMERS $R2PRIMERS $r1trimmed $r2trimmed
+    gzip $r1trimmed $r2trimmed
+fi
