@@ -20,6 +20,8 @@ r2=$READS/${sample}_R2.fastq.gz
 r1filtered=$READS/${sample}_R1.filtered.fastq
 r2filtered=$READS/${sample}_R2.filtered.fastq
 
-# output written to same dir as r1 and r2; includes "filtered" in name
-python $BIN/filter_pairs.py $r1 $r2
-gzip $r1filtered $r2filtered
+if [[ ! -f $r1filtered ]]; then
+    # output written to same dir as r1 and r2; includes "filtered" in name
+    python $BIN/filter_pairs.py $r1 $r2
+    gzip $r1filtered $r2filtered
+fi
