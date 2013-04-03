@@ -133,10 +133,18 @@ plotsurv(fit, mir, "neg", lty=1:2, c("low", "high"), p)
 mir = "hsa-miR-9-5p_hsa-miR-193a-3p"
 names=c("low-low", "low-high", "high-low", "high-high")
 fit = survfit(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168366, data=erpos)
-sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168366, data=erpos)
+sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168366, data=erpos, rho=1)
 sdf
 p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
 plotsurv(fit, mir, "pos", lty=1:4, names, p)
+
+# trying to plot only h-h and l-l
+fit
+plot(fit, lty=1:4)
+legend('bottomleft', names, lty=1:4)
+title(main=paste0(miR, " (ER ", ER, ")"), sub=paste('p =', p), xlab="Time to Relapse")
+
+
 
 fit = survfit(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168366, data=erneg)
 sdf = survdiff(Surv(Time, Relapse)~ILMN_3167447 + ILMN_3168366, data=erneg)
@@ -207,4 +215,5 @@ plotsurv(fit, mir, "pos", lty=1:2, c("low", "high"), p)
 # playing with binomial test for genes that are regulated by miR
 fail <- 53 + (105 - 51)
 success <- (105 - 53) + 51
+
 binom.test(c(107,103), p=0.5)
