@@ -1,16 +1,16 @@
 library(survival)
-setwd("~/projects/hits-clip/data/20130322/")
-df = read.table("fixed_matrix.txt", header=TRUE, row.names=1)
+setwd("~/projects/hits-clip/data/20130404/")
+df = read.table("GSE22216_highlow.txt", header=TRUE, row.names=1)
 
 attach(df)
-erpos = df[df$ER==1,]
-erneg = df[df$ER==1,]
+# erpos = df[df$ER==1,]
+# erneg = df[df$ER==1,]
 
-plotsurv <- function(fit, miR, ER, lty, names, p){
-    pdf(paste0(miR, "__", ER, ".pdf"), width=6, height=8)
+plotsurv <- function(fit, miR, lty, names, p){
+    pdf(paste0(miR, ".pdf"), width=6, height=8)
     plot(fit, lty=lty, mark.time=TRUE)
-    legend(.1, .1, names, lty=lty)
-    title(main=paste0(miR, " (ER ", ER, ")"), sub=paste('p =', p), xlab="Time to Relapse")
+    legend('bottomleft', names, lty=lty)
+    title(main=miR, sub=paste('p =', p), xlab="Time to Relapse")
     dev.off()
 }
 
@@ -217,3 +217,54 @@ fail <- 53 + (105 - 51)
 success <- (105 - 53) + 51
 
 binom.test(c(107,103), p=0.5)
+
+
+# 20130404 working on new miRs and clusters
+library(survival)
+setwd("~/projects/hits-clip/data/20130404/")
+df = read.table("GSE22216_highlow.txt", header=TRUE, row.names=1)
+attach(df)
+
+# plot(fit[1], col="blue", conf.int=FALSE)
+# lines(fit[2], col="red")
+# colors=c("blue", "red")
+# names=c("low","high")
+# 
+# mir = "hsa-miR-9-5p"
+# fit = survfit(Surv(Time, Relapse)~hsa.miR.9.5p)
+# sdf = survdiff(Surv(Time, Relapse)~hsa.miR.9.5p, rho=1)
+# sdf
+# p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+# pdf(paste0(mir, ".pdf"), width=6, height=8)
+# plot(fit, col=colors)
+# legend('bottomleft', names, col=colors, lty=c(1,1), lwd=c(2,2))
+# title(main=mir, sub=paste('p =', p), xlab="Time")
+# dev.off()
+
+#single mir plot
+single_mir <- function(df, mir){
+    colors=c("blue", "red")
+    names=c("low","high")
+    fit = survfit(as.formula(paste0("Surv(Time, Relapse)~",mir)))
+    sdf = survdiff(as.formula(paste0("Surv(Time, Relapse)~",mir)), rho=1)
+    # sdf
+    p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+    pdf(paste0(mir, ".pdf"), width=6, height=8)
+    plot(fit, col=colors)
+    legend('bottomleft', names, col=colors, lty=c(1,1), lwd=c(2,2))
+    title(main=mir, sub=paste('p =', p), xlab="Time")
+    dev.off()
+}
+
+single_mir(df, "hsa.miR.9.5p")
+single_mir(df, "hsa.miR.9.3p")
+single_mir(df, "hsa.miR.193b.3p")
+single_mir(df, "hsa.miR.193a.3p")
+single_mir(df, "hsa.miR.221.3p")
+single_mir(df, "hsa.miR.34a.5p")
+single_mir(df, "hsa.miR.18a.5p")
+single_mir(df, "hsa.miR.19a.3p")
+
+mir = "hsa-miR-9-5p_hsa-miR-18a-5p_hsa-miR-19a-3p"
+
+
