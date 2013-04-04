@@ -263,8 +263,56 @@ single_mir(df, "hsa.miR.193a.3p")
 single_mir(df, "hsa.miR.221.3p")
 single_mir(df, "hsa.miR.34a.5p")
 single_mir(df, "hsa.miR.18a.5p")
-single_mir(df, "hsa.miR.19a.3p")
+single_mir(df, "hsa.miR.19b.3p")
 
-mir = "hsa-miR-9-5p_hsa-miR-18a-5p_hsa-miR-19a-3p"
+many_mirs <- function(df, mirs){
+    colors <- c("blue", "red")
+    names <- c("all low", "all high")
+    fit <- survfit(as.formula(paste("Surv(Time, Relapse)~",paste(mirs, collapse="+"))))
+    sdf <- survdiff(as.formula(paste("Surv(Time, Relapse)~",paste(mirs, collapse="+"))), rho=0)
+    p <- 1 - pchisq(sdf$chisq, length(sdf$n) - 1)
+    pdf(paste0(paste(mirs, collapse="_"), ".pdf"), width=6, height=8)
+    plot(fit[1], col="blue", conf.int=FALSE)
+    lines(fit[length(fit$n)], col="red")
+    legend('bottomleft', names, col=colors, lty=c(1,1), lwd=c(2,2))
+    title(main=paste(mirs, collapse=" "), sub=paste('p =', p), xlab="Time")
+    dev.off()
+}
 
+many_mirs(df, c("hsa.miR.18a.5p", "hsa.miR.19b.3p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.18a.5p", "hsa.miR.19b.3p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.193a.3p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.18a.5p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.19b.3p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.221.3p"))
+many_mirs(df, c("hsa.miR.9.5p", "hsa.miR.221.3p", "hsa.miR.18a.5p", "hsa.miR.19b.3p"))
 
+xlabs = "Time"
+ylabs = "Survival Probability"
+xlims = c(0,max(fit$time))
+ylims = c(0,1)
+
+times <- seq(0, max(fit$time), by = 1)
+subs1 <- 1:length(levels(summary(fit)$strata))
+subs2 <- 1:length(summary(fit,censored=T)$strata)
+subs3 <- 1:length(summary(fit,times = times,extend = TRUE)$strata)
+
+gdf <- data.frame(
+    time = fit$time[subs2],
+    n.risk = fit$n.risk[subs2],
+    n.event = fit$n.event[subs2],
+    surv = fit$surv[subs2],
+    strata = factor(summary(fit, censored=TRUE)$strata[subs2]),
+    upper = fit$upper[subs2],
+    lower = fit$lower[subs2]
+)
+
+p <- ggplot(gdf, aes(time, surv)) +
+    geom_step(aes(color=strata)) +
+    scale_color_manual(values=c("blue", "red"))
+    scale_color_hue(breaks=levels(gdf$strata), labels=c("Low", "High")) + 
+    xlab("Time") +
+    ylab("Survival Probability") + 
+    ggtitle(mir) + 
+    theme_bw()
+p
