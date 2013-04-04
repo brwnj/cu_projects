@@ -12,10 +12,10 @@ from rpy2.robjects.packages import importr
 stats = importr('stats')
 
 def main(args):
-# stats.binom_test(c(success, fail))
     df = pd.io.parsers.read_table(args.highlow, header=0)
-    
-    for gene in args.genes.split(","):
+    genes = df.columns
+    for gene in genes:
+        if gene.endswith("_notest") or gene.startswith("hsa"): continue
         success = 0
         fail = 0
         for key, row in df.iterrows():
@@ -44,5 +44,4 @@ if __name__ == '__main__':
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("highlow", help="series matrix already converted to 1/0")
     p.add_argument("miR", help="miR to use -- must be same as header")
-    p.add_argument("genes", help="comma separated list of genes to test -- must be same as header")
     main(p.parse_args())
