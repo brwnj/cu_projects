@@ -21,6 +21,13 @@ sameple:total reads
 
 #Hits-Clip; hg18
 
+miR-221-3p and binomial testing across genes
+some more genes will be emailed from peter
+
+17-92 cluster with miR-9-etc curve through medcalc
+and miR-9 through medcalc
+try 18a and 19a alone to see if it needs 9-5p to be significant
+
 PK61-PK63 the last run
 ++ still need to be run!
 heatmap of all miRNA
