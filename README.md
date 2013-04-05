@@ -1,3 +1,18 @@
+#Jones
+
+rad-tag umi
+
+r1
+[UMIUMIUM][CRAP][READREADREAD...][CRAP]
+r2
+[CRAP][READREADREAD...]
+
+per UMI, take most abundant sequence
+
+sort r1 by sequence
+convert back to fastq
+interweave r2 by read name
+
 #Davidson; Human; T-Cell repertoire
 
 ```
