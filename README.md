@@ -103,7 +103,7 @@ doesn't get you all possible peaks though...
 
 + nick is going to make a pca to observe batch effects
 + pbmcset isn't working in the diff_probes
-+ follow paper to determine how to best implement testing across groups
++ follow paper to determine how to best implement testing across groups; ttest, mann u, etc.
 + normalizing groups to normal's median for visualization
 + probe by probe u test; counts less than alpha
 + don't care about initial test, maybe just use ttest for now
