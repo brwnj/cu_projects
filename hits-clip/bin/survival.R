@@ -310,7 +310,7 @@ gdf <- data.frame(
 p <- ggplot(gdf, aes(time, surv)) +
     geom_step(aes(color=strata)) +
     scale_color_manual(values=c("blue", "red"))
-    scale_color_hue(breaks=levels(gdf$strata), labels=c("Low", "High")) + 
+#     scale_color_hue(breaks=levels(gdf$strata), labels=c("Low", "High")) + 
     xlab("Time") +
     ylab("Survival Probability") + 
     ggtitle(mir) + 
