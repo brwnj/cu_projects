@@ -18,8 +18,8 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 r1=$READS/${sample}_R1.filtered.trimmed.fastq.gz
 r2=$READS/${sample}_R2.filtered.trimmed.fastq.gz
 results=$RESULTS/$sample
-r1out=$results/${sample}_R1.joined.fastq.gz
-r2out=$results/${sample}_R2.joined.fastq.gz
+r1out=$results/${sample}_R1.notjoined.fastq.gz
+r2out=$results/${sample}_R2.notjoined.fastq.gz
 joined=$results/$sample.joined.fastq.gz
 
 if [[ ! -d $results ]]; then
