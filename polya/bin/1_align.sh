@@ -44,12 +44,12 @@ if [[ ! -f $umibam ]]; then
         > $umibam
     samtools index $umibam
     # create bw
-    bam2bw.sh $umibam $CHROM_SIZES $PROJECTID TRUE
+    bam2bw $umibam $CHROM_SIZES $PROJECTID TRUE
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
     umitools rmdup $umibam $bam $UMI
     samtools index $bam
     # create bw
-    bam2bw.sh $bam $CHROM_SIZES $PROJECTID TRUE 
+    bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
 fi
