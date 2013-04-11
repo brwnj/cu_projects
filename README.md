@@ -1,89 +1,23 @@
-#Jones
-
-rad-tag umi
-
-r1
-[UMIUMIUM][CRAP][READREADREAD...][CRAP]
-r2
-[CRAP][READREADREAD...]
-
-per UMI, take most abundant sequence
-
-sort r1 by sequence
-convert back to fastq
-interweave r2 by read name
-
 #Davidson; Human; T-Cell repertoire
 
-```
-1alpha
-2beta
-3alpha
-4beta
-5alpha and 
-6beta were spiked with some known sequence
-
-sameple:total reads
-1:51307090
-2:45512106
-3:38216696
-4:61373826
-5:48097530
-6:42528694
-```
-
-+ imgt cdr region lookup does it come up with fr-imgt
++ awaiting reply email
 
 #Hits-Clip; hg18
 
 PK61-PK63 the last run
 ++ still need to be run!
-heatmap of all miRNA
-
-visualize all data to pick miRs to order
-trying to find which are different across datasets
-
-new plots of combinations without the clutter -- only plot h-h-h l-l-l
-++ not possible
-
-try chi-square per gene to see if you can find distributions that are not 50:50
-also note which way they are skewed
-
-
-* continue getting PK samples through the pipeline
-* peter:
-
-    * look whether high mi9 networks correlate with their rnaseq
-    * of the nodes, pull out those genes, see if they're moving in the direction of expectation
-    * simple comparison of networks, maybe like a venn diagram
-
-    * define which miRNAs are implicated in regulating estrogen and tamoxifen (PK63 is tamoxiphen resistant)
-
-    * from rnaseq data(?), overlap gene list to correlate the abundance of 
-        hits-discovered networks to those same genes in the rnaseq set
-    * km plot from er+, get high and low on er+ only
 
 #Poly(A); hg18
 
-* rerun using all 5 samples
-* investigate counts as to why some may be over the UMI threshold
-* 61 and 62 through fisher
-
-* with and without umi mapped reads counts
-* for each gene, contigency table to run fishers exact test
-            gene p1 p2 p3 p4
-c1
-c2
-c3
-
-* testing gene level changes -- one condition versus one other
-* testing counts with and without umi -- does it make a difference?
++ alias bkill
++ classifying peaks
++ run fisher test on new sample pairs
 
 ### finding novel poly(a) sites
+
 + est libraries that polya primed
 + high confidence peaks at the 3' end of est as another class in addition to the other way
 + look near the annotated peak for new polya site
-
 
 * see paper from jay
 * compare for each site then for each gene
@@ -92,21 +26,22 @@ if 8 or more As follow the 3 As, class 2
 class one has fewer than 8 As after that stretch
 * classifying the other groups (3, 4) -- call peaks and classify
 
-could just call peaks, remove those within 50 bp from known polya sites
-filter out peaks without characterization or around long stretches of As
-doesn't get you all possible peaks though...
+category
+1   has A[A,T]TAAA; NOT A-rich downstream from this cleavage site
+2   has A[A,T]TAAA; with A-rich sequence downstream
+3   lacks A[A,T]TAAA; no A-rich region downstream
+4   only downstream A-rich sequence
+
+100 bp from known polya sites
+
+filter out peaks with less than 10 reads of support
+canonical PAS should be found in -10 to -30 of the cleavage site
+no more than three canonical PAS should be located in the upstream window
 
 #Tamim
 * conifer on different samples and compare to microarray data
 
 #Walter
-
-+ nick is going to make a pca to observe batch effects
-+ pbmcset isn't working in the diff_probes
-+ follow paper to determine how to best implement testing across groups; ttest, mann u, etc.
-+ normalizing groups to normal's median for visualization
-+ probe by probe u test; counts less than alpha
-+ don't care about initial test, maybe just use ttest for now
 
 * form consensus peak file from infected only; give number of total regions
 * unafold to see nearby peaks form a stem-loop structure (http://www.idtdna.com/UNAFold)
@@ -123,7 +58,6 @@ chr1:1000273-1000313	hg18_ensGene_ENST00000321300	100.00	15	0	0	13	27	710	724	0.
 chr1:1000273-1000313	hg18_ensGene_ENST00000405804	100.00	15	0	0	22	36	1229	1243	0.92	30.2
 chr1:1000273-1000313	hg18_ensGene_ENST00000400772	94.44	18	1	0	14	31	745	762	3.6	28.2
 chr1:1000273-1000313	hg18_ensGene_ENST00000309965	100.00	14	0	0	16	29	129	116	3.6	28.2
-
 
 #Novoalign
 
@@ -171,3 +105,8 @@ novoindex mm9.mrna.novoidx refFlatRad45Num60kMin10Splices.fasta.gz refFlatRad45N
 align
 
 parse alignment
+
+#A5
+
+had to remove check for phred64, tis not working
+replaced idba with idba_ud in ngopt/bin
