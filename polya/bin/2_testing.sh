@@ -15,15 +15,17 @@ set -o nounset -o pipefail -o errexit -x
 
 source $HOME/projects/polya/bin/config.sh
 
-comparisona=(MP54 MP54 MP54 MP54 MP55 MP55 MP55 MP56 MP56 MP57)
-comparisonb=(MP55 MP56 MP57 MP58 MP56 MP57 MP58 MP57 MP58 MP58)
+# comparisona=(MP54 MP54 MP54 MP54 MP55 MP55 MP55 MP56 MP56 MP57)
+# comparisonb=(MP55 MP56 MP57 MP58 MP56 MP57 MP58 MP57 MP58 MP58)
+comparisona=(MP59 MP59 MP59 MP59 MP60 MP60 MP60 MP61 MP61 MP62)
+comparisonb=(MP60 MP61 MP62 MP63 MP61 MP62 MP63 MP62 MP63 MP63)
 samplea=${comparisona[$(($LSB_JOBINDEX - 1))]}
 sampleb=${comparisonb[$(($LSB_JOBINDEX - 1))]}
 
 for strand in pos neg; do
     bga=$RESULT/$samplea/$samplea.$strand.bedgraph.gz
     bgb=$RESULT/$sampleb/$sampleb.$strand.bedgraph.gz
-    test_result=$RESULT/ac_fisher/${samplea}_${sampleb}.$strand.txt
+    test_result=$RESULT/testing_results/${samplea}_${sampleb}.$strand.txt
 
-    polyac.py $REFBED $bga $bgb > $test_result
+    python $BIN/polyac.py $REFBED $bga $bgb > $test_result
 done
