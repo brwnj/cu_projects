@@ -6,6 +6,6 @@ NOVOIDX=$HOME/projects/hits-clip/data/common/novoalign/hg18
 RESULT=$HOME/projects/polya/results/common
 DATA=$HOME/projects/polya/data/common
 CHROM_SIZES=$HOME/ref/hg18/hg18.sizes
-BIN=$HOME/projects/polya/bin
+BIN=$HOME/devel/worktils
 REFBED=$DATA/polya_3utr_slop.bed
 UMI=NNNNNV
