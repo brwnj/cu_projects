@@ -18,6 +18,7 @@ filter out peaks with less than 10 reads of support
 canonical PAS should be found in -10 to -30 range of the cleavage site
 no more than three canonical PAS should be located in the upstream window
 chr6:90,095,714-90,096,087
+chr13:45,447,283-45,448,282 -- need 4 separate peaks here!
 """
 
 __version__ = "0.1"
@@ -26,44 +27,70 @@ import os
 import sys
 import tempfile
 import subprocess as sp
-from toolshed import nopen
+from toolshed import reader
 
-def get_summit(bed, bam, sizes):
+def summit_start(starts, counts):
+    """finds max position of starts given counts.
+    
+    >>> summit_start("20217423,20217424,20217425,20217426", "1,2,33,18")
+    (20217425, 33)
     """
-    peaks have no strand info, so it may be best to recount w/o respect to strand
-    """
-    print >>sys.stderr, "getting counts"
-    # tmp = tempfile.mkstemp(suffix=".count")[1]
-    tmp = "tempsummit.bed"
-    cmd = "bedtools genomecov -bg -5 -ibam %s -g %s | \
-                bedtools map -a %s -b - -c 4 -o max > %s" % \
-                (bam, sizes, bed, tmp)
+    starts = map(int, starts.split(","))
+    counts = map(int, counts.split(","))
+    summit_height = max(counts)
+    return starts[counts.index(summit_height)], summit_height
+
+def get_counts(bam):
+    # tmp = tempfile.mkstemp(suffix=".bedgraph")[1]
+    tmp = "tempcov.bedgraph"
+    cmd = "bedtools genomecov -bg -5 -ibam %s > %s" % (bam, tmp)
     sp.call(cmd, shell=True)
     return tmp
 
-def add_slop(bed, sizes, slop):
-    """adds slop to bed entries. returns temp file name."""
+def get_summits(bed, bedgraph):
+    """
+    peaks have no strand info, so it may be best to recount w/o respect to strand
+    """
     # tmp = open(tempfile.mkstemp(suffix=".bed")[1], 'w')
-    print >>sys.stderr, "adding slop to summit"
-    tmp = open("tempslop.bed", 'w')
-    cmd = "|bedtools slop -b %d -i %s -g %s" % (slop, bed, sizes)
-    tmp.write("".join([line for line in nopen(cmd)]))
+    tmp = open("tmp_summits.bed", 'w')
+    cmd = "|bedtools map -c 2 -o collapse -a %s -b %s |\
+                 bedtools map -c 4 -o collapse -a - -b %s" % \
+                 (bed, bedgraph, bedgraph)
+    res = ["chr", "start", "stop", "name", "q", "starts", "counts"]
+    for l in reader(cmd, header=res):
+        # peak shifting isn't perfect so you'll get some peaks
+        # where no reads overlap. those peaks typically have very few reads, so
+        # just filter them out.
+        if l['starts'] == ".":
+            continue
+        start, height = summit_start(l['starts'], l['counts'])
+        fields = [l['chr'], start, start + 1, l['name'], l['q'], height]
+        tmp.write("\t".join(map(str, fields)) + "\n")
     tmp.close()
     return tmp.name
 
+def add_slop(bed, sizes, slop):
+    """adds slop to bed entries. returns temp file name."""
+    # tmp = tempfile.mkstemp(suffix=".bed")[1]
+    tmp = "tempslop.bed"
+    cmd = "bedtools slop -b %d -i %s -g %s > %s" % (slop, bed, sizes, tmp)
+    sp.call(cmd, shell=True)
+    return tmp
+
 def classify_peaks(bed):
-    """bed file represents summit locations."""
+    """not sure yet"""
     # first need to add the slop to the summits bed
     # need the sequences for these regions
     pass
 
 def main(args):
-    # summits is bullshit
-    # find the highest point of the peak; aka THE SUMMIT!
-    # summit_tmp = get_summit(args.bed, args.bam, args.sizes)
-    summit_tmp = "tempsummit.bed"
-    # bed to larger regions
-    slop_tmp = add_slop(args.bed, args.sizes, args.wsize)
+    print >>sys.stderr, ">> getting counts"
+    counts_tmp = get_counts(args.bam)
+    print >>sys.stderr, ">> locating summit per peak"
+    summit_tmp = get_summits(args.bed, counts_tmp)
+    print >>sys.stderr, ">> adding slop to summits"
+    slop_tmp = add_slop(summit_tmp, args.sizes, args.wsize)
+    print >>sys.stderr, ">> retrieving peak sequences"
     # os.remove(slop_tmp)
     # larger regions to fasta
     # classify the lines of the fasta
