@@ -1,33 +1,21 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-have peaks bed
-data in the genomedata archive is coming from bedgraphs where counts were
+Classify called peaks into categories as described Wang et al.:
+http://rnajournal.cshlp.org/content/19/3/413.long
 
-for each summit; grab 100 nt upstream
-
-category
 1   has A[A,T]TAAA; NOT A-rich downstream from this cleavage site
 2   has A[A,T]TAAA; with A-rich sequence downstream
 3   lacks A[A,T]TAAA; no A-rich region downstream
 4   only downstream A-rich sequence
-
-100 bp from known polya sites
-
-filter out peaks with less than 10 reads of support
-canonical PAS should be found in -10 to -30 range of the cleavage site
-no more than three canonical PAS should be located in the upstream window
-chr6:90,095,714-90,096,087
-chr13:45,447,283-45,448,282 -- need 4 separate peaks here!
 """
-
-__version__ = "0.1"
-
 import os
 import sys
 import tempfile
 import subprocess as sp
 from toolshed import reader
+
+__version__ = "0.1"
 
 def summit_start(starts, counts):
     """finds max position of starts given counts.
@@ -41,18 +29,17 @@ def summit_start(starts, counts):
     return starts[counts.index(summit_height)], summit_height
 
 def get_counts(bam):
-    # tmp = tempfile.mkstemp(suffix=".bedgraph")[1]
-    tmp = "tempcov.bedgraph"
+    """runs bedtools genomecov. returns file name."""
+    tmp = tempfile.mkstemp(suffix=".bedgraph")[1]
     cmd = "bedtools genomecov -bg -5 -ibam %s > %s" % (bam, tmp)
     sp.call(cmd, shell=True)
     return tmp
 
 def get_summits(bed, bedgraph):
+    """peaks have no strand info, so it may be best to recount w/o respect to
+    strand
     """
-    peaks have no strand info, so it may be best to recount w/o respect to strand
-    """
-    # tmp = open(tempfile.mkstemp(suffix=".bed")[1], 'w')
-    tmp = open("tmp_summits.bed", 'w')
+    tmp = open(tempfile.mkstemp(suffix=".bed")[1], 'w')
     cmd = "|bedtools map -c 2 -o collapse -a %s -b %s |\
                  bedtools map -c 4 -o collapse -a - -b %s" % \
                  (bed, bedgraph, bedgraph)
@@ -70,31 +57,118 @@ def get_summits(bed, bedgraph):
     return tmp.name
 
 def add_slop(bed, sizes, slop):
-    """adds slop to bed entries. returns temp file name."""
-    # tmp = tempfile.mkstemp(suffix=".bed")[1]
-    tmp = "tempslop.bed"
+    """adds slop to bed entries. returns file name."""
+    tmp = tempfile.mkstemp(suffix=".bed")[1]
     cmd = "bedtools slop -b %d -i %s -g %s > %s" % (slop, bed, sizes, tmp)
     sp.call(cmd, shell=True)
     return tmp
 
-def classify_peaks(bed):
-    """not sure yet"""
-    # first need to add the slop to the summits bed
-    # need the sequences for these regions
-    pass
+def get_seqs(fasta, bed):
+    """retrieves sequence in tab delimited file. returns file name."""
+    tmp = tempfile.mkstemp(suffix=".txt")[1]
+    cmd = "bedtools getfasta -tab -name -fi %s -bed %s -fo %s" % (fasta, bed, tmp)
+    sp.call(cmd, shell=True)
+    return tmp
+
+def seqs_to_dict(seqs):
+    """name:sequence. returns dict."""
+    d = {}
+    for l in reader(seqs, header=["name","seq"]):
+        d[l['name']] = l['seq']
+    return d
+
+def append_seqs(peaks, seqs):
+    """takes tab delim seqs and appends seq column onto peak regions. output is
+    written to a file. returns file name.
+    """
+    tmp = open(tempfile.mkstemp(suffix=".txt")[1], 'w')
+    seqs = seqs_to_dict(seqs)
+    res = ["chr", "start", "stop", "name", "q", "count"]
+    for l in reader(peaks, header=res):
+        seq = seqs[l['name']].upper()
+        fields = [l[i] for i in res] + [seq]
+        tmp.write("\t".join(fields) + "\n")
+    return tmp.name
+
+def peak_category(seq, a_region_size, a_ratio):
+    """determine the category of the peak. returns category as string.
+    
+    >>> peak_category("TTAAATAAATCTTCCTTTTAATTACTGGAAAAAATCTATTTT", 10, .75)
+    '1'
+    >>> peak_category("TTAAATAAATCTTCCTTTTAAAAAAAGGAAAAAATCTATTTT", 10, .75)
+    '2'
+    >>> peak_category("TTAAAGAAATCTTCCTTTTAGTATCTGGAAGCAATCTATTTT", 10, .75)
+    '3'
+    >>> peak_category("TTAAAGAAATCTTCCTTTTAAAAAAAGGAAAAAATCTATTTT", 10, .75)
+    '4'
+    """
+    canonical = ['AATAAA', 'ATTAAA']
+    half_len = len(seq) / 2
+    up = seq[:half_len]
+    down = seq[half_len + 1:]
+    found_pas = False
+    found_arich = False
+    # no more than three canonical PAS located in the upstream window
+    pas_count = 0
+    for pas in canonical:
+        pas_count += up.count(pas)
+    if pas_count > 3:
+            return False
+    # has A[A,T]TAAA
+    for pas in canonical:
+        if up.find(pas) != -1:
+            # canonical PAS should be in -10 to -30 range of the cleavage site
+            # can implement this later
+            found_pas = True
+            break
+    # A-rich sequence downstream
+    a_counts = down[:a_region_size].count("A")
+    if a_counts > 0:
+        a_content = a_counts / float(a_region_size)
+        if a_content > a_ratio:
+            found_arich = True
+    # return the category
+    if found_pas and not found_arich:
+        return "1"
+    if found_pas and found_arich:
+        return "2"
+    if not found_pas and not found_arich:
+        return "3"
+    if not found_pas and found_arich:
+        return "4"
+
+def classify_peaks(bed, min_count, a_region_size, a_ratio):
+    """classify the peak sequences."""
+    res = ["chrom", "start", "stop", "name", "q", "count", "seq"]
+    for l in reader(bed, header=res):
+        # filter out peaks with less than 10 reads of support
+        if int(l['count']) < min_count: continue
+        cat = peak_category(l['seq'], a_region_size, a_ratio)
+        # no more than three canonical PAS located in the upstream window
+        if not cat: continue
+        fields = [l[i] for i in res] + [cat]
+        print "\t".join(fields)
 
 def main(args):
     print >>sys.stderr, ">> getting counts"
     counts_tmp = get_counts(args.bam)
     print >>sys.stderr, ">> locating summit per peak"
+    # may want this file in the future
     summit_tmp = get_summits(args.bed, counts_tmp)
+    os.remove(counts_tmp)
     print >>sys.stderr, ">> adding slop to summits"
     slop_tmp = add_slop(summit_tmp, args.sizes, args.wsize)
+    os.remove(summit_tmp)
     print >>sys.stderr, ">> retrieving peak sequences"
-    # os.remove(slop_tmp)
-    # larger regions to fasta
-    # classify the lines of the fasta
-    # classify_peaks()
+    # writes to a file; field 1 is 'chr1:1673768-1673869'
+    seqs_tmp = get_seqs(args.fasta, slop_tmp)
+    # appends the sequence column onto slop bed
+    peak_tmp = append_seqs(slop_tmp, seqs_tmp)
+    os.remove(slop_tmp)
+    os.remove(seqs_tmp)
+    print >>sys.stderr, ">> classifying peaks"
+    classify_peaks(peak_tmp, args.min_count, args.a_region, args.a_ratio)
+    os.remove(peak_tmp)
 
 if __name__ == '__main__':
     import argparse
@@ -105,5 +179,16 @@ if __name__ == '__main__':
     p.add_argument('fasta', metavar="FASTA", help="genomic reference sequence")
     p.add_argument('sizes', metavar="SIZES", help="genomic chromosome sizes")
     p.add_argument('-w', '--window-size', dest="wsize", type=int, default=50,
-            help="number of nucleotides to add up- and downstream of PAS [%(default)s]")
+            help="number of nucleotides to add up- and \
+                    downstream of PAS [%(default)s]")
+    p.add_argument('-c', '--min-counts', dest="min_count", type=int, default=10,
+            help="required read support for valid peak [%(default)s]")
+    p.add_argument('-a', '--a-region-size', dest='a_region', type=int, default=10,
+            help="number of bases to use when determining \
+                    downstream A-content [%(default)s]")
+    p.add_argument('-r', '--a-ratio-cutoff', dest='a_ratio', type=float,
+            default=0.75, help="content ratio for A-region to be \
+                                    considered A-rich [%(default)s]")
+    p.add_argument('--verbose', action='store_true',
+            help="updates progress [%(default)s]")
     main(p.parse_args())
