@@ -36,5 +36,6 @@ if [[ ! -f $peak ]]; then
     bedClip $summit $CHROM_SIZES $clipped_summit
     mv $clipped_peak $peak
     mv $clipped_summit $summit
+    gzip -f $clipped_peak $clipped_summit $narrowpeak
     rm -f $xls
 fi
