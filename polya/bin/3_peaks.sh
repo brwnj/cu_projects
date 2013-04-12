@@ -30,8 +30,7 @@ clipped_peak=${out}_peaks.bed.clipped
 clipped_summit=${out}_summits.bed.clipped
 
 if [[ ! -f $peak ]]; then
-    macs2 callpeak -t $bam -n $out --keep-dup auto \
-        --nomodel --bw 30 --shiftsize 5 --call-summits
+    macs2 callpeak -t $bam -n $out --keep-dup auto --nomodel -s 25 --extsize 5 --call-summits
     bedClip $peak $CHROM_SIZES $clipped_peak
     bedClip $summit $CHROM_SIZES $clipped_summit
     mv $clipped_peak $peak
