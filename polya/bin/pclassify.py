@@ -150,23 +150,23 @@ def classify_peaks(bed, min_count, a_region_size, a_ratio):
         print "\t".join(fields)
 
 def main(args):
-    print >>sys.stderr, ">> getting counts"
+    if args.verbose: print >>sys.stderr, ">> getting counts"
     counts_tmp = get_counts(args.bam)
-    print >>sys.stderr, ">> locating summit per peak"
+    if args.verbose: print >>sys.stderr, ">> locating summit per peak"
     # may want this file in the future
     summit_tmp = get_summits(args.bed, counts_tmp)
     os.remove(counts_tmp)
-    print >>sys.stderr, ">> adding slop to summits"
+    if args.verbose: print >>sys.stderr, ">> adding slop to summits"
     slop_tmp = add_slop(summit_tmp, args.sizes, args.wsize)
     os.remove(summit_tmp)
-    print >>sys.stderr, ">> retrieving peak sequences"
+    if args.verbose: print >>sys.stderr, ">> retrieving peak sequences"
     # writes to a file; field 1 is 'chr1:1673768-1673869'
     seqs_tmp = get_seqs(args.fasta, slop_tmp)
     # appends the sequence column onto slop bed
     peak_tmp = append_seqs(slop_tmp, seqs_tmp)
     os.remove(slop_tmp)
     os.remove(seqs_tmp)
-    print >>sys.stderr, ">> classifying peaks"
+    if args.verbose: print >>sys.stderr, ">> classifying peaks"
     classify_peaks(peak_tmp, args.min_count, args.a_region, args.a_ratio)
     os.remove(peak_tmp)
 
