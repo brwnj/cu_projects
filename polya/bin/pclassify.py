@@ -146,6 +146,7 @@ def classify_peaks(bed, min_count, a_region_size, a_ratio):
         cat = peak_category(l['seq'], a_region_size, a_ratio)
         # no more than three canonical PAS located in the upstream window
         if not cat: continue
+        # decided to leave the sequence for potential MEME analysis
         fields = [l[i] for i in res] + [cat]
         print "\t".join(fields)
 
