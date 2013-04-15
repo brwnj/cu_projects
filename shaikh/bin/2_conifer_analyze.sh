@@ -5,11 +5,10 @@
 #BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P shaikh
-#BSUB -q short
+#BSUB -q normal
 
 <<doc
-run conifer on tamim's samples
-trios only
+run conifer on tamim's samples.
 doc
 
 set -o nounset -o errexit -o pipefail -x
@@ -23,12 +22,12 @@ if [[ ! -d $results/analysis/plots ]]; then
 fi
 bin=$HOME/opt/conifer_v0.2.2
 
-probes=$bin/probes.txt
-hdf5=$results/analysis/trios.hdf5
-sing_vals=$results/analysis/trios_singular_values.txt
-sd_vals=$results/analysis/trios_sd_values.txt
-
-calls=$results/analysis/trios_calls.txt
+probes=$bin/hg19_ens_gene.txt
+scree_plot=$results/analysis/april_scree.png
+hdf5=$results/analysis/april.hdf5
+sing_vals=$results/analysis/april_singular_values.txt
+sd_vals=$results/analysis/april_sd_values.txt
+calls=$results/analysis/april_calls.txt
 
 # create the hdf5
 if [[ ! -f $hdf5 ]]; then
@@ -36,7 +35,8 @@ if [[ ! -f $hdf5 ]]; then
     python $bin/conifer.py analyze \
         --probes $probes \
         --rpkm_dir $results/rpkm \
-        --svd 2 \
+        --plot_scree $scree_plot \
+        --svd 5 \
         --output $hdf5 \
         --write_svals $sing_vals \
         --write_sd $sd_vals
