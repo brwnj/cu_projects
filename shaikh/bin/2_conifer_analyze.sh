@@ -22,12 +22,10 @@ if [[ ! -d $results/analysis/plots ]]; then
 fi
 bin=$HOME/opt/conifer_v0.2.2
 
-probes=$bin/hg19_ens_gene.txt
-scree_plot=$results/analysis/april_scree.png
-hdf5=$results/analysis/april.hdf5
-sing_vals=$results/analysis/april_singular_values.txt
-sd_vals=$results/analysis/april_sd_values.txt
-calls=$results/analysis/april_calls.txt
+probes=$bin/probes.txt
+scree_plot=$results/analysis/tamim_scree.png
+hdf5=$results/analysis/tamim.hdf5
+calls=$results/analysis/tamim_calls.txt
 
 # create the hdf5
 if [[ ! -f $hdf5 ]]; then
@@ -37,9 +35,7 @@ if [[ ! -f $hdf5 ]]; then
         --rpkm_dir $results/rpkm \
         --plot_scree $scree_plot \
         --svd 5 \
-        --output $hdf5 \
-        --write_svals $sing_vals \
-        --write_sd $sd_vals
+        --output $hdf5 
 fi
 
 # do the testing

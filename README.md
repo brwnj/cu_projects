@@ -9,37 +9,10 @@ PK61-PK63 the last run
 
 #Poly(A); hg18
 
-+ alias bkill
-+ classifying peaks
 + run fisher test on new sample pairs
-
-### finding novel poly(a) sites
-
 + est libraries that polya primed
 + high confidence peaks at the 3' end of est as another class in addition to the other way
 + look near the annotated peak for new polya site
-
-* see paper from jay
-* compare for each site then for each gene
-* a[a,t]taaa
-if 8 or more As follow the 3 As, class 2
-class one has fewer than 8 As after that stretch
-* classifying the other groups (3, 4) -- call peaks and classify
-
-category
-1   has A[A,T]TAAA; NOT A-rich downstream from this cleavage site
-2   has A[A,T]TAAA; with A-rich sequence downstream
-3   lacks A[A,T]TAAA; no A-rich region downstream
-4   only downstream A-rich sequence
-
-100 bp from known polya sites
-
-filter out peaks with less than 10 reads of support
-canonical PAS should be found in -10 to -30 of the cleavage site
-no more than three canonical PAS should be located in the upstream window
-
-#Tamim
-* conifer on different samples and compare to microarray data
 
 #Walter
 
@@ -105,8 +78,3 @@ novoindex mm9.mrna.novoidx refFlatRad45Num60kMin10Splices.fasta.gz refFlatRad45N
 align
 
 parse alignment
-
-#A5
-
-had to remove check for phred64, tis not working
-replaced idba with idba_ud in ngopt/bin
