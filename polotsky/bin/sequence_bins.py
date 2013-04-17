@@ -49,7 +49,7 @@ def group_matches(counter, mismatches):
     seqs.sort(key = len, reverse = True)
     for target in seqs:
         if target in seen: continue
-        seen.update([target])
+        seen.add(target)
         for query in seqs:
             if query in seen: continue
             # check mismatch tolerance
@@ -58,7 +58,7 @@ def group_matches(counter, mismatches):
                 # set added items to zero to mark for removal
                 counter[query] = 0
                 # and don't compare against this sequence any more
-                seen.update([query])
+                seen.add(query)
     # remove 0s from the counter
     counter += Counter()
     return counter
