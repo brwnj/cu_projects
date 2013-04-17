@@ -6,12 +6,12 @@ will be read into memory.
 """
 import sys
 import editdist as ed
-from collections import Counter
 from toolshed import nopen
 from itertools import islice
+from collections import Counter
 
 def read_fastq(fh):
-    """fastq parser that returns name, seq, and qual."""
+    """FASTQ parser that yields name, seq, and qual."""
     while True:
         values = list(islice(fh, 4))
         if len(values) == 4:
@@ -25,15 +25,6 @@ def read_fastq(fh):
         assert len(seq) == len(qual)
         yield id1[1:-1], seq[:-1], qual[:-1]
 
-def match(target, query, mismatches):
-    """Run local alignment. Returns bool."""
-    try:
-        best_score = pairwise2.align.localms(target, query, 1, -1, -2, -1)[0][2]
-        if best_score >= (len(query) - mismatches):
-            return True
-    except IndexError:
-        return False
-
 def group_unique(fastq):
     """Group identical reads using a Counter. Returns Counter."""
     c = Counter()
@@ -42,26 +33,35 @@ def group_unique(fastq):
             c.update([seq])
     return c
 
+def distance(a, b):
+    """Calculate Levenshtein distance accounting for length differences between
+    the two strings. Returns int.
+    >>> distance('CATGGGTGGTTCAGTGGTAGAATTCTCGCCTGCC', 'GTGCTGTAGGCATT')
+    2
+    """
+    return ed.distance(a, b) - abs(len(a) - len(b))
+
 def group_matches(counter, mismatches):
     """not sure yet..."""
-    d = {}
-    seqs = list(counter).sort(key = len)
-    print seqs
-    # ignore = []
-    #     
-    # order the sequences by length
-    # iterate over the ordered sequences
-    # find anything that is a match and add to ignore
-
-    # ignore = set()
-    # seqs = set(list(counter))
-    # for query in seqs:
-    #     if query in ignore: continue
-    #     for target in seqs:
-    #         if target == query: continue
-    #         if ed.distance(query, target) < mismatches:
-    #             ignore.add(target)
-    # return seqs - ignore
+    seen = set()
+    # ordered by length to return longest sequence
+    seqs = list(counter)
+    seqs.sort(key = len, reverse = True)
+    for target in seqs:
+        if target in seen: continue
+        seen.update([target])
+        for query in seqs:
+            if query in seen: continue
+            # check mismatch tolerance
+            if distance(target, query) < mismatches:
+                counter[target] += counter[query]
+                # set added items to zero to mark for removal
+                counter[query] = 0
+                # and don't compare against this sequence any more
+                seen.update([query])
+    # remove 0s from the counter
+    counter += Counter()
+    return counter
 
 def main(args):
     print >>sys.stderr, ">> grouping unique reads"
@@ -69,9 +69,12 @@ def main(args):
     if args.mismatches == 0:
         for seq, count in reads.iteritems():
             print "%s\t%d" % (seq, count)
-    print >>sys.stderr, ">> further grouping allowing mismatches"
-    reads = group_matches(reads, args.mismatches)
-    
+    else:
+        print >>sys.stderr, \
+                ">> accounting for %d mismatch tolerance" % args.mismatches
+        reads = group_matches(reads, args.mismatches)
+        for seq, count in reads.iteritems():
+            print "%s\t%d" % (seq, count)
 
 if __name__ == '__main__':
     import argparse
