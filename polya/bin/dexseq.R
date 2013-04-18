@@ -1,6 +1,7 @@
 # source("http://bioconductor.org/biocLite.R")
 # biocLite("DEXSeq")
 library(DEXSeq)
+library(parallel)
 # library(DESeq)
 setwd("~/projects/polya/data")
 
@@ -12,13 +13,18 @@ run_dexseq <- function(rownames, conditions, count_files, output){
     cds = read.HTSeqCounts(countfiles = count_files,
                            design = design)
     cds = estimateSizeFactors(cds)
-    cds = estimateDispersions(cds, minCount = 1)
+    cds = estimateDispersions(cds, minCount = 1, nCores=4, quiet=TRUE)
     cds = fitDispersionFunction(cds)
-    cds = testForDEU(cds)
+    cds = testForDEU(cds, nCores=4)
     cds = estimatelog2FoldChanges(cds)
     res = DEUresultTable(cds)
-    write.csv(res, file=output)
+    write.table(res, file=output, sep="\t")
 }
+
+run_dexseq(c("MP55", "MP55x", "MP56", "MP56x"),
+           c("normal", "normal", "tumor", "tumor"),
+           c("MP55.pos.counts", "MP55.pos.x.counts", "MP56.pos.counts", "MP56.pos.x.counts"),
+           "MP55_vs_MP56_pos.csv")
 
 run_dexseq(c("nbt29","nbt29x","ts21","ts21x"),
            c("normal","normal","tumor","tumor"),
