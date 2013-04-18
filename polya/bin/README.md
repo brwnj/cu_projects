@@ -1,6 +1,13 @@
 #poly(a)
 
-pad the poly(a) sites by 10 bases. the poly(a) name field is poly(a)|gene
+getting the counts
 ```
-bedtools slop -l 5 -r 5 -i polya_3utr.bed -g hg18.sizes > polya_3_utr_slop.bed
+bedtools map -c 4 -o max -null 0 -a polya_db_slop.bed.gz -b MP55.pos.bedgraph.gz | cut -f 4,7
+```
+generating "replicates"
+```
+for f in *.counts;\
+    do awk 'BEGIN{OFS=FS="\t"}{foo=int(rand()*10);if($2!=0){print $1,$2+foo}else{print}}' $f\
+    > ${f%.counts}.x.counts;\
+done
 ```
