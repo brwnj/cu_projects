@@ -42,12 +42,19 @@ def distance(a, b):
     return ed.distance(a, b) - abs(len(a) - len(b))
 
 def group_matches(counter, mismatches):
-    """not sure yet..."""
+    """"""
     seen = set()
     # ordered by length to return longest sequence
     seqs = list(counter)
+    to_process = len(seqs)
     seqs.sort(key = len, reverse = True)
-    for target in seqs:
+    # looping over the seqs using `find` the first time may reduce bias
+    # without slowing things down too much. another approach would be to
+    # increment edit distance.
+    for i, target in enumerate(seqs, start=1):
+        # the first 100000 will be painfully slow
+        if i % 100000 == 0:
+            print >>sys.stderr, ">> processed %d of %d" % (i, to_process)
         if target in seen: continue
         seen.add(target)
         for query in seqs:
@@ -81,6 +88,6 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("fastq", metavar="FASTQ", help="reads to process")
-    p.add_argument("-m", "--mismatches", type=int, default=3,
+    p.add_argument("-m", "--mismatches", type=int, default=2,
             help="number of mismatches allowed when combining bins [%(default)s]")
     main(p.parse_args())
