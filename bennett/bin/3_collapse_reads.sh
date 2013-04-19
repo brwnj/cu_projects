@@ -19,5 +19,5 @@ results=$RESULTS/$sample
 joined=$results/$sample.joined.fastq.gz
 collapsed=$results/$sample.collapsed.fastq.gz
 if [[ ! -f $collapsed ]]; then
-    python $BIN/collapse_reads.py $joined | gzip -c > $collapsed
+    python $BIN/collapse_reads.py -m 3 $joined | gzip -c > $collapsed
 fi

@@ -27,5 +27,6 @@ if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("bed", help="bed file with different gene names across polya sites.")
+    p.add_argument("bed",
+            help="bed file with different gene names across polya sites.")
     main(p.parse_args())
