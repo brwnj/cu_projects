@@ -9,13 +9,11 @@ PK61-PK63 the last run
 
 #Poly(A); hg18
 
-when you add in more polya sites (more than 3'UTR only), the fisher test starts
-to drop more genes that are real. those genes are still picked up using dexseq.
++ classifying novel peaks
++ need to figure out strand; do neg aligned reads correspond to pos strand genes
+and vice versa
++ if so, then pos strand reads need to be tested on their reverse complement
 
-+ run fisher test on new sample pairs
-+ est libraries that polya primed
-+ high confidence peaks at the 3' end of est as another class in addition to the other way
-+ look near the annotated peak for new polya site
 
 #Walter
 
