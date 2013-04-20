@@ -17,25 +17,59 @@ source $HOME/projects/polya/bin/config.sh
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 result=$RESULT/$sample
 bam=$result/$sample.bam
-out=$result/$sample
+negbam=$result/$sample.neg.bam
+posbam=$result/$sample.pos.bam
+
+negout=$result/$sample.neg
+posout=$result/$sample.pos
 
 # the output from macs2
-peak=${out}_peaks.bed
-narrowpeak=${out}_peaks.narrowPeak
-summit=${out}_summits.bed
-xls=${out}_peaks.xls
-
+negpeak=${negout}_peaks.bed
+pospeak=${posout}_peaks.bed
+negnarrowpeak=${negout}_peaks.narrowPeak
+posnarrowpeak=${posout}_peaks.narrowPeak
+negsummit=${negout}_summits.bed
+possummit=${posout}_summits.bed
+negxls=${negout}_peaks.xls
+posxls=${posout}_peaks.xls
 # some peaks were extending outside of genomic coords
-clipped_peak=${out}_peaks.bed.clipped
-clipped_summit=${out}_summits.bed.clipped
+negclipped_peak=${negout}_peaks.bed.clipped
+posclipped_peak=${posout}_peaks.bed.clipped
+# combined peaks with appropriate strand column
+peak=$result/${sample}_peaks.bed.gz
+
+if [[ ! -f $negbam ]]; then
+    samtools view -hbf16 $bam > $negbam
+fi
+if [[ ! -f $posbam ]]; then
+    samtools view -hbF16 $bam > $posbam
+fi
+
+if [[ ! -f $negpeak.gz ]]; then
+    macs2 callpeak -t $negbam -n $negout --keep-dup auto \
+        --nomodel -s 25 --extsize 5 --call-summits
+    bedClip $negpeak $CHROM_SIZES $negclipped_peak
+    mv $negclipped_peak $negpeak
+    gzip -f $negpeak $negnarrowpeak
+    rm -f $negxls $negsummit
+fi
+
+if [[ ! -f $pospeak.gz ]]; then
+    macs2 callpeak -t $posbam -n $posout --keep-dup auto \
+        --nomodel -s 25 --extsize 5 --call-summits
+    bedClip $pospeak $CHROM_SIZES $posclipped_peak
+    mv $posclipped_peak $pospeak
+    gzip -f $pospeak $posnarrowpeak
+    rm -f $posxls $possummit
+fi
 
 if [[ ! -f $peak ]]; then
-    macs2 callpeak -t $bam -n $out --keep-dup auto \
-        --nomodel -s 25 --extsize 5 --call-summits
-    bedClip $peak $CHROM_SIZES $clipped_peak
-    bedClip $summit $CHROM_SIZES $clipped_summit
-    mv $clipped_peak $peak
-    mv $clipped_summit $summit
-    gzip -f $clipped_peak $clipped_summit $narrowpeak
-    rm -f $xls
+    zcat $negpeak.gz $pospeak.gz \
+    | awk 'BEGIN{OFS=FS="\t"}{
+        split($4, basename, "/");
+        $4 = basename[length(basename)];
+        if($4~"neg"){$6="-"}
+        if($4~"pos"){$6="+"}print}' \
+    | bedtools sort -i - \
+    | gzip -c > $peak
 fi
