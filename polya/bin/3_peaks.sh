@@ -8,7 +8,7 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-call peaks using macs2.
+call peaks using macs2
 DOC
 
 set -o nounset -o pipefail -o errexit -x
