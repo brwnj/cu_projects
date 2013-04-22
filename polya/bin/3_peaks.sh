@@ -64,12 +64,13 @@ if [[ ! -f $pospeak.gz ]]; then
 fi
 
 if [[ ! -f $peak ]]; then
+    # peaks called on the negative reads are from positive stranded genes
     zcat $negpeak.gz $pospeak.gz \
     | awk 'BEGIN{OFS=FS="\t"}{
         split($4, basename, "/");
         $4 = basename[length(basename)];
-        if($4~"neg"){$6="-"}
-        if($4~"pos"){$6="+"}print}' \
+        if($4~"neg"){$6="+"}
+        if($4~"pos"){$6="-"}print}' \
     | bedtools sort -i - \
     | gzip -c > $peak
 fi
