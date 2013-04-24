@@ -13,9 +13,8 @@ set -o nounset -o errexit -o pipefail -x
 
 source $HOME/projects/polya/bin/config.sh
 
-# leaving this because sometimes there are multiple lanes
-lane=5
-date=20130402
+lane=4
+date=20130423
 
 # 50 bp
 bs=R6I14C36
