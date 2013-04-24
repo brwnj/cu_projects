@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#BSUB -J celera[1-7]%1
+#BSUB -J celera[1-7]
 #BSUB -e celera.%J.%I.err
 #BSUB -o celera.%J.%I.out
 #BSUB -q bigmem
@@ -18,4 +18,8 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 frg=$READS/$sample.frg
 out=$RESULTS/$sample
 
-runCA -d $out -p $sample $frg
+asm=$out/$sample.asm
+
+if [[ ! -f $asm ]]; then
+    runCA -d $out -p $sample $frg
+fi
