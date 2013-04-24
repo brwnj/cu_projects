@@ -41,18 +41,16 @@ def distance(a, b):
     """
     return ed.distance(a, b) - abs(len(a) - len(b))
 
-def group_matches(counter, mismatches):
+def group_matches(counter, mismatches, allowed_mismatches):
     """"""
+    print >>sys.stderr, \
+                ">> grouping sequences; edit dist: %d" % mismatches
     seen = set()
     # ordered by length to return longest sequence
     seqs = list(counter)
     to_process = len(seqs)
     seqs.sort(key = len, reverse = True)
-    # looping over the seqs using `find` the first time may reduce bias
-    # without slowing things down too much. another approach would be to
-    # increment edit distance.
     for i, target in enumerate(seqs, start=1):
-        # the first 100000 will be painfully slow
         if i % 100000 == 0:
             print >>sys.stderr, ">> processed %d of %d" % (i, to_process)
         if target in seen: continue
@@ -60,7 +58,7 @@ def group_matches(counter, mismatches):
         for query in seqs:
             if query in seen: continue
             # check mismatch tolerance
-            if distance(target, query) < mismatches:
+            if distance(target, query) <= mismatches:
                 counter[target] += counter[query]
                 # set added items to zero to mark for removal
                 counter[query] = 0
@@ -68,20 +66,18 @@ def group_matches(counter, mismatches):
                 seen.add(query)
     # remove 0s from the counter
     counter += Counter()
-    return counter
+    # taking the total mismatch cap first introduces lots of bias
+    if not mismatches == allowed_mismatches:
+        return group_matches(counter, mismatches + 1, allowed_mismatches)
+    else:
+        return counter
 
 def main(args):
     print >>sys.stderr, ">> grouping unique reads"
     reads = group_unique(args.fastq)
-    if args.mismatches == 0:
-        for seq, count in reads.iteritems():
-            print "%s\t%d" % (seq, count)
-    else:
-        print >>sys.stderr, \
-                ">> accounting for %d mismatch tolerance" % args.mismatches
-        reads = group_matches(reads, args.mismatches)
-        for seq, count in reads.iteritems():
-            print "%s\t%d" % (seq, count)
+    reads = group_matches(reads, 0, args.mismatches)
+    for seq, count in reads.iteritems():
+        print "%s\t%d" % (seq, count)
 
 if __name__ == '__main__':
     import argparse
@@ -90,4 +86,5 @@ if __name__ == '__main__':
     p.add_argument("fastq", metavar="FASTQ", help="reads to process")
     p.add_argument("-m", "--mismatches", type=int, default=2,
             help="number of mismatches allowed when combining bins [%(default)s]")
-    main(p.parse_args())
+    args = p.parse_args()
+    main(args)
