@@ -48,7 +48,7 @@ if [[ ! -f $umibam ]]; then
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    umitools rmdup $umibam $bam $UMI
+    umitools rmdup --verbose $umibam $bam $UMI
     samtools index $bam
     # create bw
     bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
