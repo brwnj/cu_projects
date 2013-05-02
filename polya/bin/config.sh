@@ -10,3 +10,4 @@ CHROM_SIZES=$HOME/ref/hg18/hg18.sizes
 BIN=$HOME/devel/worktils
 REFBED=$DATA/polya_3utr_slop.bed
 UMI=NNNNNV
+FASTA=$HOME/ref/hg18/hg18.fa
