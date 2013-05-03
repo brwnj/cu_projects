@@ -1,3 +1,9 @@
+#Bennett
+
++ spreadsheet with protein sequence
++ annotate cdr based on protein sequence (allow up to 2 mismatches)
++ only interested in protein sequences containing YYC, YFC, and YSC
+
 #Davidson; Human; T-Cell repertoire
 
 + rerun assembly

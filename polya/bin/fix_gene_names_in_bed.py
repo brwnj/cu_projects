@@ -3,8 +3,8 @@
 """
 Give the same gene name across the same polya "family".
 """
-from itertools import groupby
 from toolshed import nopen
+from itertools import groupby
 
 def read_polya_bed(fh):
     for key, grp in groupby(fh, key=\
