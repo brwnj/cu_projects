@@ -1,9 +1,9 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 #BSUB -J celera[1-7]
 #BSUB -e celera.%J.%I.err
 #BSUB -o celera.%J.%I.out
-#BSUB -q bigmem
-#BSUB -R "span[hosts=1]"
+#BSUB -q normal
+#BSUB -R "select[mem>24] rusage[mem=24] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P santangelo
 

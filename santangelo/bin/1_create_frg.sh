@@ -3,7 +3,7 @@
 #BSUB -e fastqToCA.%J.%I.err
 #BSUB -o fastqToCA.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
+#BSUB -R "select[mem>1] rusage[mem=1] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P santangelo
 
@@ -19,4 +19,4 @@ r1=$READS/${sample}_R1.fastq
 r2=$READS/${sample}_R2.fastq
 frg=$READS/$sample.frg
 
-fastqToCA -insertsize 150 150 -libraryname $sample -type sanger -mates $r1,$r2 > $frg
+fastqToCA -insertsize 800 150 -libraryname $sample -type sanger -mates $r1,$r2 > $frg
