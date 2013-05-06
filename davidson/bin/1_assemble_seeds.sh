@@ -5,6 +5,7 @@
 #BSUB -q normal
 #BSUB -R "select[mem>12] rusage[mem=12] span[hosts=1]"
 #BSUB -n 1
+#BSUB -P davidson
 
 <<DOC
 create tags and find seeds among the reads.
@@ -18,6 +19,9 @@ sample=$LSB_JOBINDEX
 
 data=$HOME/projects/davidson/data/20120924
 fasta=$data/$sample.trm.fa.gz
-seeds=$data/$sample.35.seeds.fa.gz
+# seeds=$data/$sample.35.seeds.fa.gz
 
-iSSAKE -f $fasta -s $seeds -m 30 -b $sample
+results=$HOME/projects/davidson/results/common
+seeds=$results/$sample/$sample.contigs.gz
+
+iSSAKE -f $fasta -s $seeds -b $sample
