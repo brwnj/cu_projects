@@ -24,9 +24,12 @@ matrix2png
 
 #Poly(A); hg18
 
-+ call peaks, classify.
++ polyadb is 80% class 1, 20% class 3 when using the same read support cutoffs as the paper
++ 1440 (class 1 and 3) total peaks were classified using MP55
++ our class 1 consensus peaks (of 13 samples) peaks overlapped 75% of those 1440
+    while containing another 8000 sites
+
 + dexseq across samples using class 1 peaks inside of exons (including UTRs)
-    + consensus of all peak regions at 10 bp spread from summit
 + classify proximal-distal using log2foldchange
 + group each classified dexseq results into categories
 
