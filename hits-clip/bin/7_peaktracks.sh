@@ -17,8 +17,7 @@ DOC
 # IDX=$(expr $LSB_JOBINDEX - 1)
 # SAMPLE=${SAMPLEIDS[$IDX]}
 
-CHROMSIZES=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes
-
+CHROMSIZES=$HOME/ref/hg18/hg18.sizes
 CUTOFF=.001
 
 BED="$SAMPLE.peaks.rmd.qv$CUTOFF.bed.gz"
@@ -26,14 +25,14 @@ FIXEDBED="$SAMPLE.peaks.rmd.f.bed"
 CLIPPEDBED="$SAMPLE.peaks.rmd.f.c.bed"
 TRACKBED="$SAMPLE.peaks.track$CUTOFF.bed"
 
-RUNDIR="/vol1/home/brownj/projects/hits-clip/results/common/samples/$SAMPLE"
+RUNDIR=$HOME/projects/hits-clip/results/common/samples/$SAMPLE
 RUN=$RUNDIR/peaktracks.sh
-echo "#! /usr/bin/env bash" > $RUN
+echo "#!/usr/bin/env bash" > $RUN
 echo "#BSUB -J $SAMPLE.bedtrack" >> $RUN
 echo "#BSUB -o %J.out" >> $RUN
 echo "#BSUB -e %J.err" >> $RUN
 echo "
-bioawk -c header 'BEGIN{OFS=\"\t\"}\$2<\$3{print \$1,\$2,\$3,\$7,\$7*1000,\$6}' $BED > $FIXEDBED
+awk -c header '\$2<\$3{print \$1,\$2,\$3,\$7,\$7*1000,\$6}' $BED > $FIXEDBED
 bedClip -verbose=2 $FIXEDBED $CHROMSIZES $CLIPPEDBED
 echo 'track type=bed name=$SAMPLE.peaks visibility=pack useScore=1' > $TRACKBED
 cat $CLIPPEDBED >> $TRACKBED

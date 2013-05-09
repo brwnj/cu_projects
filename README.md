@@ -19,6 +19,8 @@
 #Hits-Clip; hg18
 
 + still need to run PK61-63
++ heatmap of miRNA, something that you can zoom into
+matrix2png
 
 #Poly(A); hg18
 
@@ -29,6 +31,11 @@
 + group each classified dexseq results into categories
 
 + histone marks, ESTs to handle intergenic
+
++ map to mouse, then to human for peter's previous samples (samples with an 'a')
+    + map some human to mouse and see how many map (percentage wise)
+    + possible to mask human genome from mouse genome based on a certain length
+    
 
 + cluster into patterns of states when comparing between replicates
 + all decreasing, all increasing, etc.

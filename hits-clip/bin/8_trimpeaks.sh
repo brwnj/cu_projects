@@ -20,7 +20,7 @@ DOC
 SAMPLE=HUVEC
 REPLICATE="MP24 MP38"
 
-DATA=/vol1/home/brownj/projects/hits-clip/results/common
+DATA=$HOME/projects/hits-clip/results/common
 RUNDIR=$DATA/$SAMPLE
 
 FOOTPRINT=60

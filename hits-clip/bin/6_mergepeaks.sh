@@ -1,4 +1,4 @@
-#! /usr/bin/env bash
+#!/usr/bin/env bash
 #BSUB -J mergepeaks
 #BSUB -e %J.%I.err
 #BSUB -o %J.%I.out
@@ -17,11 +17,11 @@ DOC
 #             "MP42.ACTG MP45.ACTG MP45.TCGA" "MP24 MP38") 
 # SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 # REPLICATE=${REPLICATES[${LSB_JOBINDEX}]}
-SAMPLE=HELA
-REPLICATE="helaa helab"
-SRC=/vol1/home/brownj/devel/peaktools/peaktools
+SAMPLE=something
+REPLICATE="PK61 PK62 PK63"
+SRC=$HOME/devel/peaktools/peaktools/shit...
 
-CHROMSIZES=/vol3/home/jhessel/projects/encode/data/hg18/hg18.chrom.sizes
+CHROMSIZES=$HOME/ref/hg18/hg18.sizes
 CASE_DATA=$HOME/projects/hits-clip/results/common
 REPLICATE_DATA=$CASE_DATA/samples
 EXT=peaks.rmd.qv.001.bed.gz
