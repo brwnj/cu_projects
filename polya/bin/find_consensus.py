@@ -60,6 +60,8 @@ def main(args):
     intersect(tmps_with_slop, args.fraction)
     cleanup(tmps_with_slop)
 
+# where it overlaps with gene; naming the sites in order; strand
+
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
