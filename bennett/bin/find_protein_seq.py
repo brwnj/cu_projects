@@ -1,26 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-7	LVESSGHY
-9	RTLYGGIKDS 
-14	GEPFSDSSGSYSLLHMQE
-19	GLKSRNWYQGVDV
-
-dna = Seq("ATGGCCATTGTAATGGGCCGCTGAAAGGGTGCCCGATAG")
-
-In [57]: dna.translate()
-Out[57]: Seq('MAIVMGR*KGAR*', HasStopCodon(ExtendedIUPACProtein(), '*'))
-In [58]: dna[1:].translate()
-Out[58]: Seq('WPL*WAAERVPD', HasStopCodon(ExtendedIUPACProtein(), '*'))
-In [59]: dna[2:].translate()
-Out[59]: Seq('GHCNGPLKGCPI', ExtendedIUPACProtein())
-In [60]: dna[3:].translate()
-Out[60]: Seq('AIVMGR*KGAR*', HasStopCodon(ExtendedIUPACProtein(), '*'))
-
-+ spreadsheet with protein sequence
-+ annotate cdr based on protein sequence (allow up to 2 mismatches)
-+ only interested in protein sequences containing YYC, YFC, and YSC
-
+YYC, YFC, and YSC
 """
 import sys
 from Bio import trie, triefind
