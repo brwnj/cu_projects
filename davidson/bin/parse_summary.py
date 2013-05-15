@@ -7,20 +7,18 @@ from toolshed import reader
 from collections import Counter, defaultdict
 
 def get_unique_protein_seqs(imgt):
-    """docstring for get_unique_protein_seqs"""
     c = Counter()
     for l in reader(imgt, header=True):
-        if "productive" not in l['Functionality']: continue
+        if not l['Functionality'] == "productive": continue
         if len(l['AA JUNCTION']) < 2: continue
         c.update([l['AA JUNCTION']])
     return c
 
 def get_vdj_regions(counter, imgt):
-    """docstring for get_vdj_regions"""
     p = defaultdict(list)
     s = {}
     for l in reader(imgt, header=True):
-        if "productive" not in l['Functionality']: continue
+        if not l['Functionality'] == "productive": continue
         try:
             v = l["V-GENE and allele"].split()[1]
         except IndexError:

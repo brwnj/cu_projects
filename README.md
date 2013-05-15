@@ -22,6 +22,13 @@
 + heatmap of miRNA, something that you can zoom into
 matrix2png
 
+#Munson
+
+8 bp UMI
+17 bp biological primer
+6 bp index
+read 21 more
+
 #Poly(A); hg18
 
 + polyadb is 80% class 1, 20% class 3 when using the same read support cutoffs as the paper
