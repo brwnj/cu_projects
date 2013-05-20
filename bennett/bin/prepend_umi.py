@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Add piece or all of index read back onto R1 (or R2).
+Add a piece or all of the index read back onto R1 (or R2).
 """
 from itertools import izip
 from toolshed import nopen
