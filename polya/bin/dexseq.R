@@ -3,7 +3,7 @@
 library(DEXSeq)
 library(parallel)
 # library(DESeq)
-setwd("~/projects/polya/data")
+setwd("~/projects/polya/data/20130418/")
 
 # annotation_file = "~/projects/polya/data/polya_extended_with_names.gff"
 
@@ -20,6 +20,16 @@ run_dexseq <- function(rownames, conditions, count_files, output){
     res = DEUresultTable(cds)
     write.table(res, file=output, sep="\t")
 }
+
+rownames = c("MP55", "MP56")
+conditions = c("MP55", "MP55", "MP56", "MP56")
+count_files = c("MP55.pos.counts", "MP56.pos.counts")
+output = "TESTING.txt"
+
+rownames=c("MP55", "MP55x", "MP56", "MP56x")
+conditions=c("normal", "normal", "tumor", "tumor")
+count_files=c("MP55.pos.counts", "MP55.pos.x.counts", "MP56.pos.counts", "MP56.pos.x.counts")
+
 
 run_dexseq(c("MP55", "MP55x", "MP56", "MP56x"),
            c("normal", "normal", "tumor", "tumor"),

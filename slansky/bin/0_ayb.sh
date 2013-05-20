@@ -9,8 +9,8 @@ set -o nounset -o errexit -o pipefail -x
 
 # Expected folder structure:
 # $HOME/projects/polya/data/Data/Intensities/L005/<cycles>/*.cif
-lane=5
-bs=R8I17C27
+lane=6
+bs=R8I17C33
 cifs=$HOME/projects/slansky/data
 cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
 fastq=$cifs/L00${lane}.fastq.gz
@@ -31,6 +31,6 @@ for tile in `ls $cifs_dir | sed -rn 's/._._([0-9]+).cif/\1/p'`; do
     jobids="$jobids $jobid"
 done
 python -m bsub $jobids
-cat $cifs/*.fastq | gzip -c > $fastq
-rm $cifs/?_?_*.fastq
+cat $cifs/*${lane}*.fastq | gzip -c > $fastq
+rm $cifs/?_${lane}_*.fastq
 rm $cifs/ayb*.tab

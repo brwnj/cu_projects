@@ -6,10 +6,6 @@
 
 #Davidson; Human; T-Cell repertoire
 
-+ rerun assembly
-+ rerun alpha
-+ collapse beta, stats, etc...
-
 #Deterding
 
 + gene list of the significant hits
@@ -20,32 +16,21 @@
 
 + still need to run PK61-63
 + heatmap of miRNA, something that you can zoom into
-matrix2png
-
-#Munson
-
-8 bp UMI
-17 bp biological primer
-6 bp index
-read 21 more
++ matrix2png
 
 #Poly(A); hg18
 
-+ polyadb is 80% class 1, 20% class 3 when using the same read support cutoffs as the paper
-+ 1440 (class 1 and 3) total peaks were classified using MP55
-+ our class 1 consensus peaks (of 13 samples) peaks overlapped 75% of those 1440
-    while containing another 8000 sites
-
-+ dexseq across samples using class 1 peaks inside of exons (including UTRs)
++ maybe just run dexseq without real replicates and see how many are significant
 + classify proximal-distal using log2foldchange
 + group each classified dexseq results into categories
-
-+ histone marks, ESTs to handle intergenic
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
     + map some human to mouse and see how many map (percentage wise)
     + possible to mask human genome from mouse genome based on a certain length
-    
+
+    + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
+        + align to mouse and see what maps for each length
+        + are there gains in using longer length reads
 
 + cluster into patterns of states when comparing between replicates
 + all decreasing, all increasing, etc.
