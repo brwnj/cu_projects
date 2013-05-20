@@ -1,5 +1,10 @@
 #Bennett
 
++ take the most abundant sequence per UMI with highest quality for each direction
++ trim the primer sequences and annotate
++ join the reads
++ search for protein sequences
+
 + spreadsheet with protein sequence
 + annotate cdr based on protein sequence (allow up to 2 mismatches)
 + only interested in protein sequences containing YYC, YFC, and YSC

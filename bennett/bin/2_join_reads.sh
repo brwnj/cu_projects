@@ -26,5 +26,5 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 if [[ ! -f $joined ]]; then
-    SeqPrep -f $r1 -r $r2 -1 $r1out -2 $r2out -s $joined
+    SeqPrep -g -m 0.05 -n 0.75 -f $r1 -r $r2 -1 $r1out -2 $r2out -s $joined
 fi
