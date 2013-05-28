@@ -3,58 +3,44 @@
 """
 Add a piece or all of the index read back onto R1 (or R2).
 """
-from itertools import izip
+from itertools import izip, ifilter, islice, imap
 from toolshed import nopen
 
-def readfx(fh):
-    # https://github.com/lh3/readfq/blob/master/readfq.py
-    last = None
-    while True:
-        if not last:
-            for l in fh:
-                if l[0] in '>@':
-                    last = l[:-1]
-                    break
-        if not last: break
-        name, seqs, last = last[1:], [], None
-        for l in fh:
-            if l[0] in '@+>':
-                last = l[:-1]
-                break
-            seqs.append(l[:-1])
-        if not last or last[0] != '+':
-            yield name, ''.join(seqs), None
-            if not last: break
-        else:
-            seq, leng, seqs = ''.join(seqs), 0, []
-            for l in fh:
-                seqs.append(l[:-1])
-                leng += len(l) - 1
-                if leng >= len(seq):
-                    last = None
-                    yield name, seq, ''.join(seqs);
-                    break
-            if last:
-                yield name, seq, None
-                break
+class Fastq(object):
+    def __init__(self, args):
+        self.name = args[0][1:]
+        self.seq = args[1]
+        self.qual = args[3]
+        assert len(self.seq) == len(self.qual)
+    
+    def __repr__(self):
+        return "Fastq({name})".format(name=self.name)
+    
+    def __str__(self):
+        return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
+                seq=self.seq, qual=self.qual)
+
+def readfq(fq):
+    with nopen(fq) as fh:
+        fqiter = (ifilter(None, imap(lambda l: l.strip('\r\n'), fh)))
+        while True:
+            vals = [x for x in islice(fqiter, 4)]
+            if not vals: raise StopIteration
+            assert all(vals) and len(vals) == 4
+            yield Fastq(vals)
 
 def main(args):
-    with nopen(args.index) as idx, nopen(args.fastq) as fq:
-        for (xname, xseq, xqual), (name, seq, qual) in izip(readfx(idx), readfx(fq)):
-            xname = xname.partition(" ")[0]
-            xref = name.partition(" ")[0]
-
-            assert xname == xref
-            
-            if args.end:
-                xseq = xseq[args.begin:args.end]
-                xqual = xqual[args.begin:args.end]
-            else:
-                xseq = xseq[args.begin:]
-                xqual = xqual[args.begin:]
-            
-            print "@{name}\n{xseq}{seq}\n+\n{xqual}{qual}".format(name=name,
-                            xseq=xseq, seq=seq, xqual=xqual, qual=qual)
+    for idx, rec in izip(readfq(args.index), readfq(args.fastq)):
+        assert idx.name.partition(" ")[0] == rec.name.partition(" ")[0]
+        if args.end:
+            idx.seq = idx.seq[args.begin:args.end]
+            idx.qual = idx.qual[args.begin:args.end]
+        else:
+            idx.seq = idx.seq[args.begin:]
+            idx.qual = idx.qual[args.begin:]
+        rec.seq = idx.seq + rec.seq
+        rec.qual = idx.qual + rec.qual
+        print rec
 
 if __name__ == '__main__':
     import argparse

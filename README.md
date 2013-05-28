@@ -9,13 +9,27 @@
 + annotate cdr based on protein sequence (allow up to 2 mismatches)
 + only interested in protein sequences containing YYC, YFC, and YSC
 
+#Canine; Duval
+
+TGGAATTCTCGGGTGCCAAGGAAC
+TAGCTTATCAGACTGATGTTGACT
+AAGCTGCCAGTTGAAGAACTGTTG
+
+TGGAATTCTCGGGTGCCAAGGAAC
+TAGCTTATCAGACTGATGTTGACT
+TACCCTGTAGAACCGAATTTGTTGGAATTCTCGGG
+AAGCTGCCAGTTGAAGAACTGTTGGAATTCTCGGG
+TAGCTTATCAGACTGATGTTGATGGAATTCTCGGG
+CAACGGAATCCCAAAAGCAGCTGTGGAATTCTCGG
+TAGCAGCACGTAAATATTGGCGTGGAATTCTCGGG
+TAGCTTATCAGACTGATGTTGACCTGGAATTCTCG
+TGTCTGAGCGTCGCTTGGAATTCTCGGGTGCCAAG
+
 #Davidson; Human; T-Cell repertoire
 
 #Deterding
 
-+ gene list of the significant hits
-+ run pathway analysis
-+ blast hits across several popular species
++ need to meet to discuss IPA
 
 #Hits-Clip; hg18
 
@@ -24,6 +38,8 @@
 + matrix2png
 
 #Poly(A); hg18
+
++ add class to peak name
 
 + maybe just run dexseq without real replicates and see how many are significant
 + classify proximal-distal using log2foldchange
