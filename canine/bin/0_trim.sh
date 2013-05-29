@@ -16,6 +16,6 @@ source $HOME/projects/canine/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 fqin=$DATA/$sample.fastq.gz
-fqout=$DATA/$sample.trimmed.fastq.gz
+fqout=$DATA/$sample.trm.fastq.gz
 
-python $BIN/trim_trailing.py -b A $fqin | gzip -c > $fqout
+fastq-mcf $ADAPTORS $fqin -o $fqout -l 15 -L 25 -k 0
