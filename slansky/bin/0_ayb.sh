@@ -9,8 +9,8 @@ set -o nounset -o errexit -o pipefail -x
 
 # Expected folder structure:
 # $HOME/projects/polya/data/Data/Intensities/L005/<cycles>/*.cif
-lane=6
-bs=R8I17C33
+lane=5
+bs=R8I17C33I61C6
 cifs=$HOME/projects/slansky/data
 cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
 fastq=$cifs/L00${lane}.fastq.gz
