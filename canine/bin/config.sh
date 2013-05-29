@@ -7,3 +7,4 @@ SAMPLES=(10_17cm98_B 11_cml_6m 12_cml_10c2 13_Jones_A 14_Parks_A        #5
 DATA=$HOME/projects/canine/data/20130424
 RESULTS=$HOME/projects/canine/results/common
 BIN=$HOME/projects/canine/bin
+ADAPTORS=$DATA/adapters.fa
