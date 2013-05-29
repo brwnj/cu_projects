@@ -22,12 +22,12 @@ class Fastq(object):
 
 def readfq(fq):
     with nopen(fq) as fh:
-        fqiter = (ifilter(None, imap(lambda l: l.strip('\r\n'), fh)))
+        fqclean = (x.strip("\r\n") for x in fh if x.strip())
         while True:
-            vals = [x for x in islice(fqiter, 4)]
-            if not vals: raise StopIteration
-            assert all(vals) and len(vals) == 4
-            yield Fastq(vals)
+            rd = [x for x in islice(fqclean, 4)]
+            if not rd: raise StopIteration
+            assert all(rd) and len(rd) == 4
+            yield Fastq(rd)
 
 def main(args):
     for idx, rec in izip(readfq(args.index), readfq(args.fastq)):
