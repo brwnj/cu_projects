@@ -3,7 +3,7 @@
 """
 Add a piece or all of the index read back onto R1 (or R2).
 """
-from itertools import izip, ifilter, islice, imap
+from itertools import izip, ifilter, islice
 from toolshed import nopen
 
 class Fastq(object):

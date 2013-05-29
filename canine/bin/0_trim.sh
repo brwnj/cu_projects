@@ -7,10 +7,6 @@
 #BSUB -n 1
 #BSUB -P duval_canine
 
-<<DOC
-trim trailing As from the sequences
-DOC
-
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/canine/bin/config.sh
 
