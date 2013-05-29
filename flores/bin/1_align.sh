@@ -29,6 +29,6 @@ if [[ ! -f $bam ]]; then
     novoalign -d $NOVOIDXHG19 -f $trimmed_r1 $trimmed_r2 -o SAM -r None -i 250 100 -c 8 -k \
         2> $stats \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $sample.temp -m 9500000000 \
+        | samtools sort -o - $sample.temp -m 2G \
         > $bam
 fi

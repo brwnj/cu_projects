@@ -25,7 +25,7 @@ if [ ! -f $bam ]; then
     gsnap --gunzip -d tta_mic -D $GSNAPINDEX --input-buffer-size=100000 -B5 -t4 -A sam --nofails \
         -n1 --pairexpect=250 --pairdev=150 --read-group-id=$name \
         --read-group-name=$name $pair \
-        | samtools view -ShuF 4 - | samtools sort -o - $name.temp -m 9500000000 > $bam
+        | samtools view -ShuF 4 - | samtools sort -o - $name.temp -m 2G > $bam
     samtools index $bam
 fi
 # if [ ! -f $stats ]; then
