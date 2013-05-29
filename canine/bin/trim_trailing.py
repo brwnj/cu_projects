@@ -3,43 +3,36 @@
 """
 """
 from toolshed import nopen
+from itertools import islice
 
-def readfx(fh):
-    # https://github.com/lh3/readfq/blob/master/readfq.py
-    last = None
-    while True:
-        if not last:
-            for l in fh:
-                if l[0] in '>@':
-                    last = l[:-1]
-                    break
-        if not last: break
-        name, seqs, last = last[1:].partition(" ")[0], [], None
-        for l in fh:
-            if l[0] in '@+>':
-                last = l[:-1]
-                break
-            seqs.append(l[:-1])
-        if not last or last[0] != '+':
-            yield name, ''.join(seqs), None
-            if not last: break
-        else:
-            seq, leng, seqs = ''.join(seqs), 0, []
-            for l in fh:
-                seqs.append(l[:-1])
-                leng += len(l) - 1
-                if leng >= len(seq):
-                    last = None
-                    yield name, seq, ''.join(seqs);
-                    break
-            if last:
-                yield name, seq, None
-                break
+class Fastq(object):
+    def __init__(self, args):
+        self.name = args[0][1:]
+        self.seq = args[1]
+        self.qual = args[3]
+        assert len(self.seq) == len(self.qual)
+    
+    def __repr__(self):
+        return "Fastq({name})".format(name=self.name)
+    
+    def __str__(self):
+        return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
+                seq=self.seq, qual=self.qual)
+
+def readfq(fq):
+    with nopen(fq) as fh:
+        fqclean = (x.strip("\r\n") for x in fh if x.strip())
+        while True:
+            rd = [x for x in islice(fqclean, 4)]
+            if not rd: raise StopIteration
+            assert all(rd) and len(rd) == 4
+            yield Fastq(rd)
+
 
 def chunker(it, n):
     """
-    >>> chunker('AAAABBBC', 4)
-    ['AAAA', 'AAAB', 'AABB', 'ABBB', 'BBBC', 'BBC', 'BC', 'C']
+    >>> chunker("ABCDEF", 4)
+    ['ABCD', 'BCDE', 'CDEF', 'DEF', 'EF', 'F']
     """
     return [it[i:i+n] for i in xrange(0, len(it), 1)]
 
@@ -50,18 +43,19 @@ def get_trim_loc(seq, base, fraction, wsize):
     return len(seq)
 
 def main(args):
-    with nopen(args.fastq) as fh:
-        for name, seq, qual in readfx(fh):
-            pos = get_trim_loc(seq, args.b, args.f, args.w)
-            if pos > args.l:
-                print "@%s\n%s\n+\n%s" % (name, seq[:pos], qual[:pos])
+    for rd in readfq(args.fastq):
+        pos = get_trim_loc(rd.seq, args.b, args.f, args.w)
+        if pos > args.l:
+            rd.seq = seq[:pos]
+            rd.qual = qual[:pos]
+            print rd
 
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("fastq")
-    p.add_argument("-b", choices=['A','C','G','T'], required=True,
+    p.add_argument("-b", choices=['A','C','G','T','N'], required=True,
             help="base to trim")
     p.add_argument("-f", metavar="FRACTION", default=0.6, type=float,
             help="trimming threshold [%(default)s]")
