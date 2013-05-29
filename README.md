@@ -11,20 +11,6 @@
 
 #Canine; Duval
 
-TGGAATTCTCGGGTGCCAAGGAAC
-TAGCTTATCAGACTGATGTTGACT
-AAGCTGCCAGTTGAAGAACTGTTG
-
-TGGAATTCTCGGGTGCCAAGGAAC
-TAGCTTATCAGACTGATGTTGACT
-TACCCTGTAGAACCGAATTTGTTGGAATTCTCGGG
-AAGCTGCCAGTTGAAGAACTGTTGGAATTCTCGGG
-TAGCTTATCAGACTGATGTTGATGGAATTCTCGGG
-CAACGGAATCCCAAAAGCAGCTGTGGAATTCTCGG
-TAGCAGCACGTAAATATTGGCGTGGAATTCTCGGG
-TAGCTTATCAGACTGATGTTGACCTGGAATTCTCG
-TGTCTGAGCGTCGCTTGGAATTCTCGGGTGCCAAG
-
 #Davidson; Human; T-Cell repertoire
 
 #Deterding
@@ -59,6 +45,7 @@ TGTCTGAGCGTCGCTTGGAATTCTCGGGTGCCAAG
 #Walter
 
 + scikit-learn for testing different classification methods
-+ nick (k-nearest neighbors and random forests)
-+ CART, svm, neural network
 + convert IDs from chauss... and finish implementing plotting along with corrplot-like plots
+
++ given list with direction, compute a score for each patient along with their group (TB, noinf, etc.)
++ calculate threshold for plot
