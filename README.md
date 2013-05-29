@@ -15,19 +15,21 @@
 
 #Deterding
 
-+ need to meet to discuss IPA
-
-#Hits-Clip; hg18
+#Hits-Clip
 
 + still need to run PK61-63
 + heatmap of miRNA, something that you can zoom into
 + matrix2png
 
-#Poly(A); hg18
+#Poly(A)
 
 + add class to peak name
++ update ucsc
++ run dexseq for all combinations (1v1 with fake rep)
++ send dexseq results
 
-+ maybe just run dexseq without real replicates and see how many are significant
++ start work on fisher testing of pairs to see whether we're getting the right answer
+
 + classify proximal-distal using log2foldchange
 + group each classified dexseq results into categories
 
