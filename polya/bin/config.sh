@@ -12,3 +12,4 @@ BIN=$HOME/devel/polya
 UMI=NNNNNV
 FASTA=$HOME/ref/hg18/hg18.fa
 EXONS=$HOME/ref/hg18/refseq.exon.bed.gz
+RUNDEXSEQ=$BIN/run_dexseq.R
