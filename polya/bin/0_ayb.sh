@@ -5,12 +5,7 @@
 #BSUB -q normal
 #BSUB -P pillai_kabos_polya
 
-<<DOC
-call bases using AYB
-DOC
-
 set -o nounset -o errexit -o pipefail -x
-
 source $HOME/projects/polya/bin/config.sh
 
 lane=4
@@ -20,6 +15,7 @@ date=20130423
 bs=R6I14C36
 # 100 bp
 # bs=R6I14C86
+
 # Expected folder structure:
 # $HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
 cifs=$HOME/projects/polya/data/$date
@@ -56,12 +52,10 @@ done
 # wait for completion
 python -m bsub $jobids
 # concatenate into one gzipped fastq
-cat $cifs/*.fastq | gzip -c > $fastq
+cat $cifs/*${lane}*.fastq | gzip -c > $fastq
 # remove individual, non-gzipped fastqs from ayb
-rm $cifs/?_?_*.fastq
+rm $cifs/?_${lane}_*.fastq
 # clean ayb output
 rm $cifs/ayb*.tab
 # demultiplex
-fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq
-# leaving unmatched.fq for troubleshooting
-gzip -f $DATA/*.fq
+fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq.gz
