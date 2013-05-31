@@ -84,7 +84,7 @@ fi
 
 if [[ ! -f $classified ]]; then
     # this shouldn't need to be sorted, so may want to look into pclass script
-    pclassify.py $peak $posbg $negbg $FASTA $CHROM_SIZES \
+    python $BIN/classify_peaks.py $peak $posbg $negbg $FASTA $CHROM_SIZES \
         | bedtools sort -i - \
         | gzip -c > $classified
 fi
