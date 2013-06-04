@@ -11,10 +11,10 @@ class Fastq(object):
         self.seq = args[1]
         self.qual = args[3]
         assert len(self.seq) == len(self.qual)
-    
+
     def __repr__(self):
         return "Fastq({name})".format(name=self.name)
-    
+
     def __str__(self):
         return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
                 seq=self.seq, qual=self.qual)
@@ -27,7 +27,6 @@ def readfq(fq):
             if not rd: raise StopIteration
             assert all(rd) and len(rd) == 4
             yield Fastq(rd)
-
 
 def chunker(it, n):
     """

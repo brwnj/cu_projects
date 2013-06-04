@@ -18,5 +18,5 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 
-python $BIN/run_dexseq.py $RUNDEXSEQ $counts
+python $BIN/run_dexseq.py -p pillai_kabos_polya $RUNDEXSEQ $counts
 mv *_vs_* $results/
