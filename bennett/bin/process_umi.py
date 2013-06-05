@@ -11,36 +11,34 @@ from toolshed import nopen
 from collections import Counter, defaultdict
 from itertools import islice, groupby, izip
 
-__version__ = "0.7"
+__version__ = "1.0"
 
 IUPAC = {"A":"A","T":"T","C":"C","G":"G","R":"GA","Y":"TC",
          "M":"AC","K":"GT","S":"GC","W":"AT","H":"ACT",
          "B":"GTC","V":"GCA","D":"GAT","N":"GATC"}
 
-def read_fastq(fh):
-    """fastq parser that returns name, seq, and qual."""
-    while True:
-        values = list(islice(fh, 4))
-        if len(values) == 4:
-            id1, seq, id2, qual = values
-        elif len(values) == 0:
-            raise StopIteration
-        else:
-            raise EOFError("unexpected end of file")
-        assert id1.startswith('@')
-        assert id2.startswith('+')
-        assert len(seq) == len(qual)
-        yield id1[1:-1], seq[:-1], qual[:-1]
+class Fastq(object):
+    def __init__(self, args):
+        self.name = args[0][1:]
+        self.seq = args[1]
+        self.qual = args[3]
+        assert len(self.seq) == len(self.qual)
+    
+    def __repr__(self):
+        return "Fastq({name})".format(name=self.name)
+    
+    def __str__(self):
+        return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
+                seq=self.seq, qual=self.qual)
 
-def read_fasta(fa):
-    """parses fasta filehandle and returns name and sequence."""
-    for header, group in groupby(fa, lambda line: line[0] == '>'):
-        if header:
-            line = group.next()
-            name = line[1:].strip()
-        else:
-            seq = ''.join(line.strip() for line in group)
-            yield name, seq
+def readfq(fq):
+    with nopen(fq) as fh:
+        fqclean = (x.strip("\r\n") for x in fh if x.strip())
+        while True:
+            rd = [x for x in islice(fqclean, 4)]
+            if not rd: raise StopIteration
+            assert all(rd) and len(rd) == 4
+            yield Fastq(rd)
 
 def valid_umi(iupac, umi):
     """parse UMI sequence to validate against IUPAC sequence."""
@@ -51,36 +49,6 @@ def valid_umi(iupac, umi):
         except KeyError:
             return False
     return True
-
-def run_dump(args):
-    """fastq, umi, position"""
-    with nopen(args.fastq) as fh:
-        for name, seq, qual in read_fastq(fh):
-            umi = seq[:args.length]
-            print ">%s\n%s" % (name.split()[0], umi)
-
-def fasta_to_dict(fasta):
-    """docstring for fasta_to_dict"""
-    d = {}
-    with nopen(fasta) as fh:
-        for name, seq in read_fasta(fh):
-            # should no longer need to split here
-            d[name.split()[0]] = seq
-    return d
-
-def run_add(args):
-    """fastq, fasta"""
-    umi_d = fasta_to_dict(args.fasta)
-    umi_qual = 'J' * len(umi_d[umi_d.keys()[0]])
-    with nopen(args.fastq) as fh:
-        for name, seq, qual in read_fastq(fh):
-            try:
-                umi = umi_d[name.split()[0]]
-                assert len(umi) == len(umi_qual)
-            except KeyError:
-                # read not present in R1; flag with invalid UMI
-                umi = 'X' * len(umi_qual)
-            print "@%s\n%s%s\n+\n%s%s" % (name, umi, seq, umi_qual, qual)
 
 def run_sort(args):
     """fastq, length"""
@@ -111,25 +79,6 @@ def distance(a, b):
         for i in xrange(0, la-lb+1):
             dists.append(ed.distance(a[i:i+lb], b))
         return min(dists)
-
-def remove_matches(counter, mismatches):
-    """filters based on Levenshtein distance. returns set."""
-    # what to remove from the set
-    ignore = set()
-    # what to skip during iteration
-    seen = set()
-    # inherently ordered by abundance
-    seqs = set(list(counter))
-    for target in seqs:
-        if target in seen: continue
-        seen.add(target)
-        for query in seqs:
-            if query in seen: continue
-            if distance(target, query) < mismatches:
-                ignore.add(query)
-                # no longer calculate distance for this query
-                seen.add(query)
-    return seqs - ignore
 
 def process_pairs(r1_out, r2_out, r1counter, r1dd, r2d, umiseq, mismatches, readid):
     """prints every unique read per umi"""
@@ -226,27 +175,6 @@ if __name__ == "__main__":
             formatter_class=argparse.RawDescriptionHelpFormatter)
     subp = p.add_subparsers(help='commands')
 
-    # dump UMI sequence from R1 into fasta
-    fdump = subp.add_parser('dump',
-            description="Prints fasta of read name and 5' UMI sequence.",
-            help="obtain fasta of read name and 5' UMI sequence")
-    fdump.add_argument('fastq', metavar="FASTQ",
-            help="fastq containing a UMI")
-    fdump.add_argument('length', metavar="LENGTH", type=int,
-            help="length of the UMI sequence")
-    fdump.set_defaults(func=run_dump)
-
-    # attach UMI of R1 onto R2 for identification
-    fadd = subp.add_parser('add',
-            description="Add UMI of dumped FASTA onto matched read name of \
-                    FASTQ on the 5' end. Quality of the UMI will be 'J'.",
-            help="add 5' UMI from dumped fasta onto reads of FASTQ")
-    fadd.add_argument('fastq', metavar="FASTQ",
-            help="reads onto which to add the UMI")
-    fadd.add_argument('fasta', metavar="FASTA",
-            help="dumped UMI sequences")
-    fadd.set_defaults(func=run_add)
-
     # sorting the fastq by umi
     fsort = subp.add_parser('sort',
             description="Sorts fastq by UMI.",
@@ -257,22 +185,6 @@ if __name__ == "__main__":
             help='length of the UMI sequence')
     fsort.set_defaults(func=run_sort)
     
-    # find most abundance sequence per umi
-    fscan = subp.add_parser('scan',
-            description="Finds most abundant sequence per valid UMI.",
-            help="find most abundant sequence per UMI")
-    fscan.add_argument('fastq', metavar="FASTQ",
-            help="reads with UMI to scan")
-    fscan.add_argument('umi', metavar="UMI",
-            help='IUPAC sequence of the UMI, e.g. NNNNNV')
-    fscan.add_argument('-m', '--mismatches', type=int, default=3,
-            help='allowable mismatches when finding unique sequences [%(default)s]')
-    fscan.add_argument('-5', dest='five', type=int, default=0,
-            help="number of 5' bases to trim AFTER the UMI sequence [%(default)s]")
-    fscan.add_argument('-3', dest='three', type=int, default=0,
-            help="number of 3' bases to trim [%(default)s]")
-    fscan.set_defaults(func=run_scan)
-
     # find most abundance sequence per umi among paired-end reads
     fscanp = subp.add_parser('scanp',
             description="Finds most abundant sequence per valid UMI among \
@@ -282,20 +194,12 @@ if __name__ == "__main__":
             help="R1 FASTQ with UMI to scan.")
     fscanp.add_argument('r2i', metavar="R2-IN",
             help="R2 FASTQ with UMI to scan.")
-    fscanp.add_argument('r1o', metavar="R1-OUT", help="R1 output FASTA.")
-    fscanp.add_argument('r2o', metavar="R2-OUT", help="R2 output FASTA.")
+    fscanp.add_argument('r1o', metavar="R1-OUT", help="R1 output FASTQ.")
+    fscanp.add_argument('r2o', metavar="R2-OUT", help="R2 output FASTQ.")
     fscanp.add_argument('umi', metavar="UMI",
             help='IUPAC sequence of the UMI, e.g. NNNNNV')
     fscanp.add_argument('-m', '--mismatches', type=int, default=3,
             help='allowable mismatches when finding unique sequences [%(default)s]')
-    fscanp.add_argument('--r1-5', dest='r1five', type=int, default=0,
-            help="number of 5' bases to trim AFTER the UMI sequence in R1 [%(default)s]")
-    fscanp.add_argument('--r1-3', dest='r1three', type=int, default=0,
-            help="number of 3' bases to trim in R1 [%(default)s]")
-    fscanp.add_argument('--r2-5', dest='r2five', type=int, default=0,
-            help="number of 5' bases to trim AFTER the UMI sequence in R2 [%(default)s]")
-    fscanp.add_argument('--r2-3', dest='r2three', type=int, default=0,
-            help="number of 3' bases to trim in R2 [%(default)s]")
     fscanp.set_defaults(func=run_scanp)
     
     args = p.parse_args()
