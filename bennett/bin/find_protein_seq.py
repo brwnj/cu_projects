@@ -15,14 +15,6 @@ def get_proteins(f):
         d[t['id']] = t['pseq']
     return d
 
-def translate(seq):
-    """translates the sequence in each reading frame"""
-    seq = Seq(seq)
-    i = -1
-    while i < 2:
-        i += 1
-        yield seq[i:].translate(to_stop=True).tostring()
-
 def get_seqs(fn):
     seqs = {}
     for l in reader(fn):
@@ -39,7 +31,6 @@ def chunker(it, n):
 
 def build_trie(p, seqs):
     t = trie.trie()
-    # the lengths of the query sequences
     lengths = sorted(set([len(v) for v in p.values()]))
     for name, seq in seqs.iteritems():
         seq_len = len(seq)
@@ -52,7 +43,6 @@ def build_trie(p, seqs):
     return t
 
 def process_seqs(t, pseqs):
-    #iterate through the protein sequences and see if there are any hits
     for name, pseq in pseqs.iteritems():
         print pseq
         print t.get_approximate(pseq, 2)

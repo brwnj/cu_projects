@@ -29,15 +29,15 @@ def readfq(fq):
             assert all(rd) and len(rd) == 4
             yield Fastq(rd)
 
-def main(args):
-    for idx, rec in izip(readfq(args.index), readfq(args.fastq)):
+def main(index, fastq, begin, end):
+    for idx, rec in izip(readfq(index), readfq(fastq)):
         assert idx.name.partition(" ")[0] == rec.name.partition(" ")[0]
-        if args.end:
-            idx.seq = idx.seq[args.begin:args.end]
-            idx.qual = idx.qual[args.begin:args.end]
+        if end:
+            idx.seq = idx.seq[begin:end]
+            idx.qual = idx.qual[begin:end]
         else:
-            idx.seq = idx.seq[args.begin:]
-            idx.qual = idx.qual[args.begin:]
+            idx.seq = idx.seq[begin:]
+            idx.qual = idx.qual[begin:]
         rec.seq = idx.seq + rec.seq
         rec.qual = idx.qual + rec.qual
         print rec
@@ -52,5 +52,5 @@ if __name__ == '__main__':
             help="0-based start of index read to save [%(default)s]")
     p.add_argument("-e", dest="end", type=int,
             help="0-based end of index read to save")
-    args = p.parse_args()
-    main(args)
+    args = vars(p.parse_args())
+    main(**args)

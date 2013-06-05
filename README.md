@@ -1,5 +1,7 @@
 #Bennett
 
++ per umi filtering...
+
 + cdr3 contained in R1; try that through high-vquest
 
 + take the most abundant sequence per UMI with highest quality for each direction
