@@ -1,5 +1,7 @@
 #Bennett
 
++ cdr3 contained in R1; try that through high-vquest
+
 + take the most abundant sequence per UMI with highest quality for each direction
 + trim the primer sequences and annotate
 + join the reads
@@ -10,6 +12,10 @@
 + only interested in protein sequences containing YYC, YFC, and YSC
 
 #Canine; Duval
+
++ go through email to determine comparison groups
++ script to run deseq across specified groups
++ attempt to characterize differentially expressed sequences
 
 #Davidson; Human; T-Cell repertoire
 
@@ -23,13 +29,7 @@
 
 #Poly(A)
 
-+ add class to peak name
-+ update ucsc
-+ run dexseq for all combinations (1v1 with fake rep)
-+ send dexseq results
-
 + start work on fisher testing of pairs to see whether we're getting the right answer
-
 + classify proximal-distal using log2foldchange
 + group each classified dexseq results into categories
 
