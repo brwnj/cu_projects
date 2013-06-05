@@ -31,9 +31,14 @@
 
 #Poly(A)
 
-+ start work on fisher testing of pairs to see whether we're getting the right answer
-+ classify proximal-distal using log2foldchange
-+ group each classified dexseq results into categories
++ new browser session with new beds
++ explain that these peaks correspond to those used in latest test results
++ send link to sandbox containing dexseq results
++ parse dexseq results into proximal, distal, no-change, no-test
+
++ "in this test, this gene is observed to shift distally" -- using fold change
+across significant sites of a single gene
++ figure out exactly how to characterize genes with more than 2 significant sites
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
     + map some human to mouse and see how many map (percentage wise)
@@ -42,9 +47,6 @@
     + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
-
-+ cluster into patterns of states when comparing between replicates
-+ all decreasing, all increasing, etc.
 
 #Walter
 
