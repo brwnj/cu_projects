@@ -1,5 +1,7 @@
 #Bennett
 
++ You want numbers of unique protein sequences per barcode for patient 1
+
 + per umi filtering...
 
 + cdr3 contained in R1; try that through high-vquest
@@ -31,10 +33,11 @@
 
 #Poly(A)
 
-+ new browser session with new beds
-+ explain that these peaks correspond to those used in latest test results
-+ send link to sandbox containing dexseq results
++ call peaks using non-umi data
++ fake exons in order to visualize shifts
+
 + parse dexseq results into proximal, distal, no-change, no-test
++ merge bams, combine peaks, call classes, flag peaks not intersecting peaks as lower confidence
 
 + "in this test, this gene is observed to shift distally" -- using fold change
 across significant sites of a single gene
