@@ -55,3 +55,5 @@ across significant sites of a single gene
 + levin classification; score
 + given list with direction, compute a score for each patient along with their group (TB, noinf, etc.)
 + calculate threshold for plot
+
++ adding total intensity at up-regulated transcripts and subtracting total intensity at all down-regulated transcripts
