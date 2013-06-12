@@ -26,16 +26,15 @@ dte = read.table("246_metadata.txt", header=TRUE)
 dto = read.table("135_metadata.txt", header=TRUE)
 
 # plots for v region
-# bar plot
-p <- ggplot(dt, aes(v_region, fill=sample))
-# add the histogram
-p <- p + geom_histogram(binwidth=2, position=position_dodge())
-# group plots by sample
-# p <- p + facet_grid(. ~ sample)
-# white background
+p <- ggplot(dto, aes(v_region, fill=sample))
+p <- p + geom_histogram(binwidth=2, position=position_dodge(), color="black")
+# p <- p + facet_wrap(~ sample, ncol=1)
 p <- p + theme_bw()
-# rotate the labels
-p <- p + theme(axis.text.x = element_text(angle = 90, hjust = 1))
+p <- p + theme(axis.text.x = element_text(angle = 65, hjust = 1))
+p <- p + labs(x="V Region", y="Counts", title="Identified Alpha Variable TCR Sequence Distribution")
+# p <- p + theme(legend.position="none")
+p <- p + theme(panel.grid.major.x=element_blank(), panel.grid.major.y=element_blank(), panel.grid.minor.x=element_blank(), panel.grid.minor.y=element_blank())
+p <- p + scale_fill_discrete(name="Samples", labels=c("Alpha 1", "Alpha 3", "Alpha 5"))
 p
 
 # average coverage
