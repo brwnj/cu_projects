@@ -32,6 +32,20 @@ for f in *.aa.txt; do awk '$3=="productive"{split($2,n,":"); print n[2]":"n[3]":
 
 #Poly(A)
 
++ intronic peaks
++ don't necessarily test with these sites, but may want to add yet another track
+with all sites + intronic peaks
++ meme; motif finding; intronic memes for the clip data
+
++ may have to eventually compare present vs absent for peaks rather than relying
+on dexseq calls for significance
+
++ lsf job submission help for austin
++ driver scripts
+
++ phyper
++ this set of miRNA in a given set of genes, what are the odds
+
 + call peaks using non-umi data
 + fake exons in order to visualize shifts
 
