@@ -23,7 +23,7 @@ stats=$outdir/$name.remac.alignment_stats.txt
 idx=$HOME/ref/tetrahymena/JCVI_TTA1_2_2_18.novoidx
 
 if [ ! -f $bam ]; then
-    novoalign -d $idx -f $pair -o SAM -r None -i 250 100 -c 8 -k \
+    novoalign -d $idx -f $pair -o SAM "@RG\tID:$name\tSM:$name\tPU:Illumina\tLB:PE" -r None -i 250 100 -c 8 -k \
         2> $stats \
         | samtools view -ShuF4 - \
         | samtools sort -o - $name.temp -m 8G \
