@@ -6,6 +6,7 @@ molecular identifier (UMI).
 """
 import sys
 import gzip
+import textwrap
 import editdist as ed
 import subprocess as sp
 from toolshed import nopen
@@ -58,9 +59,11 @@ def run_sort(args):
     else:
         cmd = "cat %s | " % args.fastq
     # sort by the UMI, then by read name for paired-end sync
-    cmd += """awk '{printf($0);n++;if(n%4==0){printf("\\n")}else{printf("\\t")}}' |\
-                awk '{i=substr($2,1,8); print i"\\t"$0}' | sort -k1,1 -k2,2 |\
-                cut -f 2,3,4,5 | tr "\\t" "\\n\""""
+    cmd += ("""awk '{printf($0);n++;if(n%4==0){printf("\\n")}else{printf("\\t")}}' | """
+                """awk '{i=substr($2,1,length); print i"\\t"$0}' | """
+                """sort -k1,1 -k2,2 | """
+                """cut -f 2,3,4,5 | """
+                """tr "\\t" "\\n\"""").replace("length", args.length)
     sp.call(cmd, shell=True)
 
 def decode(x):
@@ -119,8 +122,8 @@ def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
             r2seqs.update([r2name_to_seq[name]])
         
         r2_seq = r2seqs.most_common(1)[0][0]
-        r1out.write(">read_%d:%s 1\n%s\n+\n%s\n" % (n, umi, seq, r1seq_to_qual[seq]))
-        r2out.write(">read_%d:%s 2\n%s\n+\n%s\n" % (n, umi, r2_seq, r2seq_to_qual[r2_seq]))
+        r1out.write("@read_%d:%s 1\n%s\n+\n%s\n" % (n, umi, seq, r1seq_to_qual[seq]))
+        r2out.write("@read_%d:%s 2\n%s\n+\n%s\n" % (n, umi, r2_seq, r2seq_to_qual[r2_seq]))
         n += 1
     return n
 
@@ -139,7 +142,7 @@ def add_qual(d, k, q):
         d[k] = q
     return d
 
-def run_scanp(args):
+def run_collapse(args):
     """r1, r2, umi, mismatches"""
     mmatch = args.mismatches
     iupac_umi = args.umi
@@ -201,13 +204,13 @@ if __name__ == "__main__":
     fsort.set_defaults(func=run_sort)
     
     # pull out each unique sequence per UMI
-    fscanp = subp.add_parser('scanp', description="Finds unique sequences per valid UMI among paired-end reads.", help="find most abundant sequence per UMI given paired-end reads")
-    fscanp.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI to scan.")
-    fscanp.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI to scan.")
-    fscanp.add_argument('umi', metavar="UMI", help='IUPAC sequence of the UMI, e.g. NNNNNV')
-    fscanp.add_argument('-c', '--cutoff', type=int, default=200, help='shortest allowable read length after trimming at first N')
-    fscanp.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
-    fscanp.set_defaults(func=run_scanp)
+    fcollapse = subp.add_parser('collapse', description="Finds unique sequences per valid UMI among paired-end reads.", help="find most abundant sequence per UMI given paired-end reads")
+    fcollapse.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI to scan.")
+    fcollapse.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI to scan.")
+    fcollapse.add_argument('umi', metavar="UMI", help='IUPAC sequence of the UMI, e.g. NNNNNV')
+    fcollapse.add_argument('-c', '--cutoff', type=int, default=200, help='shortest allowable read length after trimming at first N')
+    fcollapse.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
+    fcollapse.set_defaults(func=run_collapse)
     
     args = p.parse_args()
     main(args)
