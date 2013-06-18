@@ -49,8 +49,8 @@ if __name__ == '__main__':
     p.add_argument("index", metavar="INDEX", help="index read")
     p.add_argument("fastq", metavar="FASTQ", help="R1 or R2")
     p.add_argument("-b", dest="begin", default=0, type=int,
-            help="0-based start of index read to save")
+            help="exclusive 0-based start of index read to save")
     p.add_argument("-e", dest="end", type=int,
-            help="0-based end of index read to save")
+            help="inclusive 0-based end of index read to save")
     args = vars(p.parse_args())
     main(**args)
