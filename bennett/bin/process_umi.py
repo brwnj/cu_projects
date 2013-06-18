@@ -5,6 +5,7 @@ Finding unique restriction site associated DNA (RAD) tag sequences per unique
 molecular identifier (UMI).
 """
 import sys
+import gzip
 import editdist as ed
 import subprocess as sp
 from toolshed import nopen
@@ -128,7 +129,7 @@ def get_name(name):
         sample = name.split(".fastq")[0]
     else:
         sample = name.split(".fq")[0]
-    return "{sample}.umifiltered.fastq".format(**locals())
+    return "{sample}.umifiltered.fastq.gz".format(**locals())
 
 def add_qual(d, k, q):
     try:
@@ -145,8 +146,8 @@ def run_scanp(args):
     umileng = len(iupac_umi)
     cutoff = args.cutoff
     readid = 1
-    r1out = open(get_name(args.r1), 'wb')
-    r2out = open(get_name(args.r2), 'wb')
+    r1out = gzip.open(get_name(args.r1), 'wb')
+    r2out = gzip.open(get_name(args.r2), 'wb')
 
     for umi, group in groupby(izip(readfq(args.r1), readfq(args.r2)), key=lambda (rr1, rr2): rr1.seq[:umileng]):
         r1seqs = Counter()
