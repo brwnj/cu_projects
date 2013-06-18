@@ -7,12 +7,10 @@ for f in *.aa.txt; do echo $f; awk '{if(NR==1){print};if($3=="productive"){split
 ```
 for f in *.aa.txt; do awk '$3=="productive"{split($2,n,":"); print n[2]":"n[3]":"$15,$0}' $f | sort -u -k1,1 | cut -f2- > ${f%.aa*}.unique.headless.txt; done
 ```
-+ per umi filtering...
++ all unique reads per UMI
++ annotate the primers
++ join the reads? or run through high-v and join later
 
-+ take the most abundant sequence per UMI with highest quality for each direction
-+ trim the primer sequences and annotate
-+ join the reads
-+ search for protein sequences
 
 #Canine; Duval
 
