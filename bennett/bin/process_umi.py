@@ -62,8 +62,20 @@ def run_sort(args):
                 cut -f 2,3,4,5 | tr "\\t" "\\n\""""
     sp.call(cmd, shell=True)
 
-# def trimmed_seq(seq, leng, t5, t3):
-#     return seq[leng + t5:-t3] if t3 > 0 else seq[leng + t5:]
+def decode(x):
+    """
+    >>> decode("4")
+    19
+    """
+    return ord(x) - 33
+
+def average(quals):
+    """
+    >>> average("/==96996<FGCHHHGGGFFE=EDFFFEEB")
+    32.53...
+    """
+    vals = map(decode, quals)
+    return sum(vals)/float(len(quals))
 
 def distance(a, b):
     """find best edit distance between two strings of potentially uneven length.
@@ -79,11 +91,13 @@ def distance(a, b):
             dists.append(ed.distance(a[i:i+lb], b))
         return min(dists)
 
-def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq, umi, m, n):
+def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
+                    r1seq_to_qual, r2seq_to_qual, umi, m, n):
     """prints every unique read per umi and add the UMI sequence to the name."""
     ignore = set()
     seen = set()
-    r1seqsset = set(list(r1seqs))
+    # sorted by length, longest first
+    r1seqsset = set(sorted(list(r1seqs), key=len, reverse=True))
     for target in r1seqsset:
         if target in seen: continue
         seen.add(target)
@@ -103,9 +117,9 @@ def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq, umi, m, n)
             # list of read names used in this bin
             r2seqs.update([r2name_to_seq[name]])
         
-        # need a fastq
-        r1out.write(">read_%d:%s 1\n%s\n" % (readid, umiseq, seq))
-        r2out.write(">read_%d:%s 2\n%s\n" % (readid, umiseq, r2seqs.most_common(1)[0][0]))
+        r2_seq = r2seqs.most_common(1)[0][0]
+        r1out.write(">read_%d:%s 1\n%s\n+\n%s\n" % (n, umi, seq, r1seq_to_qual[seq]))
+        r2out.write(">read_%d:%s 2\n%s\n+\n%s\n" % (n, umi, r2_seq, r2seq_to_qual[r2_seq]))
         n += 1
     return n
 
@@ -116,41 +130,67 @@ def get_name(name):
         sample = name.split(".fq")[0]
     return "{sample}.umifiltered.fastq".format(**locals())
 
+def add_qual(d, k, q):
+    try:
+        if average(d[k]) < average(q):
+            d[k] = q
+    except KeyError:
+        d[k] = q
+    return d
+
 def run_scanp(args):
     """r1, r2, umi, mismatches"""
     mmatch = args.mismatches
     iupac_umi = args.umi
-    leng = len(iupac_umi)
+    umileng = len(iupac_umi)
+    cutoff = args.cutoff
     readid = 1
     r1out = open(get_name(args.r1), 'wb')
     r2out = open(get_name(args.r2), 'wb')
-    for umi, group in groupby(izip(readfq(args.r1), readfq(args.r2)), key=lambda (rr1, rr2): rr1.seq[:leng]):
+
+    for umi, group in groupby(izip(readfq(args.r1), readfq(args.r2)), key=lambda (rr1, rr2): rr1.seq[:umileng]):
         r1seqs = Counter()
         r1seq_to_name = defaultdict(list)
         r2name_to_seq = {}
+        r1seq_to_qual = {}
+        r2seq_to_qual = {}
+
         for r1, r2 in group:
-            assert r2.seq[:leng] == umi
+            assert r2.seq[:umileng] == umi
             assert r1.name.split()[0] == r2.name.split()[0]
             if not valid_umi(iupac_umi, umi): continue
             
-            trimmed_r2_seq = r2.seq.split("N")[0]
-            if len(trimmed_r2_seq) < 100: continue
-            trimmed_r2_qual = r2.qual[len(trimmed_r2_seq):]
+            # trim UMI and clip at first N
+            trimmed_r1_seq = r1.seq.split("N", 1)[0][umileng:]
+            trimmed_r2_seq = r2.seq.split("N", 1)[0][umileng:]
 
-            r1seqs.update([r1.seq])
-            r1seq_to_name[r1.seq].append(r1.name)
+            if len(trimmed_r1_seq) < cutoff or len(trimmed_r2_seq) < cutoff: continue
+
+            trimmed_r1_qual = r1.qual[umileng:len(trimmed_r1_seq) + umileng]
+            trimmed_r2_qual = r2.qual[umileng:len(trimmed_r2_seq) + umileng]
+            
+            assert len(trimmed_r1_seq) == len(trimmed_r1_qual)
+            assert len(trimmed_r2_seq) == len(trimmed_r2_qual)
+
+            r1seqs.update([trimmed_r1_seq])
+            r1seq_to_name[trimmed_r1_seq].append(r1.name)
             r2name_to_seq[r2.name] = trimmed_r2_seq
-        
-        # magic...
-        readid = process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq, umi, mmatch, readid)
-        sys.exit(1)
+            
+            # maintains best qual per seq
+            r1seq_to_qual = add_qual(r1seq_to_qual, trimmed_r1_seq, trimmed_r1_qual)
+            r2seq_to_qual = add_qual(r2seq_to_qual, trimmed_r2_seq, trimmed_r2_qual)
+
+        # process UMI group, writing to files, and returning current read id
+        readid = process_pairs(r1out, r2out, r1seqs, r1seq_to_name,
+                                r2name_to_seq, r1seq_to_qual, r2seq_to_qual,
+                                umi, mmatch, readid)
 
 def main(args):
     args.func(args)
 
 if __name__ == "__main__":
     import argparse
-    p = argparse.ArgumentParser(description=__doc__, version=__version__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p = argparse.ArgumentParser(description=__doc__, version=__version__, formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     subp = p.add_subparsers(help='commands')
 
     # sorting the fastq by umi
@@ -164,7 +204,8 @@ if __name__ == "__main__":
     fscanp.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI to scan.")
     fscanp.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI to scan.")
     fscanp.add_argument('umi', metavar="UMI", help='IUPAC sequence of the UMI, e.g. NNNNNV')
-    fscanp.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences [%(default)s]')
+    fscanp.add_argument('-c', '--cutoff', type=int, default=200, help='shortest allowable read length after trimming at first N')
+    fscanp.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
     fscanp.set_defaults(func=run_scanp)
     
     args = p.parse_args()
