@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#BSUB -J counts[1-33]
+#BSUB -J counts[1-39]
 #BSUB -e counts.%J.%I.err
 #BSUB -o counts.%J.%I.out
 #BSUB -q normal
