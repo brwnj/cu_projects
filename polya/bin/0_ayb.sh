@@ -8,8 +8,8 @@
 set -o nounset -o errexit -o pipefail -x
 source $HOME/projects/polya/bin/config.sh
 
-lane=4
-date=20130423
+lane=5
+date=20130619
 
 # 50 bp
 bs=R6I14C36
