@@ -33,7 +33,7 @@ if [[ ! -f $BAM ]]; then
     novoalign -d $NOVOIDX -f $FASTQ -a -o SAM -r A 20 -e 100 -s 2 -l 16 -c 8 -k \
         2> $SAMPLE.align_stats.txt \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $SAMPLE.temp -m 9500000000 \
+        | samtools sort -o - $SAMPLE.temp -m 8G \
         > $BAM
 fi
 if [[ ! -f $RBAM ]]; then
