@@ -7,10 +7,6 @@
 #BSUB -n 1
 #BSUB -P pillai_kabos_polya
 
-<<DOC
-call peaks using macs2.
-DOC
-
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/polya/bin/config.sh
 
