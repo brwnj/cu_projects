@@ -1,16 +1,7 @@
 #Bennett
 
-+ You want numbers of unique protein sequences per barcode for patient 1
-```
-for f in *.aa.txt; do echo $f; awk '{if(NR==1){print};if($3=="productive"){split($2,n,":"); print n[2]":"n[3]":"$15,$0}}' $f | sort -u -k1,1 | wc -l; done
-```
-```
-for f in *.aa.txt; do awk '$3=="productive"{split($2,n,":"); print n[2]":"n[3]":"$15,$0}' $f | sort -u -k1,1 | cut -f2- > ${f%.aa*}.unique.headless.txt; done
-```
-+ all unique reads per UMI
-+ annotate the primers
-+ join the reads? or run through high-v and join later
-
++ high-vquest of joined reads
++ parse output for something meaningful
 
 #Canine; Duval
 
@@ -29,6 +20,12 @@ for f in *.aa.txt; do awk '$3=="productive"{split($2,n,":"); print n[2]":"n[3]":
 + matrix2png
 
 #Poly(A)
+
++ SRCAP has a site that's 4 bases long, why?
++ get tracks up, change track heights, include shift directions
++ shortest height; session with all of the data; create groups
++ assign labels to tracks?
++ normals vs cancer; blah
 
 + intronic peaks
 + don't necessarily test with these sites, but may want to add yet another track
