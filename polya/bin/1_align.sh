@@ -40,16 +40,16 @@ if [[ ! -f $umibam ]]; then
     novoalign -d $NOVOIDX -f $fastq -o SAM -n 50 -r None -c 12 -k \
         2> $stats \
         | samtools view -ShuF4 - \
-        | samtools sort -o - $sample.temp -m 9500000000 \
+        | samtools sort -o - $sample.temp -m 8G \
         > $umibam
     samtools index $umibam
     # create bw
-    bam2bw $umibam $CHROM_SIZES $PROJECTID TRUE
+    bam2bw.py -5 -b -v $umibam $CHROM_SIZES $PROJECTID
 fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
     umitools rmdup --verbose $umibam $bam $UMI
     samtools index $bam
     # create bw
-    bam2bw $bam $CHROM_SIZES $PROJECTID TRUE 
+    bam2bw.py -5 -b -v $bam $CHROM_SIZES $PROJECTID
 fi
