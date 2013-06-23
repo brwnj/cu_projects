@@ -5,9 +5,8 @@
 
 #Canine; Duval
 
-+ go through email to determine comparison groups
-+ script to run deseq across specified groups
-+ attempt to characterize differentially expressed sequences
++ deliver relative levels
++ 
 
 #Davidson; Human; T-Cell repertoire
 
