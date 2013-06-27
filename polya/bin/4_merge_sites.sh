@@ -15,8 +15,6 @@ sample=${samples[$(($LSB_JOBINDEX - 1))]}
 peaks="$RESULT/${sample}*/*.classified.bed.gz"
 sites=$sample.sites.bed.gz
 
-# not working for PK samples on the cluster...
-
 if [[ ! -f $sites ]]; then
     python $BIN/merge_sites.py -n2 -c3 $EXONS $peaks | gzip -c > $sites
 fi
