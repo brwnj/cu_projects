@@ -1,12 +1,9 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Finding unique restriction site associated DNA (RAD) tag sequences per unique
-molecular identifier (UMI).
 """
 import sys
 import gzip
-import textwrap
 import editdist as ed
 import subprocess as sp
 from toolshed import nopen
