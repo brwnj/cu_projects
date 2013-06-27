@@ -22,35 +22,13 @@
 
 #Poly(A)
 
-+ SRCAP has a site that's 4 bases long, why?
 + get tracks up, change track heights, include shift directions
 + shortest height; session with all of the data; create groups
 + assign labels to tracks?
-+ normals vs cancer; blah
++ normals v cancer
 
-+ intronic peaks
-+ don't necessarily test with these sites, but may want to add yet another track
-with all sites + intronic peaks
-+ meme; motif finding; intronic memes for the clip data
-
-+ may have to eventually compare present vs absent for peaks rather than relying
-on dexseq calls for significance
-
-+ lsf job submission help for austin
-+ driver scripts
-
-+ phyper
-+ this set of miRNA in a given set of genes, what are the odds
-
-+ call peaks using non-umi data
-+ fake exons in order to visualize shifts
-
-+ parse dexseq results into proximal, distal, no-change, no-test
-+ merge bams, combine peaks, call classes, flag peaks not intersecting peaks as lower confidence
-
-+ "in this test, this gene is observed to shift distally" -- using fold change
-across significant sites of a single gene
-+ figure out exactly how to characterize genes with more than 2 significant sites
++ intronic peaks; start and stop of gene model as separate run; let austin know its location
++ don't necessarily test with these sites, but may want to add yet another track with all sites + intronic peaks
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
     + map some human to mouse and see how many map (percentage wise)
