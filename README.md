@@ -1,12 +1,14 @@
+# TODO
+
++ script to read bams, output normalized counts table
++ will require reference gtf, pybedtools, pandas, numpy
+
 #Bennett
 
 + high-vquest of joined reads
 + parse output for something meaningful
 
 #Canine; Duval
-
-+ deliver relative levels
-+ 
 
 #Davidson; Human; T-Cell repertoire
 
