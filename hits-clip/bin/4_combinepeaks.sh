@@ -15,23 +15,23 @@ set -o nounset -o pipefail -o errexit -x
 #            PK12 PK21 PK22 PK23 PK24 PK31 PK32 PK33 PK41 PK42 PK51 PK52 PK53 
 #            PK54 helaa helab)
 SAMPLEIDS=(PK61 PK62 PK63)
-SAMPLE=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
+SAMPLE=${SAMPLEIDS[$(($LSB_JOBINDEX - 1))]}
 
 STRANDS="pos neg"
 CHROMOSOMES="chr1 chr2 chr3 chr4 chr5 chr6 chr7 chr8 chr9 chr10 chr11 chr12 chr13 chr14 chr15 chr16 chr17 chr18 chr19 chr20 chr21 chr22 chrX chrY chrM"
 DATA=$HOME/projects/hits-clip/results/common/samples
-COMBINEDBED=$SAMPLE.peaks.bed
-SHUFFLECOMBINED=$SAMPLE.shuffle.peaks.bed
+COMBINEDBED=$SAMPLE.rmd.peaks.bed
+SHUFFLECOMBINED=$SAMPLE.rmd.shuffle.peaks.bed
 for STRAND in $STRANDS; do
     for CHROM in $CHROMOSOMES; do
         #regular peaks
-        zcat $SAMPLE.$CHROM.$STRAND.peaks.bed.gz >> $COMBINEDBED
+        zcat $SAMPLE.$CHROM.$STRAND.rmd.peaks.bed.gz >> $COMBINEDBED
         #shuffled peaks
-        zcat $SAMPLE.$CHROM.$STRAND.shuffle.peaks.bed.gz >> $SHUFFLECOMBINED
+        zcat $SAMPLE.$CHROM.$STRAND.rmd.shuffle.peaks.bed.gz >> $SHUFFLECOMBINED
     done
 done
 bedSort $COMBINEDBED $COMBINEDBED
 bedSort $SHUFFLECOMBINED $SHUFFLECOMBINED
 gzip -f $COMBINEDBED $SHUFFLECOMBINED
-cp $COMBINEDBED.gz $DATA/$SAMPLE/$COMBINEDBED.gz
-cp $SHUFFLECOMBINED.gz $DATA/$SAMPLE/$SHUFFLECOMBINED.gz
+cp $COMBINEDBED.gz $DATA/$SAMPLE/
+cp $SHUFFLECOMBINED.gz $DATA/$SAMPLE/
