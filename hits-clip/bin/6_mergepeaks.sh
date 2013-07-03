@@ -17,9 +17,9 @@ DOC
 #             "MP42.ACTG MP45.ACTG MP45.TCGA" "MP24 MP38") 
 # SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 # REPLICATE=${REPLICATES[${LSB_JOBINDEX}]}
-SAMPLE=something
+# SAMPLE=something
 REPLICATE="PK61 PK62 PK63"
-SRC=$HOME/devel/peaktools/peaktools/shit...
+# SRC=$HOME/devel/peaktools/peaktools/shit...
 
 CHROMSIZES=$HOME/ref/hg18/hg18.sizes
 CASE_DATA=$HOME/projects/hits-clip/results/common
@@ -49,7 +49,7 @@ function combine_replicates()
             python $SRC/combine_replicates.py -v $REPLICATES | gzip -c > $BADBED
         fi
 
-        bioawk -c header '$2<$3' $BADBED > $FIXED
+        awk -c header '$2<$3' $BADBED > $FIXED
         bedClip -verbose=2 $FIXED $CHROMSIZES $CLIPPED
         echo "track type=bed name=$SAMPLE.$STRAND visibility=pack" > $TRACK
         cat $CLIPPED >> $TRACK
@@ -73,8 +73,8 @@ function run_replicates()
         PEAK="$REPLICATE_DATA/$R/$R.$EXT"
         POSBED="$REPLICATE_DATA/$R/$R.pos.$EXT"
         NEGBED="$REPLICATE_DATA/$R/$R.neg.$EXT"
-        bioawk -c header '$6=="+"' $PEAK | gzip -c > $POSBED
-        bioawk -c header '$6=="-"' $PEAK | gzip -c > $NEGBED
+        awk -c header '$6=="+"' $PEAK | gzip -c > $POSBED
+        awk -c header '$6=="-"' $PEAK | gzip -c > $NEGBED
         POSREPS="$POSREPS $REPLICATE_DATA/$R/$R.pos.$EXT"
         NEGREPS="$NEGREPS $REPLICATE_DATA/$R/$R.neg.$EXT"
         REPS="$REPS $REPLICATE_DATA/$R/$R.$EXT"
