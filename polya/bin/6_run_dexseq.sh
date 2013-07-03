@@ -21,4 +21,4 @@ fi
 # run_dexseq.py submits jobs directly into the queue
 python $BIN/run_dexseq.py -p pillai_kabos_polya $RUNDEXSEQ $counts
 
-# for f in *.txt; do if [[ $(awk '{print $8}' $f | sort | uniq | wc -l) -gt 3 ]]; then echo $f: pass; else echo $f: fail; fi; done
+# for f in *_vs_*.txt; do if [[ $(awk '{print $8}' $f | sort | uniq | wc -l) -lt 3 ]]; then echo fail: $f; fi; done
