@@ -15,17 +15,18 @@ set -o nounset -o pipefail -o errexit -x
 #            PK12 PK21 PK22 PK23 PK24 PK31 PK32 PK33 PK41 PK42 PK51 PK52 PK53 
 #            PK54)
 SAMPLEIDS=(PK61 PK62 PK63)
-SAMPLE=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
+SAMPLE=${SAMPLEIDS[$(($LSB_JOBINDEX - 1))]}
 DATA=$HOME/projects/hits-clip/results/common/samples
 CUTOFF=.001
 
-REAL=$DATA/$SAMPLE/$SAMPLE.peaks.rmd.bed.gz
-NULL=$DATA/$SAMPLE/$SAMPLE.shuffle.peaks.rmd.bed.gz
-QVALS=$DATA/$SAMPLE/$SAMPLE.peaks.rmd.qv.bed.gz
-VALIDPEAKS=$DATA/$SAMPLE/$SAMPLE.peaks.rmd.qv$CUTOFF.bed.gz
+# i named the new ones slightly differently... great.
+REAL=$DATA/$SAMPLE/$SAMPLE.rmd.peaks.bed.gz
+NULL=$DATA/$SAMPLE/$SAMPLE.rmd.shuffle.peaks.bed.gz
+QVALS=$DATA/$SAMPLE/$SAMPLE.rmd.peaks.qv.bed.gz
+VALIDPEAKS=$DATA/$SAMPLE/$SAMPLE.rmd.peaks.qv$CUTOFF.bed.gz
 SUMMARY=$DATA/$SAMPLE/qvalue_summary.txt
 
 peaktools-qvalues -v $REAL $NULL | gzip -c > $QVALS
-bioawk -c header -v CO=${CUTOFF} '$7<CO' $QVALS | gzip -c > $VALIDPEAKS
+awk -cheader -v CO=${CUTOFF} '$7<CO' $QVALS | gzip -c > $VALIDPEAKS
 peaktools-qvalue-summary -t $CUTOFF $QVALS > $SUMMARY
 peaktools-qvalue-summary $QVALS >> $SUMMARY
