@@ -1,18 +1,15 @@
-# TODO
+# Dev
 
 + script to read bams, output normalized counts table
-+ will require reference gtf, pybedtools, pandas, numpy
 
 #Bennett
 
 + high-vquest of joined reads
 + parse output for something meaningful
 
-#Canine; Duval
-
-#Davidson; Human; T-Cell repertoire
-
 #Deterding
+
++ inquire about email
 
 #Hits-Clip
 
@@ -37,6 +34,19 @@
     + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
+
+#Spillman; Human; ChIP
+
++ Minus
+    + E2Input_minus
+    + E21PR1_minus
+    + E21PR2_minus
+    + E21PR3_minus
++ Plus
+    + E2input_plus
+    + E21PR1_plus
+    + E21PR2_plus
+    + E21PR3_plus
 
 #Walter
 
