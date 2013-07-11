@@ -5,7 +5,6 @@
 #Bennett
 
 + high-vquest of joined reads
-+ parse output for something meaningful
 
 #Deterding
 
@@ -13,16 +12,17 @@
 
 #Hits-Clip
 
+## tracks for PK61, PK62, PK63
+
 + still need to run PK61-63
 + heatmap of miRNA, something that you can zoom into
 + matrix2png
 
 #Poly(A)
 
-+ get tracks up, change track heights, include shift directions
-+ shortest height; session with all of the data; create groups
-+ assign labels to tracks?
-+ normals v cancer
++ normal v tumor is not being observed as differentially significant after dexseq
++ unadjusted pvalues; cluster those genes through kegg
++ for peter's, likely will want to use pvalue rather and padjust
 
 + intronic peaks; start and stop of gene model as separate run; let austin know its location
 + don't necessarily test with these sites, but may want to add yet another track with all sites + intronic peaks
