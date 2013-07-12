@@ -11,7 +11,12 @@ def main(files):
         file = os.path.basename(file)
         name, ext = os.path.splitext(file)
         parent = "viewPeaks" if "peak" in file else "viewCoverage"
-        stype = "UNK"
+        if "ts" in name.lower():
+            stype = "TS"
+        elif "nbt" in name.lower():
+            stype = "NBT"
+        else:
+            stype = "UNK"
         view = "PKS" if "peak" in file else "COV"
         inv = "MP" if "MP" in file else "PK"
         if "neg" in file:
