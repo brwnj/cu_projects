@@ -12,6 +12,8 @@
 
 #Hits-Clip
 
++ peaks through hits-clip coming up as 60 base pairs
+
 ## tracks for PK61, PK62, PK63
 
 + still need to run PK61-63
