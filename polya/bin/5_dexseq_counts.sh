@@ -11,7 +11,7 @@ set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/polya/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
-sites=$HOME/projects/polya/results/20130627/${sample:0:2}.sites.bed.gz
+sites=$HOME/projects/polya/results/20130718/${sample:0:2}.sites.c13.bed.gz
 results=$RESULT/$sample
 
 for strand in pos neg; do

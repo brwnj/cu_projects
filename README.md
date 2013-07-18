@@ -12,8 +12,6 @@
 
 #Hits-Clip
 
-+ peaks through hits-clip coming up as 60 base pairs
-
 ## tracks for PK61, PK62, PK63
 
 + still need to run PK61-63
@@ -22,12 +20,8 @@
 
 #Poly(A)
 
-+ normal v tumor is not being observed as differentially significant after dexseq
-+ unadjusted pvalues; cluster those genes through kegg
-+ for peter's, likely will want to use pvalue rather and padjust
-
-+ intronic peaks; start and stop of gene model as separate run; let austin know its location
-+ don't necessarily test with these sites, but may want to add yet another track with all sites + intronic peaks
++ don't filter intronic; add to trackhub
++ tables for dexseq results; sites with pval, padj, basemean
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
     + map some human to mouse and see how many map (percentage wise)

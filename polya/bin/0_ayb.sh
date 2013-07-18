@@ -5,27 +5,31 @@
 #BSUB -q normal
 #BSUB -P pillai_kabos_polya
 
+<<DOC
+Barcodes file name format:
+barcodes.LANE.txt, eg. barcodes.1.txt
+
+Expected folder structure:
+$HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
+DOC
+
 set -o nounset -o errexit -o pipefail -x
 source $HOME/projects/polya/bin/config.sh
 
-lane=5
-date=20130619
+lane=7
+date=20130716
 
 # 50 bp
-bs=R6I14C36
+bs=R6I14C37
 # 100 bp
 # bs=R6I14C86
 
-# Expected folder structure:
-# $HOME/projects/polya/data/20130305/Data/Intensities/L003/<cycles>/*.cif
 cifs=$HOME/projects/polya/data/$date
-# to ensure proper tiles
 cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
 fastq=$cifs/${date}_L00${lane}.fastq.gz
-barcodes=$cifs/barcodes.txt
+barcodes=$cifs/barcodes.${lane}.txt
 
 jobids=""
-# you need a for loop here because some seg fault
 for tile in `ls $cifs_dir | sed -rn 's/._._([0-9]+).cif/\1/p'`; do
     RUNSCRIPT=ayb.${tile}.$lane.sh
     echo "#! /usr/bin/env bash" > $RUNSCRIPT
@@ -40,22 +44,14 @@ for tile in `ls $cifs_dir | sed -rn 's/._._([0-9]+).cif/\1/p'`; do
 
 AYB -b $bs -d cif -l debug -o $cifs -p 8 -i $cifs -r L${lane}T${tile} --format fastq
 " >> $RUNSCRIPT
-    
-    # submit the job
+
     job=$(bsub < $RUNSCRIPT)
-    # get the id
     jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
-    # add the job id to a space delimited string
     jobids="$jobids $jobid"
 done
 
-# wait for completion
 python -m bsub $jobids
-# concatenate into one gzipped fastq
 cat $cifs/*${lane}*.fastq | gzip -c > $fastq
-# remove individual, non-gzipped fastqs from ayb
 rm $cifs/?_${lane}_*.fastq
-# clean ayb output
 rm $cifs/ayb*.tab
-# demultiplex
 fastq-multx -B $barcodes -m 2 -e $fastq -o $DATA/%.fq.gz
