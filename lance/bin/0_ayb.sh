@@ -8,9 +8,9 @@
 set -o nounset -o errexit -o pipefail -x
 
 pi=lance
-lane=1
-bs=R100R2I2C2
-cifs=$HOME/projects/lance/data/20130613
+lane=6
+bs=R107
+cifs=$HOME/projects/lance/data/20130718
 
 cifs_dir=$cifs/Data/Intensities/L00${lane}/C1.1
 fastq=$cifs/L00${lane}.fastq.gz
