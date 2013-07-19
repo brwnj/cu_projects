@@ -20,6 +20,8 @@
 
 #Poly(A)
 
++ PK61 v PK62 to see if mincount pulls out some significant padj vals
+
 + don't filter intronic; add to trackhub
 + tables for dexseq results; sites with pval, padj, basemean
 
