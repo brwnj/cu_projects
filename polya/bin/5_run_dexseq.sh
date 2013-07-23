@@ -15,5 +15,6 @@ sample=${samples[$(($LSB_JOBINDEX - 1))]}
 counts=$RESULT/${sample}*/*.counts.txt.gz
 
 cd $DEXRESULTS
+
 # run_dexseq.py submits jobs directly into the queue
-python $BIN/run_dexseq.py -p pillai_kabos_polya -q normal $RUNDEXSEQ $counts
+python $BIN/run_dexseq.py -p pillai_kabos_polya -q night $RUNDEXSEQ $counts
