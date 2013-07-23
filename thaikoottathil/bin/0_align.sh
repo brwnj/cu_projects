@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-11]
+#BSUB -J align[1-12]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
