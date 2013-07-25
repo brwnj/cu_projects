@@ -1,7 +1,7 @@
 #! /usr/bin/env bash
-#BSUB -J dexseq[1-2]
-#BSUB -e dexseq.%J.%I.err
-#BSUB -o dexseq.%J.%I.out
+#BSUB -J dexseq_main[1-2]
+#BSUB -e dexseq_main.%J.%I.err
+#BSUB -o dexseq_main.%J.%I.out
 #BSUB -q normal
 #BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
 #BSUB -n 1

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J prepend_umi[1-10]
+#BSUB -J prepend_umi[1-18]
 #BSUB -e prepend_umi.%J.%I.err
 #BSUB -o prepend_umi.%J.%I.out
 #BSUB -q normal
@@ -21,5 +21,9 @@ r2_out=$READS/${sample}_R2.umi.fastq.gz
 
 bin=$HOME/projects/bennett/bin
 
-python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1 | gzip -c > $r1_out
-python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2 | gzip -c > $r2_out
+if [[ ! -f $r1_out ]]; then
+    python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1 | gzip -c > $r1_out
+fi
+if [[ ! -f $r2_out ]]; then
+    python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2 | gzip -c > $r2_out
+fi

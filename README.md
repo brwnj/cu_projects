@@ -20,9 +20,6 @@
 
 #Poly(A)
 
-+ PK61 v PK62 to see if mincount pulls out some significant padj vals
-
-+ don't filter intronic; add to trackhub
 + tables for dexseq results; sites with pval, padj, basemean
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
@@ -32,23 +29,6 @@
     + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
-
-#Spillman; Human; ChIP
-
-+ Minus
-    + E2Input_minus
-    + E21PR1_minus
-    + E21PR2_minus
-    + E21PR3_minus
-+ Plus
-    + E2input_plus
-    + E21PR1_plus
-    + E21PR2_plus
-    + E21PR3_plus
-
-#Thaikoottathil
-
-+ run analysis through Homer; annotate
 
 #Walter
 
