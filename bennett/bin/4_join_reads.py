@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J join_reads[1-10]
+#BSUB -J join_reads[1-18]
 #BSUB -e join_reads.%J.%I.err
 #BSUB -o join_reads.%J.%I.out
 #BSUB -q normal
@@ -18,4 +18,6 @@ joined=$READS/${sample}.joined.fastq.gz
 
 bin=$HOME/projects/bennett/bin
 
-python $bin/join_reads.py $r1 $r2 | gzip -c > $joined
+if [[ ! -f $joined ]]; then
+    python $bin/join_reads.py $r1 $r2 | gzip -c > $joined
+fi
