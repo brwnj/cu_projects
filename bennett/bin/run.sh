@@ -12,7 +12,7 @@ source $HOME/projects/bennett/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 bin=$HOME/projects/bennett/bin
-jobids=""
+jobids="1"
 
 # prepend the umi back onto the reads
 i1=$READS/${sample}_I1.fastq.gz
