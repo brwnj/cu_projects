@@ -15,3 +15,4 @@ FASTA=$HOME/ref/hg18/hg18.fa
 EXONS=$BIN/ref/refseq.exon.bed.gz
 RUNDEXSEQ=$BIN/run_dexseq.R
 DEXRESULTS=$RESULT/dexseq_results
+SITESHIFTS=$RESULT/site_shifts

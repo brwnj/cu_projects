@@ -17,7 +17,7 @@ results=$RESULT/$sample
 for strand in pos neg; do
     bedg=$results/$sample.$strand.bedgraph.gz
     out=$results/$sample.$strand.counts.txt.gz
-    if [[ ! -f $out ]]; then
-        python $BIN/read_counts.py $bedg $sites $CHROM_SIZES | gzip -c > $out
-    fi
+    # if [[ ! -f $out ]]; then
+    python $BIN/read_counts.py $bedg $sites $CHROM_SIZES | gzip -c > $out
+    # fi
 done
