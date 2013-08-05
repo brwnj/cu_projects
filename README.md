@@ -19,11 +19,24 @@
 
 + nonredundant list of ORFs
 + matching protein sequence to protein sequence
-+ 
 
 #Deterding
 
-+ inquire about email
++ handle email questions
+
+# Duval
+
++ chipseq; human; run through homer pipeline; will receive sample definitions at some 
+
++ 900 miRNAs NCI60 something
++ map our numbers and match names to those existing
++ accession number of geo - normalized binned miRs to compare to other geo sets
++ list of 261 from the drug resistance testing
++ take a closer look at the park sample. it has many more positive counts than the others
++ reduce the number to nci60 and mirbase. annotate; blast; etc
++ gse26375
++ email: should receive list of oncomiRs that should also
++ annotate to mirbase; should be seeing mirbase names being counted
 
 #Hits-Clip
 

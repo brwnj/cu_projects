@@ -26,13 +26,24 @@ def main(files):
         else:
             strand = "B"
         ftype = "bigBed 6" if ext == ".bb" else "bigWig"
+
+        # print ("track {name}\n"
+        #         "parent {parent}\n"
+        #         "subGroups stype={stype} view={view} inv={inv} strand={strand}\n"
+        #         "shortLabel {name}\n"
+        #         "longLabel {name}\n"
+        #         "bigDataUrl {file}\n"
+        #         "color\n"
+        #         "type {ftype}\n").format(**locals())
+
+        parent = "mpshifts" if "MP" in file else "pkshifts"
         print ("track {name}\n"
                 "parent {parent}\n"
-                "subGroups stype={stype} view={view} inv={inv} strand={strand}\n"
+                "subGroups stype={stype} strand={strand}\n"
                 "shortLabel {name}\n"
                 "longLabel {name}\n"
                 "bigDataUrl {file}\n"
-                "color\n"
+                "color 37,52,148\n"
                 "type {ftype}\n").format(**locals())
 
 if __name__ == '__main__':
