@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J classify_shifts[1-51]
+#BSUB -J classify_shifts[1-63]
 #BSUB -e classify_shifts.%J.%I.err
 #BSUB -o classify_shifts.%J.%I.out
 #BSUB -q normal
@@ -18,4 +18,3 @@ outfile=$SITESHIFTS/$sample.classified_shifts.txt.gz
 if [[ ! -f $outfile ]]; then
     python $BIN/classify_shifts.py $infile | gzip -c > $outfile
 fi
-

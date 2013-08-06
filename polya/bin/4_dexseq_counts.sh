@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#BSUB -J counts[1-51]
+#BSUB -J counts[1-63]
 #BSUB -e counts.%J.%I.err
 #BSUB -o counts.%J.%I.out
 #BSUB -q short

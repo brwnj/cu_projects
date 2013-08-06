@@ -182,8 +182,9 @@ def main(folder, meta):
         md[l['alias']] = l
     # composite track with classified peaks, coverage, and merged sites
     print COMPOSITE_TRACK_DEF
+
     # classified peaks for peter and manoj
-    # $results/${sample}_peaks.classified.bed.gz >> folder/${sample}_peaks.classified.bb
+    # $results/*_peaks.classified.bed.gz >> folder/${sample}_peaks.classified.bb
     print CLASSIFIED_PEAKS_VIEW
     for s in files['sites']:
         sample = gsample(s)
@@ -193,6 +194,7 @@ def main(folder, meta):
                                     filename=s,
                                     color=md[sample]['color'])
     print COVERAGE_VIEW
+    # the bigwigs
     for s in files['coverage']:
         sample = gsample(s)
         print COVERAGE_TEMPLATE.substitute(tname=gtname(s),
@@ -202,7 +204,9 @@ def main(folder, meta):
                                     filename=s,
                                     color=md[sample]['color'])
     print SITES_VIEW
+    # should not change often, but could automate eventually
     print PK_SHIFTS
+    # after classifying shifts
     for s in files['dexseq']:
         if not s.startswith("PK"): continue
         print SHIFTS_TEMPLATE.substitute(tname=gtname(s),
