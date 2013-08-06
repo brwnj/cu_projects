@@ -21,14 +21,14 @@ COMPOSITE_TRACK_DEF = ("track PolyA\n"
                         "subGroup4 inv Investigator MP=Pillai PK=Kabos\n"
                         "subGroup5 day Day 1=1 4=4 7=7 14=14\n"
                         "sortOrder view=-\n"
-                        "type bed 3\n")
+                        "type bed 6 .\n")
 
 CLASSIFIED_PEAKS_VIEW = ("  track viewPeaks\n"
                             "   parent PolyA\n"
                             "   shortLabel Classified Sites\n"
                             "   view PKS\n"
                             "   visibility pack\n"
-                            "   type bigBed 6\n")
+                            "   type bigBed 6 .\n")
 
 COVERAGE_VIEW = ("  track viewCoverage\n"
                     "   parent PolyA\n"
@@ -46,7 +46,7 @@ SITES_VIEW = """
     shortLabel Sites
     view STS
     visibility pack
-    type bigBed 6
+    type bigBed 6 .
 
         track mp.c13.sites
         parent viewSites
@@ -55,7 +55,7 @@ SITES_VIEW = """
         longLabel MP sites classes 1 and 3
         bigDataUrl MP.sites.c13.bb
         color 215,48,39
-        type bigBed 6
+        type bigBed 6 .
 
         track mp.c1234.sites
         parent viewSites
@@ -64,7 +64,7 @@ SITES_VIEW = """
         longLabel MP sites classes 1, 2, 3, and 4
         bigDataUrl MP.sites.c1234.bb
         color 215,48,39
-        type bigBed 6
+        type bigBed 6 .
 
         track mp.wholegene.sites
         parent viewSites
@@ -73,7 +73,7 @@ SITES_VIEW = """
         longLabel MP sites classes 1, 2, 3, and 4 - Whole Gene
         bigDataUrl MP.sites.wholegene.bb
         color 189,0,38
-        type bigBed 6
+        type bigBed 6 .
 
         track pk.c13.sites
         parent viewSites
@@ -82,7 +82,7 @@ SITES_VIEW = """
         longLabel PK sites classes 1 and 3
         bigDataUrl PK.sites.c13.bb
         color 69,117,180
-        type bigBed 6
+        type bigBed 6 .
 
         track pk.c1234.sites
         parent viewSites
@@ -91,7 +91,7 @@ SITES_VIEW = """
         longLabel PK sites classes 1, 2, 3, and 4
         bigDataUrl PK.sites.c1234.bb
         color 69,117,180
-        type bigBed 6
+        type bigBed 6 .
 
         track pk.wholegene.sites
         parent viewSites
@@ -100,25 +100,27 @@ SITES_VIEW = """
         longLabel PK sites classes 1, 2, 3, and 4 - Whole Gene
         bigDataUrl PK.sites.wholegene.bb
         color 0,109,44
-        type bigBed 6
+        type bigBed 6 .
 """
 
 # these will presumably have different sample subtypes
 PK_SHIFTS = ("track pkshifts\n"
                 "compositeTrack on\n"
+                "configurable on\n"
                 "shortLabel PK Shifts\n"
                 "longLabel Kabos: Observed DEXSeq shifts\n"
                 "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
                 "subGroup2 strand Strand POS=Positive NEG=Negative\n"
-                "type bed 3\n")
+                "type bed 12 .\n")
 
 MP_SHIFTS = ("track mpshifts\n"
                 "compositeTrack on\n"
+                "configurable on\n"
                 "shortLabel MP Shifts\n"
                 "longLabel Pillai: Observed DEXSeq shifts\n"
                 "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
                 "subGroup2 strand Strand POS=Positive NEG=Negative\n"
-                "type bed 3\n")
+                "type bed 12 .\n")
 
 SITE_TEMPLATE = Template("        track $tname\n"
                             "        parent viewPeaks\n"
@@ -127,7 +129,7 @@ SITE_TEMPLATE = Template("        track $tname\n"
                             "        longLabel $tname\n"
                             "        bigDataUrl $filename\n"
                             "        color $color\n"
-                            "        type bigBed 6\n")
+                            "        type bigBed 6 .\n")
 
 COVERAGE_TEMPLATE = Template("        track $tname\n"
                                 "        parent viewCoverage\n"
@@ -145,7 +147,12 @@ SHIFTS_TEMPLATE = Template("    track $tname\n"
                                 "    longLabel $tname\n"
                                 "    bigDataUrl $filename\n"
                                 "    color 37,52,148\n"
-                                "    type bigBed 6\n")
+                                "    exonArrows on\n"
+                                "    exonArrowsDense on\n"
+                                '    nextExonText "Next Shift"\n'
+                                '    prevExonText "Previous Shift"\n'
+                                "    thickDrawItem on\n"
+                                "    type bigBed 12 .\n")
 
 def gsample(fname):
     return re.split('\.|_', fname)[0]
