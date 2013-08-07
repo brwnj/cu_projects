@@ -169,6 +169,16 @@ def gstrand(fname):
 def gshiftsparent(fname):
     return "pkshifts" if fname.startswith("PK") else "mpshifts"
 
+def flipstrand(fname):
+    # since reads are being mapped to the opposite strand they belong to,
+    # we are flipping the names, eg. 'pos' to 'neg'.
+    tname = os.path.splitext(fname)[0]
+    if "neg" in tname:
+        tname = tname.replace("neg", "pos")
+    elif "pos" in tname:
+        tname = tname.replace("pos", "neg")
+    return tname
+
 def main(folder, meta):
     filelist = os.listdir(folder)
     # group files by track type
@@ -204,10 +214,11 @@ def main(folder, meta):
     # the bigwigs
     for s in files['coverage']:
         sample = gsample(s)
-        print COVERAGE_TEMPLATE.substitute(tname=gtname(s),
+        tname = flipstrand(s)
+        print COVERAGE_TEMPLATE.substitute(tname=tname,
                                     stype=md[sample]['stype'],
                                     inv=ginv(s),
-                                    strand=gstrand(s),
+                                    strand=gstrand(tname),
                                     filename=s,
                                     color=md[sample]['color'])
     print SITES_VIEW
@@ -216,18 +227,20 @@ def main(folder, meta):
     # after classifying shifts
     for s in files['dexseq']:
         if not s.startswith("PK"): continue
-        print SHIFTS_TEMPLATE.substitute(tname=gtname(s),
+        tname = flipstrand(s)
+        print SHIFTS_TEMPLATE.substitute(tname=tname,
                                     parent=gshiftsparent(s),
                                     stype="UNK",
-                                    strand=gstrand(s),
+                                    strand=gstrand(tname),
                                     filename=s)
     print MP_SHIFTS
     for s in files['dexseq']:
         if not s.startswith("MP"): continue
-        print SHIFTS_TEMPLATE.substitute(tname=gtname(s),
+        tname = flipstrand(s)
+        print SHIFTS_TEMPLATE.substitute(tname=tname,
                                     parent=gshiftsparent(s),
                                     stype="UNK",
-                                    strand=gstrand(s),
+                                    strand=gstrand(tname),
                                     filename=s)
 
 if __name__ == '__main__':

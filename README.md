@@ -48,6 +48,9 @@
 
 #Poly(A)
 
++ move to hg19
++ flip bw strand identification in the tracks
+
 + tables for dexseq results; sites with pval, padj, basemean
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
