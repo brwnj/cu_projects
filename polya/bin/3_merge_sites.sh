@@ -17,8 +17,8 @@ sites13=$RESULT/polya_sites/$sample.sites.c13.bed.gz
 sites1234=$RESULT/polya_sites/$sample.sites.c1234.bed.gz
 
 if [[ ! -f $sites13 ]]; then
-    python $BIN/merge_sites.py -n2 -c3 $EXONS $peaks | gzip -c > $sites13
+    python $BIN/merge_sites.py -n2 -c3 -c3a $EXONS $peaks | gzip -c > $sites13
 fi
 if [[ ! -f $sites1234 ]]; then
-    python $BIN/merge_sites.py -n2 -c2 -c3 -c4 $EXONS $peaks | gzip -c > $sites1234
+    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 $EXONS $peaks | gzip -c > $sites1234
 fi
