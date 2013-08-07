@@ -6,14 +6,14 @@ SAMPLES=(MP51 MP52 MP53 MP54 MP55 MP56 MP57 MP58 MP59 MP60              #10
         PK88 PK89 PK90 PK91 PK92 MP70 MP71 MP72 MP73 MP74               #50
         MP75 PK93 PK94 PK95 PK96 PK97 PK98 PK99 PK100 PK101             #60
         PK102 PK103 PK104)                                              #63
-NOVOIDX=$HOME/projects/hits-clip/data/common/novoalign/hg18
+NOVOIDX=$HOME/ref/hg19/hg19.9606.novoidx
 RESULT=$HOME/projects/polya/results/common
 DATA=$HOME/projects/polya/data/common
-CHROM_SIZES=$HOME/ref/hg18/hg18.sizes
+CHROM_SIZES=$HOME/ref/hg19/hg19.sizes
 BIN=$HOME/devel/polya
 UMI=NNNNNV
-FASTA=$HOME/ref/hg18/hg18.fa
-EXONS=$BIN/ref/refseq.exon.bed.gz
+FASTA=$HOME/ref/hg19/hg19.fa
+#EXONS=$BIN/ref/refseq.exon.bed.gz
 RUNDEXSEQ=$BIN/run_dexseq.R
 DEXRESULTS=$RESULT/dexseq_results
 SITESHIFTS=$RESULT/site_shifts
