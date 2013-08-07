@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #BSUB -J maketagdir
-#BSUB -e maketagdir.%J.%I.err
-#BSUB -o maketagdir.%J.%I.out
+#BSUB -e maketagdir.%J.err
+#BSUB -o maketagdir.%J.out
 #BSUB -q normal
 #BSUB -R "span[hosts=1]"
 #BSUB -n 1
