@@ -26,7 +26,7 @@
 
 # Duval
 
-+ chipseq; human; run through homer pipeline; will receive sample definitions at some 
++ chipseq; human; run through homer pipeline; will receive sample definitions at some
 
 + 900 miRNAs NCI60 something
 + map our numbers and match names to those existing
@@ -49,6 +49,14 @@
 #Poly(A)
 
 + move to hg19
+
++ currently picking up genes where expression is similar and shift is observed
++ cpox is an example across manoj's data
++ normalize per gene
++ get the gene count; calculate scale factor; divide each polya site by the scale factor
++ fisher test at that polya site, output something similar to dexseq; normalize by total count
++ qvalue calculation
++ no need for fold change, but insert the values of the two samples being compared
 
 + tables for dexseq results; sites with pval, padj, basemean
 
