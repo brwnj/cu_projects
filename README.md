@@ -20,9 +20,8 @@
 + nonredundant list of ORFs
 + matching protein sequence to protein sequence
 
-#Deterding
-
-+ handle email questions
++ swissprot fasta header for parsing
++ translate known and novel protein seqs in known ORFs
 
 # Duval
 
