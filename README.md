@@ -4,8 +4,8 @@
 
 #Bennett
 
-+ high-vquest of joined reads
-+ pipeline on new samples
++ match protein sequences to imgt results
++ design best output format for this task
 
 #Davidson
 

@@ -45,6 +45,11 @@ posbg=$result/$sample.pos.bedgraph.gz
 negbg=$result/$sample.neg.bedgraph.gz
 classified=$result/${sample}_peaks.classified.bed.gz
 
+if [[ ! -f $bam ]]; then
+    echo "bam not found for $sample"
+    exit
+fi
+
 if [[ ! -f $negbam ]]; then
     samtools view -hbf16 $bam > $negbam
 fi
