@@ -50,6 +50,7 @@ if [[ ! -f $bam ]]; then
     exit
 fi
 
+# strand out the bam to facilitate strand specific peak calling
 if [[ ! -f $negbam ]]; then
     samtools view -hbf16 $bam > $negbam
 fi
@@ -57,6 +58,7 @@ if [[ ! -f $posbam ]]; then
     samtools view -hbF16 $bam > $posbam
 fi
 
+# call peaks on negative strand reads
 if [[ ! -f $negpeak.gz ]]; then
     macs2 callpeak -t $negbam -n $negout --keep-dup auto \
         --nomodel -s 25 --extsize 5 --call-summits
@@ -66,6 +68,7 @@ if [[ ! -f $negpeak.gz ]]; then
     rm -f $negxls $negsummit
 fi
 
+# call peaks on positive strand reads
 if [[ ! -f $pospeak.gz ]]; then
     macs2 callpeak -t $posbam -n $posout --keep-dup auto \
         --nomodel -s 25 --extsize 5 --call-summits
@@ -75,6 +78,7 @@ if [[ ! -f $pospeak.gz ]]; then
     rm -f $posxls $possummit
 fi
 
+# combine pos and neg, fix peak name, and fix peak strand
 if [[ ! -f $peak ]]; then
     # peaks called on the negative reads are from positive stranded genes
     zcat $negpeak.gz $pospeak.gz \
@@ -87,8 +91,9 @@ if [[ ! -f $peak ]]; then
         | gzip -c > $peak
 fi
 
+# classify the peaks
 if [[ ! -f $classified ]]; then
-    # this shouldn't need to be sorted, so may want to look into pclass script
+    # sort to be safe
     python $BIN/classify_peaks.py $peak $posbg $negbg $FASTA $CHROM_SIZES \
         | bedtools sort -i - \
         | gzip -c > $classified
