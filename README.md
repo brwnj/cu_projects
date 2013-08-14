@@ -37,6 +37,41 @@
 + email: should receive list of oncomiRs that should also
 + annotate to mirbase; should be seeing mirbase names being counted
 
+#Edwards
+
++ mutation in gene across samples with freq
++ frequency that a given mutated gene is found in the same tumor as another mutated gene
+
+maybe connect genes to tumors
+gene node size based on observations
+
+##sif
+gene1 experimentID tumor1
+gene2 experimentID tumor1
+gene3 experimentID tumor1
+gene1 experimentID tumor2
+gene4 experimentID tumor2
+gene5 experimentID tumor2
+
+##noa
+functionalCategory
+gene1 = Gene
+gene2 = Gene
+gene3 = Gene
+gene4 = Gene
+gene5 = Gene
+tumor1 = Tumor
+tumor2 = Tumor
+
+##eda
+observations
+gene1 (experimentorsamplename) tumor1 = 11.0
+gene2 (experimentorsamplename) tumor1 = 3.0
+gene3 (experimentorsamplename) tumor1 = 4.0
+gene1 (experimentorsamplename) tumor2 = 6.0
+gene4 (experimentorsamplename) tumor2 = 9.0
+gene5 (experimentorsamplename) tumor2 = 22.0
+
 #Hits-Clip
 
 ## tracks for PK61, PK62, PK63
