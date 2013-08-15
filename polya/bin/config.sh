@@ -19,3 +19,5 @@ WHOLEGENE=$BIN/ref/refseq.wholegene.hg19.trimmedname.bed.gz
 RUNDEXSEQ=$BIN/run_dexseq.R
 DEXRESULTS=$RESULT/dexseq_results
 SITESHIFTS=$RESULT/site_shifts
+HUB=$RESULT/hub
+FISHERRESULTS=$RESULT/fisher_results
