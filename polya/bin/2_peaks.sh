@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#BSUB -J peaks[1-63]
+#BSUB -J peaks[1-69]
 #BSUB -e peaks.%J.%I.err
 #BSUB -o peaks.%J.%I.out
 #BSUB -q normal

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J classify_shifts[1-63]
+#BSUB -J classify_shifts[1-69]
 #BSUB -e classify_shifts.%J.%I.err
 #BSUB -o classify_shifts.%J.%I.out
 #BSUB -q normal
