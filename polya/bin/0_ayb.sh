@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #BSUB -J ayb_main
-#BSUB -e ayb.%J.err
-#BSUB -o ayb.%J.out
+#BSUB -e ayb_main.%J.err
+#BSUB -o ayb_main.%J.out
 #BSUB -q normal
 #BSUB -P pillai_kabos_polya
 

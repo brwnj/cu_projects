@@ -11,7 +11,7 @@
 pull all necessary files and convert as necessary
 DOC
 
-set -o nounset -o pipefail -o errexit -x
+set -o nounset -x
 source $HOME/projects/polya/bin/config.sh
 
 cd $HUB/hg19
@@ -20,7 +20,7 @@ cp $RESULT/*/*.bw .
 rm *UMIs_not_removed*
 # copy over classified peaks
 cp $RESULT/*/*classified.bed.gz .
-gunzip *.classified.bed.gz
+gunzip -f *.classified.bed.gz
 # convert to BB6
 for bed in *.classified.bed; do bed2bb.py --type bed6 $CHROM_SIZES $bed; done
 # delete classified peaks.bed
@@ -28,7 +28,7 @@ rm *.classified.bed
 # copy over sites beds
 cp $POLYASITES/*sites*.bed.gz .
 # convert to BB
-gunzip *sites*.bed.gz
+gunzip -f *sites*.bed.gz
 for bed in *sites*.bed; do bed2bb.py --type bed6 $CHROM_SIZES $bed; done
 # these file names must match:
     # MP.sites.c13.bb
@@ -46,3 +46,5 @@ for bed in *_to_*.bed; do bed2bb.py --type bed12 $CHROM_SIZES $bed; done
 rm *_to_*.bed
 # run generate_trackdb.py > trackDb.txt
 python $HOME/projects/polya/bin/generate_trackdb.py . $METADATA > trackDb.txt
+
+# rsync -rvu --delete ~/projects/polya/results/common/hub amc-sandbox:/data/home/brownj/public_html/polya/

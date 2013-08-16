@@ -16,9 +16,8 @@ infile=$DEXRESULTS/${sample}*
 outfile=$SITESHIFTS/$sample.classified_shifts.txt.gz
 sites=$RESULT/polya_sites/${sample:0:2}.sites.c13.bed.gz
 
-if [[ ! -f $outfile ]]; then
-    python $BIN/classify_shifts.py $infile | gzip -c > $outfile
-fi
+# overwrite everything
+python $BIN/classify_shifts.py $infile | gzip -c > $outfile
 
 cd $SITESHIFTS
 python $BIN/visualize_shifts.py $outfile $sites

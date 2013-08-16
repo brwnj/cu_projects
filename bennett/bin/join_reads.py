@@ -4,7 +4,9 @@
 Join reads based on local alignment, taking higher quality base where mismatches
 are present.
 """
-import sys, string, multiprocessing
+import sys
+import string
+import multiprocessing
 from Bio import pairwise2
 from toolshed import nopen
 from itertools import islice, izip, izip_longest
@@ -118,5 +120,5 @@ if __name__ == '__main__':
     p.add_argument("R2", help="fastq")
     p.add_argument("-t", dest="threads", default=1, type=int,
             help="number of threads to use")
-    args = vars(p.parse_args())
-    main(**args)
+    args = p.parse_args()
+    main(args.R1, args.R2, args.threads)

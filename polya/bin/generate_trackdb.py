@@ -45,7 +45,7 @@ SITES_VIEW = """
     parent PolyA
     shortLabel Sites
     view STS
-    visibility pack
+    visibility full
     type bigBed 6 .
 
         track mp.c13.sites
