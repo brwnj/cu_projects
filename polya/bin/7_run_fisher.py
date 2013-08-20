@@ -24,9 +24,11 @@ for strand in ["pos", "neg"]:
     for (a, b) in combinations(pksamples, 2):
         # write files to fisher_results
         out = out_template.substitute(**locals())
-        cmd = cmd_template.substitute(**locals())
-        submit(cmd)
+        if not os.path.exists(out):
+            cmd = cmd_template.substitute(**locals())
+            submit(cmd)
     for (a, b) in combinations(mpsamples, 2):
         out = out_template.substitute(**locals())
-        cmd = cmd_template.substitute(**locals())
-        submit(cmd)
+        if not os.path.exists(out):
+            cmd = cmd_template.substitute(**locals())
+            submit(cmd)
