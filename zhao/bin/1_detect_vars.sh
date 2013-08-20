@@ -18,12 +18,16 @@ nodups=${bam/.bam/.nodups.bam}
 duplicatemetrics=${bam/.bam/.dup_metrics.txt}
 targetintervals=${bam/.bam/.intervals}
 realigned=${bam/.bam/.realign.bam}
+recal_data_table=${bam/.bam/.recal_data.table}
+recal_bam=${bam/.bam/.recal.bam}
 ugvcf=${bam/.bam/.ug.vcf}
 hcvcf=${bam/.bam/.hc.vcf}
 
+# index the bam
 if [[ ! -f $bam.bai ]]; then
     samtools index $bam
 fi
+# mark duplicates
 if [ ! -f $nodups ]; then
     $java $PICARD/MarkDuplicates.jar \
         ASSUME_SORTED=true \
@@ -35,6 +39,7 @@ if [ ! -f $nodups ]; then
         REMOVE_DUPLICATES=true \
         MAX_RECORDS_IN_RAM=800000
 fi
+# indel realignment
 if [ -f $nodups ] && [ ! -f $targetintervals ]; then
     $java $GATK --analysis_type RealignerTargetCreator \
         --reference_sequence $REFERENCE \
@@ -48,16 +53,32 @@ if [ -f $targetintervals ] && [ ! -f $realigned ]; then
         --targetIntervals $targetintervals \
         --out $realigned
 fi
+# base recalibration
+if [ -f $realigned ] && [ ! -f $recal_data_table ]; then
+    $java $GATK -T BaseRecalibrator \
+        -R $REFERENCE \
+        -I $realigned \
+        -o $recal_data_table
+fi
+if [ -f $recal_data_table ] && [ ! -f $recal_bam ]; then
+    $java $GATK -T PrintReads \
+        -R $REFERENCE \
+        -I $realigned \
+        -BQSR $recal_data_table \
+        -o $recal_bam
+fi
+# snps
 if [ -f $realigned ] && [ ! -f $ugvcf ]; then
     $java $GATK --analysis_type UnifiedGenotyper \
-        --input_file $realigned \
+        --input_file $recal_bam \
         --reference_sequence $REFERENCE \
         --genotype_likelihoods_model BOTH \
         --out $ugvcf
 fi
+# insertions and deletions
 if [ -f $realigned ] && [ ! -f $hcvcf ]; then
     $java $GATK --analysis_type HaplotypeCaller \
-        --input_file $realigned \
+        --input_file $recal_bam \
         --reference_sequence $REFERENCE \
         --out $vhccf
 fi
