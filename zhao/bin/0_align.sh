@@ -7,6 +7,21 @@
 #BSUB -n 8
 #BSUB -P zhao
 
+<<DOC
+	                    ACATCG	GCCTAA	TGGTCA
+Paired Reads	        2469370	3748472	3050090
+Pairs Aligned	        2273604	3440160	2866330
+Read Sequences	        4938740	7496944	6100180
+Aligned	                4600208	7014260	5788755
+Unique Alignment	    3947426	6031922	5010330
+Gapped Alignment	    221906	263355	186405
+Quality Filter	        0	    0	    0
+Homopolymer Filter	    38	    70	    55
+Perc Aligned	        93.14	93.56	94.89
+Perc Uniquely Aligned	79.92	80.45	82.13
+DOC
+
+
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/zhao/bin/config.sh
 

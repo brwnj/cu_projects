@@ -12,14 +12,18 @@ source $HOME/projects/zhao/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 java='java -Xmx24g -jar'
-outdir=$RESULTS/common/$sample
+outdir=$RESULTS/$sample
 bam=$outdir/$sample.bam
 nodups=${bam/.bam/.nodups.bam}
 duplicatemetrics=${bam/.bam/.dup_metrics.txt}
 targetintervals=${bam/.bam/.intervals}
 realigned=${bam/.bam/.realign.bam}
-vcf=${bam/.bam/.vcf}
+ugvcf=${bam/.bam/.ug.vcf}
+hcvcf=${bam/.bam/.hc.vcf}
 
+if [[ ! -f $bam.bai ]]; then
+    samtools index $bam
+fi
 if [ ! -f $nodups ]; then
     $java $PICARD/MarkDuplicates.jar \
         ASSUME_SORTED=true \
@@ -31,23 +35,29 @@ if [ ! -f $nodups ]; then
         REMOVE_DUPLICATES=true \
         MAX_RECORDS_IN_RAM=800000
 fi
-if [ -f $nodups ] && [ ! -f $intervals ]; then
+if [ -f $nodups ] && [ ! -f $targetintervals ]; then
     $java $GATK --analysis_type RealignerTargetCreator \
         --reference_sequence $REFERENCE \
         --input_file $nodups \
         --out $targetintervals
 fi
-if [ -f $intervals ] && [ ! -f $realigned ]; then
+if [ -f $targetintervals ] && [ ! -f $realigned ]; then
     $java $GATK --analysis_type IndelRealigner \
         --reference_sequence $REFERENCE \
         --input_file $nodups \
         --targetIntervals $targetintervals \
         --out $realigned
 fi
-if [ -f $realigned ] && [ ! -f $vcf ]; then
+if [ -f $realigned ] && [ ! -f $ugvcf ]; then
     $java $GATK --analysis_type UnifiedGenotyper \
         --input_file $realigned \
         --reference_sequence $REFERENCE \
         --genotype_likelihoods_model BOTH \
-        --out $vcf
+        --out $ugvcf
+fi
+if [ -f $realigned ] && [ ! -f $hcvcf ]; then
+    $java $GATK --analysis_type HaplotypeCaller \
+        --input_file $realigned \
+        --reference_sequence $REFERENCE \
+        --out $vhccf
 fi
