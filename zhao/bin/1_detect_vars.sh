@@ -54,23 +54,23 @@ if [ -f $targetintervals ] && [ ! -f $realigned ]; then
         --out $realigned
 fi
 # base recalibration
-if [ -f $realigned ] && [ ! -f $recal_data_table ]; then
-    $java $GATK -T BaseRecalibrator \
-        -R $REFERENCE \
-        -I $realigned \
-        -o $recal_data_table
-fi
-if [ -f $recal_data_table ] && [ ! -f $recal_bam ]; then
-    $java $GATK -T PrintReads \
-        -R $REFERENCE \
-        -I $realigned \
-        -BQSR $recal_data_table \
-        -o $recal_bam
-fi
+# if [ -f $realigned ] && [ ! -f $recal_data_table ]; then
+#     $java $GATK -T BaseRecalibrator \
+#         -R $REFERENCE \
+#         -I $realigned \
+#         -o $recal_data_table
+# fi
+# if [ -f $recal_data_table ] && [ ! -f $recal_bam ]; then
+#     $java $GATK -T PrintReads \
+#         -R $REFERENCE \
+#         -I $realigned \
+#         -BQSR $recal_data_table \
+#         -o $recal_bam
+# fi
 # snps
 if [ -f $realigned ] && [ ! -f $ugvcf ]; then
     $java $GATK --analysis_type UnifiedGenotyper \
-        --input_file $recal_bam \
+        --input_file $realigned \
         --reference_sequence $REFERENCE \
         --genotype_likelihoods_model BOTH \
         --out $ugvcf
@@ -78,7 +78,7 @@ fi
 # insertions and deletions
 if [ -f $realigned ] && [ ! -f $hcvcf ]; then
     $java $GATK --analysis_type HaplotypeCaller \
-        --input_file $recal_bam \
+        --input_file $realigned \
         --reference_sequence $REFERENCE \
-        --out $vhccf
+        --out $hcvcf
 fi
