@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -o nounset
 
+# wt   ACATCG
+# sup6 GCCTAA
+# sup8 TGGTCA
+
 SAMPLES=(ACATCG GCCTAA TGGTCA)
 NOVOIDX=$HOME/ref/sacCer3/sacCer3.nix
 RESULTS=$HOME/projects/zhao/results/common

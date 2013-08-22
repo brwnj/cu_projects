@@ -107,20 +107,38 @@ SITES_VIEW = """
 PK_SHIFTS = ("track pkshifts\n"
                 "compositeTrack on\n"
                 "configurable on\n"
-                "shortLabel PK Shifts\n"
+                "shortLabel PK DEXSeq Shifts\n"
                 "longLabel Kabos: Observed DEXSeq shifts\n"
                 "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
                 "subGroup2 strand Strand POS=Positive NEG=Negative\n"
                 "type bed 12 .\n")
 
+PK_FISHER_SHIFTS = ("track pkfishershifts\n"
+                        "compositeTrack on\n"
+                        "configurable on\n"
+                        "shortLabel PK Fisher Shifts\n"
+                        "longLabel Kabos: Observed Fisher shifts\n"
+                        "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
+                        "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                        "type bed 12 .\n")
+
 MP_SHIFTS = ("track mpshifts\n"
                 "compositeTrack on\n"
                 "configurable on\n"
-                "shortLabel MP Shifts\n"
+                "shortLabel MP DEXSeq Shifts\n"
                 "longLabel Pillai: Observed DEXSeq shifts\n"
                 "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
                 "subGroup2 strand Strand POS=Positive NEG=Negative\n"
                 "type bed 12 .\n")
+
+MP_FISHER_SHIFTS = ("track mpfishershifts\n"
+                        "compositeTrack on\n"
+                        "configurable on\n"
+                        "shortLabel MP Fisher Shifts\n"
+                        "longLabel Pillai: Observed Fisher shifts\n"
+                        "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
+                        "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                        "type bed 12 .\n")
 
 SITE_TEMPLATE = Template("        track $tname\n"
                             "        parent viewPeaks\n"
@@ -167,7 +185,16 @@ def gstrand(fname):
     return "NEG" if "neg" in fname else "POS"
 
 def gshiftsparent(fname):
-    return "pkshifts" if fname.startswith("PK") else "mpshifts"
+    if fname.startswith("PK"):
+        if "fisher" in fname:
+            return "pkfishershifts"
+        else:
+            return "pkshifts"
+    if fname.startswith("MP"):
+        if "fisher" in fname:
+            return "mpfishershifts"
+        else:
+            return "mpshifts"
 
 def flipstrand(fname):
     # since reads are being mapped to the opposite strand they belong to,
@@ -179,6 +206,16 @@ def flipstrand(fname):
         tname = tname.replace("pos", "neg")
     return tname
 
+def print_shifts(lst, pi):
+    for s in lst:
+        if not s.startswith(pi): continue
+        tname = flipstrand(s)
+        print SHIFTS_TEMPLATE.substitute(tname=tname,
+                                    parent=gshiftsparent(s),
+                                    stype="UNK",
+                                    strand=gstrand(tname),
+                                    filename=s)
+
 def main(folder, meta):
     filelist = os.listdir(folder)
     # group files by track type
@@ -187,9 +224,11 @@ def main(folder, meta):
         if f.endswith("bw"):
             files['coverage'].append(f)
             continue
-        if "_to_" in f:
+        if "_to_" in f and not "fisher" in f:
             files['dexseq'].append(f)
             continue
+        if "fisher" in f:
+            files['fisher'].append(f)
         if "classified" in f:
             files['sites'].append(f)
             continue
@@ -221,27 +260,17 @@ def main(folder, meta):
                                     strand=gstrand(tname),
                                     filename=s,
                                     color=md[sample]['color'])
-    print SITES_VIEW
     # should not change often, but could automate eventually
+    print SITES_VIEW
+    # shifts
     print PK_SHIFTS
-    # after classifying shifts
-    for s in files['dexseq']:
-        if not s.startswith("PK"): continue
-        tname = flipstrand(s)
-        print SHIFTS_TEMPLATE.substitute(tname=tname,
-                                    parent=gshiftsparent(s),
-                                    stype="UNK",
-                                    strand=gstrand(tname),
-                                    filename=s)
+    print_shifts(files['dexseq'], "PK")
     print MP_SHIFTS
-    for s in files['dexseq']:
-        if not s.startswith("MP"): continue
-        tname = flipstrand(s)
-        print SHIFTS_TEMPLATE.substitute(tname=tname,
-                                    parent=gshiftsparent(s),
-                                    stype="UNK",
-                                    strand=gstrand(tname),
-                                    filename=s)
+    print_shifts(files['dexseq'], "MP")
+    print PK_FISHER_SHIFTS
+    print_shifts(files['fisher'], "PK")
+    print MP_FISHER_SHIFTS
+    print_shifts(files['fisher'], "MP")
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__,
