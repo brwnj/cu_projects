@@ -14,7 +14,9 @@ script = "/vol1/home/brownj/devel/polya/fisher_test.py"
 
 # get the samples
 pksamples = [s for s in os.listdir(results) if s.startswith("PK")]
+pksamples.sort(key=lambda x: int(x[2:]))
 mpsamples = [s for s in os.listdir(results) if s.startswith("MP")]
+mpsamples.sort(key=lambda x: int(x[2:]))
 # iterate through all combinations of MP and PK samples, submitting jobs
 submit = bsub("fisher", q="short", P=projid, verbose=True)
 out_template = Template("$results/fisher_results/${a}_to_$b.$strand.fisher.txt.gz")
