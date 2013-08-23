@@ -16,10 +16,12 @@ COMPOSITE_TRACK_DEF = ("track PolyA\n"
                         "shortLabel Sites and Coverage\n"
                         "longLabel Sites and Coverage tracks\n"
                         "subGroup1 view Views PKS=Classified_Sites COV=Coverage SHT=Shifts STS=Sites\n"
-                        "subGroup2 stype SampleType UNK=Unknown CD71PCD235P=CD71+/CD235a+ CD71PCD235N=CD71+/CD235a- CD71NCD235P=CD71-/CD235a+ CD34=CD34 TS=Tumor NBT=NormalTissue\n"
+                        "subGroup2 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
                         "subGroup3 strand Strand POS=Positive NEG=Negative\n"
                         "subGroup4 inv Investigator MP=Pillai PK=Kabos\n"
-                        "subGroup5 day Day 1=1 4=4 7=7 14=14\n"
+                        "subGroup5 day Day 1=1 4=4 7=7 14=14 NA=NA\n"
+                        "dimensions dimX=inv dimY=strand dimA=stype\n"
+                        "filterComposite dimA"
                         "sortOrder view=-\n"
                         "type bed 6 .\n")
 
@@ -109,8 +111,9 @@ PK_SHIFTS = ("track pkshifts\n"
                 "configurable on\n"
                 "shortLabel PK DEXSeq Shifts\n"
                 "longLabel Kabos: Observed DEXSeq shifts\n"
-                "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
-                "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                "subGroup1 strand Strand POS=Positive NEG=Negative\n"
+                "subGroup2 pairs Pairs T=True F=False"
+                # "subGroup3 stype SampleType UNK=Unknown TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
                 "type bed 12 .\n")
 
 PK_FISHER_SHIFTS = ("track pkfishershifts\n"
@@ -118,8 +121,9 @@ PK_FISHER_SHIFTS = ("track pkfishershifts\n"
                         "configurable on\n"
                         "shortLabel PK Fisher Shifts\n"
                         "longLabel Kabos: Observed Fisher shifts\n"
-                        "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
-                        "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                        "subGroup1 strand Strand POS=Positive NEG=Negative\n"
+                        "subGroup2 pairs Pairs T=True F=False"
+                        # "subGroup3 stype SampleType UNK=Unknown TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
                         "type bed 12 .\n")
 
 MP_SHIFTS = ("track mpshifts\n"
@@ -127,22 +131,24 @@ MP_SHIFTS = ("track mpshifts\n"
                 "configurable on\n"
                 "shortLabel MP DEXSeq Shifts\n"
                 "longLabel Pillai: Observed DEXSeq shifts\n"
-                "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
-                "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                "subGroup1 strand Strand POS=Positive NEG=Negative\n"
+                "subGroup2 pairs Pairs T=True F=False"
+                # "subGroup3 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA\n"
                 "type bed 12 .\n")
 
 MP_FISHER_SHIFTS = ("track mpfishershifts\n"
                         "compositeTrack on\n"
                         "configurable on\n"
                         "shortLabel MP Fisher Shifts\n"
-                        "longLabel Pillai: Observed Fisher shifts\n"
-                        "subGroup1 stype SampleType UNK=Unknown CD71P=CD71pos CD71N=CD71neg CD235AP=CD235Apos CD235AN=CD235Aneg TS=Tumor NBT=NormalTissue\n"
-                        "subGroup2 strand Strand POS=Positive NEG=Negative\n"
+                        "longLabel Pillai: Observed Fisher shifts\n"                        
+                        "subGroup1 strand Strand POS=Positive NEG=Negative\n"
+                        "subGroup2 pairs Pairs T=True F=False"
+                        # "subGroup3 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA\n"
                         "type bed 12 .\n")
 
 SITE_TEMPLATE = Template("        track $tname\n"
                             "        parent viewPeaks\n"
-                            "        subGroups stype=$stype view=PKS inv=$inv\n"
+                            "        subGroups $stype view=PKS inv=$inv\n"
                             "        shortLabel $tname\n"
                             "        longLabel $tname\n"
                             "        bigDataUrl $filename\n"
@@ -151,7 +157,7 @@ SITE_TEMPLATE = Template("        track $tname\n"
 
 COVERAGE_TEMPLATE = Template("        track $tname\n"
                                 "        parent viewCoverage\n"
-                                "        subGroups stype=$stype view=COV inv=$inv strand=$strand\n"
+                                "        subGroups $stype view=COV inv=$inv strand=$strand\n"
                                 "        shortLabel $tname\n"
                                 "        longLabel $tname\n"
                                 "        bigDataUrl $filename\n"
@@ -160,15 +166,11 @@ COVERAGE_TEMPLATE = Template("        track $tname\n"
 
 SHIFTS_TEMPLATE = Template("    track $tname\n"
                                 "    parent $parent\n"
-                                "    subGroups stype=$stype strand=$strand\n"
+                                "    subGroups pairs=$pairs strand=$strand\n"
                                 "    shortLabel $tname\n"
                                 "    longLabel $tname\n"
                                 "    bigDataUrl $filename\n"
                                 "    color 37,52,148\n"
-                                "    exonArrows on\n"
-                                "    exonArrowsDense on\n"
-                                '    nextExonText "Next Shift"\n'
-                                '    prevExonText "Previous Shift"\n'
                                 "    thickDrawItem on\n"
                                 "    type bigBed 12 .\n")
 
@@ -183,6 +185,13 @@ def ginv(sname):
 
 def gstrand(fname):
     return "NEG" if "neg" in fname else "POS"
+
+def gstype(types):
+    types = types.split(",")
+    stype = ""
+    for t in types:
+        stype += "stype={t} ".format(t=t)
+    return stype.rstrip(" ")
 
 def gshiftsparent(fname):
     if fname.startswith("PK"):
@@ -206,13 +215,18 @@ def flipstrand(fname):
         tname = tname.replace("pos", "neg")
     return tname
 
-def print_shifts(lst, pi):
+def gpairs(fname, meta):
+    a, b = fname.split(".")[0].split("_to_")
+    return "T" if a == meta[b]['pair'] or b == meta[a]['pair'] else "F"
+
+def print_shifts(lst, pi, meta):
     for s in lst:
         if not s.startswith(pi): continue
         tname = flipstrand(s)
         print SHIFTS_TEMPLATE.substitute(tname=tname,
                                     parent=gshiftsparent(s),
-                                    stype="UNK",
+                                    # stype="UNK",
+                                    pairs=gpairs(s, meta),
                                     strand=gstrand(tname),
                                     filename=s)
 
@@ -240,12 +254,11 @@ def main(folder, meta):
     print COMPOSITE_TRACK_DEF
 
     # classified peaks for peter and manoj
-    # $results/*_peaks.classified.bed.gz >> folder/${sample}_peaks.classified.bb
     print CLASSIFIED_PEAKS_VIEW
     for s in files['sites']:
         sample = gsample(s)
         print SITE_TEMPLATE.substitute(tname=gtname(s),
-                                    stype=md[sample]['stype'],
+                                    stype=gstype(md[sample]['stype']),
                                     inv=ginv(s),
                                     filename=s,
                                     color=md[sample]['color'])
@@ -255,7 +268,7 @@ def main(folder, meta):
         sample = gsample(s)
         tname = flipstrand(s)
         print COVERAGE_TEMPLATE.substitute(tname=tname,
-                                    stype=md[sample]['stype'],
+                                    stype=gstype(md[sample]['stype']),
                                     inv=ginv(s),
                                     strand=gstrand(tname),
                                     filename=s,
@@ -264,13 +277,13 @@ def main(folder, meta):
     print SITES_VIEW
     # shifts
     print PK_SHIFTS
-    print_shifts(files['dexseq'], "PK")
+    print_shifts(files['dexseq'], "PK", md)
     print MP_SHIFTS
-    print_shifts(files['dexseq'], "MP")
+    print_shifts(files['dexseq'], "MP", md)
     print PK_FISHER_SHIFTS
-    print_shifts(files['fisher'], "PK")
+    print_shifts(files['fisher'], "PK", md)
     print MP_FISHER_SHIFTS
-    print_shifts(files['fisher'], "MP")
+    print_shifts(files['fisher'], "MP", md)
 
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__,
