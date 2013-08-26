@@ -100,12 +100,4 @@
 
 #Zhao
 
-+ berr2 mutation
-+ wt/grows slowly
-+ two isolates with likely the same mutation
-+ saccer3 genome build
-+ align, gatk, snpeff; should be found in 2 isolates and not present in parent
-+ wt - acatcg; sup6 gcctaa; sup8 tggtca
-+ systematic names in yeast
-+ yalc
-+ "prp" stuff... would be the most relevant
++ deliver mutation list
