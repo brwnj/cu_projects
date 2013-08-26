@@ -7,3 +7,5 @@ PI=davidson
 RESULTS=$HOME/projects/davidson_transcriptome/results/common
 DATA=$HOME/projects/davidson_transcriptome/data/common
 NOVOIDX=$HOME/ref/hg19/hg19.9606.novoidx
+GENES=$HOME/ref/hg19/hg19.gtf
+SEQUENCE=$HOME/ref/hg19/hg19.fa
