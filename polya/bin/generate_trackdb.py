@@ -2,6 +2,9 @@
 # encoding: utf-8
 """
 Create trackdb from list of folder contents.
+
++ &#43
+- &#45
 """
 import os
 import re
@@ -15,13 +18,15 @@ COMPOSITE_TRACK_DEF = ("track PolyA\n"
                         "compositeTrack on\n"
                         "shortLabel Sites and Coverage\n"
                         "longLabel Sites and Coverage tracks\n"
-                        "subGroup1 view Views PKS=Classified_Sites COV=Coverage SHT=Shifts STS=Sites\n"
-                        "subGroup2 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
-                        "subGroup3 strand Strand POS=Positive NEG=Negative\n"
-                        "subGroup4 inv Investigator MP=Pillai PK=Kabos\n"
-                        "subGroup5 day Day 1=1 4=4 7=7 14=14 NA=NA\n"
-                        "dimensions dimX=inv dimY=strand dimA=stype\n"
-                        "filterComposite dimA"
+                        "subGroup1 view Views PKS=Classified_Sites COV=Coverage SHT=Shifts\n"
+                        "subGroup2 ptype PrimaryType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 K562=K562 TS=Tumor NBT=NormalTissue MCF7=MCF7 PK15=PK15 PK12=PK12 NA=NA\n"
+                        "subGroup3 stype SecondaryType CD235P=CD235a&#43 CD235N=CD235a&#45 NOTX=No_Treatment HEMIN=Hemin PMA=PMA CONTROL=control ERP=ER&#43 ERN=ER&#45 PLACEBO=Placebo NA=NA\n"
+                        "subGroup4 ttype TertiaryType PRP=PR&#43 PRN=PR&#45 TAM=Tamoxifen MPA=MPA NA=NA\n"
+                        "subGroup5 qtype QuaternaryType HER2P=Her2&#43 HER2N=Her2&#45 NA=NA\n"
+                        "subGroup6 strand Strand POS=Positive NEG=Negative U=Unstranded\n"
+                        "subGroup7 inv Investigator MP=Pillai PK=Kabos\n"
+                        "dimensions dimX=ptype dimY=stype dimA=inv dimB=strand dimC=ttype dimD=qtype\n"
+                        "filterComposite dimA dimB dimC dimD\n"
                         "sortOrder view=-\n"
                         "type bed 6 .\n")
 
@@ -43,66 +48,67 @@ COVERAGE_VIEW = ("  track viewCoverage\n"
                     "   alwaysZero on\n")
 
 SITES_VIEW = """
-    track viewSites
-    parent PolyA
-    shortLabel Sites
-    view STS
-    visibility full
+track polyaSites
+compositeTrack on
+shortLabel Reference Sites
+longLabel Classified Reference Sites
+subGroup1 inv Investigator MP=Pillai PK=Kabos
+visibility full
+type bigBed 6 .
+
+    track mp.c13.sites
+    parent polyaSites on
+    subGroups inv=MP
+    shortLabel Pillai 1, 3
+    longLabel Pillai: Class 1(a) and 3(a); exon model
+    bigDataUrl MP.sites.c13.bb
+    color 215,48,39
     type bigBed 6 .
 
-        track mp.c13.sites
-        parent viewSites
-        subGroups view=STS inv=MP
-        shortLabel MPSites13
-        longLabel MP sites classes 1 and 3
-        bigDataUrl MP.sites.c13.bb
-        color 215,48,39
-        type bigBed 6 .
+    track mp.c1234.sites
+    parent polyaSites off
+    subGroups inv=MP
+    shortLabel Pillai 1(a), 2, 3(a), 4
+    longLabel Pillai: Class 1(a), 2, 3(a), and 4; exon model
+    bigDataUrl MP.sites.c1234.bb
+    color 215,48,39
+    type bigBed 6 .
 
-        track mp.c1234.sites
-        parent viewSites
-        subGroups view=STS inv=MP
-        shortLabel MPSites1234
-        longLabel MP sites classes 1, 2, 3, and 4
-        bigDataUrl MP.sites.c1234.bb
-        color 215,48,39
-        type bigBed 6 .
+    track mp.wholegene.sites
+    parent polyaSites off
+    subGroups inv=MP
+    shortLabel WG - Pillai 1(a), 2, 3(a), 4
+    longLabel Pillai: Class 1(a), 2, 3(a), and 4; whole gene model
+    bigDataUrl MP.sites.wholegene.bb
+    color 189,0,38
+    type bigBed 6 .
 
-        track mp.wholegene.sites
-        parent viewSites
-        subGroups view=STS inv=MP
-        shortLabel MPSitesWG
-        longLabel MP sites classes 1, 2, 3, and 4 - Whole Gene
-        bigDataUrl MP.sites.wholegene.bb
-        color 189,0,38
-        type bigBed 6 .
+    track pk.c13.sites
+    parent polyaSites on
+    subGroups inv=PK
+    shortLabel Kabos 1, 3
+    longLabel Kabos: Class 1(a) and 3(a); exon model
+    bigDataUrl PK.sites.c13.bb
+    color 69,117,180
+    type bigBed 6 .
 
-        track pk.c13.sites
-        parent viewSites
-        subGroups view=STS inv=PK
-        shortLabel PKSites13
-        longLabel PK sites classes 1 and 3
-        bigDataUrl PK.sites.c13.bb
-        color 69,117,180
-        type bigBed 6 .
+    track pk.c1234.sites
+    parent polyaSites off
+    subGroups inv=PK
+    shortLabel Kabos 1(a), 2, 3(a), 4
+    longLabel Kabos: Class 1(a), 2, 3(a), and 4; exon model
+    bigDataUrl PK.sites.c1234.bb
+    color 69,117,180
+    type bigBed 6 .
 
-        track pk.c1234.sites
-        parent viewSites
-        subGroups view=STS inv=PK
-        shortLabel PKSites1234
-        longLabel PK sites classes 1, 2, 3, and 4
-        bigDataUrl PK.sites.c1234.bb
-        color 69,117,180
-        type bigBed 6 .
-
-        track pk.wholegene.sites
-        parent viewSites
-        subGroups view=STS inv=PK
-        shortLabel PKSitesWG
-        longLabel PK sites classes 1, 2, 3, and 4 - Whole Gene
-        bigDataUrl PK.sites.wholegene.bb
-        color 0,109,44
-        type bigBed 6 .
+    track pk.wholegene.sites
+    parent polyaSites off
+    subGroups inv=PK
+    shortLabel WG - Kabos 1(a), 2, 3(a), 4
+    longLabel Kabos: Class 1(a), 2, 3(a), and 4; whole gene model
+    bigDataUrl PK.sites.wholegene.bb
+    color 37,52,148
+    type bigBed 6 .
 """
 
 # these will presumably have different sample subtypes
@@ -112,8 +118,7 @@ PK_SHIFTS = ("track pkshifts\n"
                 "shortLabel PK DEXSeq Shifts\n"
                 "longLabel Kabos: Observed DEXSeq shifts\n"
                 "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                "subGroup2 pairs Pairs T=True F=False"
-                # "subGroup3 stype SampleType UNK=Unknown TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
+                "subGroup2 pairs Pairs T=True F=False\n"
                 "type bed 12 .\n")
 
 PK_FISHER_SHIFTS = ("track pkfishershifts\n"
@@ -122,8 +127,7 @@ PK_FISHER_SHIFTS = ("track pkfishershifts\n"
                         "shortLabel PK Fisher Shifts\n"
                         "longLabel Kabos: Observed Fisher shifts\n"
                         "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                        "subGroup2 pairs Pairs T=True F=False"
-                        # "subGroup3 stype SampleType UNK=Unknown TS=Tumor NBT=NormalTissue MCF7=MCF7 CONTROL=control ERP=ER&#43 ERN=ER&#45 PRP=PR&#43 PRN=PR&#45 HER2P=Her2&#43 HER2N=Her2&#45 PK15=PK15 PK12=PK12 TAM=Tamoxifen PLACEBO=Placebo MPA=MPA\n"
+                        "subGroup2 pairs Pairs T=True F=False\n"
                         "type bed 12 .\n")
 
 MP_SHIFTS = ("track mpshifts\n"
@@ -132,8 +136,7 @@ MP_SHIFTS = ("track mpshifts\n"
                 "shortLabel MP DEXSeq Shifts\n"
                 "longLabel Pillai: Observed DEXSeq shifts\n"
                 "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                "subGroup2 pairs Pairs T=True F=False"
-                # "subGroup3 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA\n"
+                "subGroup2 pairs Pairs T=True F=False\n"
                 "type bed 12 .\n")
 
 MP_FISHER_SHIFTS = ("track mpfishershifts\n"
@@ -142,13 +145,12 @@ MP_FISHER_SHIFTS = ("track mpfishershifts\n"
                         "shortLabel MP Fisher Shifts\n"
                         "longLabel Pillai: Observed Fisher shifts\n"                        
                         "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                        "subGroup2 pairs Pairs T=True F=False"
-                        # "subGroup3 stype SampleType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 CD235P=CD235a&#43 CD235N=CD235a&#45 K562=K562 NOTX=No_Treatment HEMIN=Hemin PMA=PMA\n"
+                        "subGroup2 pairs Pairs T=True F=False\n"
                         "type bed 12 .\n")
 
 SITE_TEMPLATE = Template("        track $tname\n"
                             "        parent viewPeaks\n"
-                            "        subGroups $stype view=PKS inv=$inv\n"
+                            "        subGroups ptype=$ptype stype=$stype ttype=$ttype qtype=$qtype view=PKS inv=$inv strand=U\n"
                             "        shortLabel $tname\n"
                             "        longLabel $tname\n"
                             "        bigDataUrl $filename\n"
@@ -157,7 +159,7 @@ SITE_TEMPLATE = Template("        track $tname\n"
 
 COVERAGE_TEMPLATE = Template("        track $tname\n"
                                 "        parent viewCoverage\n"
-                                "        subGroups $stype view=COV inv=$inv strand=$strand\n"
+                                "        subGroups ptype=$ptype stype=$stype ttype=$ttype qtype=$qtype view=COV inv=$inv strand=$strand\n"
                                 "        shortLabel $tname\n"
                                 "        longLabel $tname\n"
                                 "        bigDataUrl $filename\n"
@@ -185,13 +187,6 @@ def ginv(sname):
 
 def gstrand(fname):
     return "NEG" if "neg" in fname else "POS"
-
-def gstype(types):
-    types = types.split(",")
-    stype = ""
-    for t in types:
-        stype += "stype={t} ".format(t=t)
-    return stype.rstrip(" ")
 
 def gshiftsparent(fname):
     if fname.startswith("PK"):
@@ -258,7 +253,10 @@ def main(folder, meta):
     for s in files['sites']:
         sample = gsample(s)
         print SITE_TEMPLATE.substitute(tname=gtname(s),
-                                    stype=gstype(md[sample]['stype']),
+                                    ptype=md[sample]['primary_type'],
+                                    stype=md[sample]['secondary_type'],
+                                    ttype=md[sample]['tertiary_type'],
+                                    qtype=md[sample]['quaternary_type'],
                                     inv=ginv(s),
                                     filename=s,
                                     color=md[sample]['color'])
@@ -268,7 +266,10 @@ def main(folder, meta):
         sample = gsample(s)
         tname = flipstrand(s)
         print COVERAGE_TEMPLATE.substitute(tname=tname,
-                                    stype=gstype(md[sample]['stype']),
+                                    ptype=md[sample]['primary_type'],
+                                    stype=md[sample]['secondary_type'],
+                                    ttype=md[sample]['tertiary_type'],
+                                    qtype=md[sample]['quaternary_type'],
                                     inv=ginv(s),
                                     strand=gstrand(tname),
                                     filename=s,

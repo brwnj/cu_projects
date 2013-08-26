@@ -73,6 +73,7 @@ if [ -f $realigned ] && [ ! -f $ugvcf ]; then
         --input_file $realigned \
         --reference_sequence $REFERENCE \
         --genotype_likelihoods_model BOTH \
+        -ploidy 1 \
         --out $ugvcf
 fi
 # insertions and deletions

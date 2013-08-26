@@ -4,6 +4,26 @@
 
 #Bennett
 
++ same variable region or same j region can eb considered the same family
++ would likely have changes in the cdr3 while being close to match with very similar variable region or j region
++ report dimer (short mer) per barcode across runs
++ counts of reads per barcode
++ counts of reads after umi filtering per barcode
++ counts of reads after joining per barcode
++ counts of translated productive reads per barcode
++ counts of translated unique productive reads per barcode
+
++ same variable and j segment being used
++ going back to blood likely be able to pick up where the change occurs
+
++ same v region and j segment family while having...
++ up to 3 mismatches in cdr3
+
++ viewing in a tree may be helpful for manual picking
++ 53 different v
++ 6 j
++ barcode to cell type conversion table
+
 + match protein sequences to imgt results
 + design best output format for this task
 
