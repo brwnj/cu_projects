@@ -28,6 +28,8 @@ for f in ACATCG GCCTAA TGGTCA; do
     fi
 done
 
+# this still has bugs
+# seems like bedtools doesn't account for the length of the variant
 bedtools intersect -f .9 -r -a $RESULTS/GCCTAA/GCCTAA.snpeff.vcf -b $RESULTS/TGGTCA/TGGTCA.snpeff.vcf > $RESULTS/non_unique_intersection.vcf
 bedtools intersect -f .9 -r -a $RESULTS/TGGTCA/TGGTCA.snpeff.vcf -b $RESULTS/GCCTAA/GCCTAA.snpeff.vcf >> $RESULTS/non_unique_intersection.vcf
 
@@ -37,4 +39,4 @@ bedtools subtract -a $RESULTS/intersection.vcf -b $RESULTS/ACATCG/ACATCG.snpeff.
 java -jar ~/opt/snpeff/snpEff.jar eff -chr chr -noStats -v -c ~/opt/snpeff/snpEff.config -o txt sacCer3 $RESULTS/intersection_minus_wt.vcf > $RESULTS/intersection_minus_wt.txt.stupidheader
 tail -n +3 $RESULTS/intersection_minus_wt.txt.stupidheader > $RESULTS/intersection_minus_wt.txt
 rm $RESULTS/intersection_minus_wt.txt.stupidheader
-# python ~/projects/zhao/bin/annotate.py intersection_minus_wt.txt ~/ref/sacCer3/sacCer3.descriptions > intersection_minus_wt.annotated.txt
+python $BIN/annotate.py $RESULTS/intersection_minus_wt.txt $ANNOTATION > $RESULTS/intersection_minus_wt.annotated.txt

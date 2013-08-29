@@ -8,6 +8,7 @@ set -o nounset
 # present in sup6 and sup8 and not present in wt
 
 SAMPLES=(ACATCG GCCTAA TGGTCA)
+BIN=$HOME/projects/zhao/bin
 NOVOIDX=$HOME/ref/sacCer3/sacCer3.nix
 RESULTS=$HOME/projects/zhao/results/common
 DATA=$HOME/projects/zhao/data/common
@@ -19,3 +20,4 @@ GATK=$HOME/opt/gatk/GenomeAnalysisTK.jar
 REFERENCE=$HOME/ref/sacCer3/sacCer3.fa
 SNPEFF=$HOME/opt/snpeff/snpEff.jar
 SNPEFFCONFIG=$HOME/opt/snpeff/snpEff.config
+ANNOTATION=$HOME/ref/sacCer3/sacCer3.descriptions
