@@ -5,11 +5,29 @@ Amino Acid sequence counts of unique CDR3 sequences parsed from IMGT
 AA-sequences.
 """
 import os
+import csv
 import sys
+import gzip
 import argparse
 import pandas as pd
-from toolshed import reader
-from collections import Counter, defaultdict
+from itertools import izip
+from collections import Counter
+
+def nopen(f, mode="rb"):
+    f = os.path.expanduser(os.path.expandvars(f))
+    return {"r": sys.stdin, "w": sys.stdout}[mode[0]] if f == "-" \
+         else gzip.open(f, mode) if f.endswith((".gz", ".Z", ".z")) \
+         else open(f, mode)
+
+def reader(fname, header=True, sep="\t"):
+    dialect = csv.excel
+    dialect.delimiter = sep
+    line_gen = csv.reader(nopen(fname), dialect=dialect)
+    a_dict = dict
+    header = line_gen.next()
+    header[0] = header[0].lstrip("#")
+    for toks in line_gen:
+        yield a_dict(izip(header, toks))
 
 def gsample(fname):
     # incoming name format: 5_AA-sequences_2_ACATCG_1_270613.txt
@@ -20,22 +38,17 @@ def gsample(fname):
     return "{patient}_{barcode}".format(**locals())
 
 def main(aaseqs):
-    # read in all of the files
-    sdata = defaultdict(list)
+    # count the unique sequences
+    counters = {}
     for f in aaseqs:
         sample = gsample(f)
         print >>sys.stderr, ">> reading in", f
+        counters[sample] = Counter()
         for l in reader(f):
-            sdata[sample].append(l)
-    # count the unique sequences
-    counters = {}
-    for name, lines in sdata.iteritems():
-        counters[name] = Counter()
-        for l in lines:
             if l['Functionality'] != "productive": continue
             rname, umi, cregion, fwork = l['Sequence ID'].split(':')
             cdr3 = l['CDR3-IMGT']
-            counters[name].update(["{cdr3}:{cregion}_{fwork}".format(**locals())])
+            counters[sample].update(["{cdr3}:{cregion}_{fwork}".format(**locals())])
     # prep to create dataframe
     predf = {}
     for name, counts in counters.iteritems():
