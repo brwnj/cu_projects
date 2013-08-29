@@ -1,10 +1,6 @@
-# Dev
-
-+ script to read bams, output normalized counts table
-
 #Bennett
 
-+ same variable region or same j region can eb considered the same family
++ same variable region or same j region can be considered the same family
 + would likely have changes in the cdr3 while being close to match with very similar variable region or j region
 + report dimer (short mer) per barcode across runs
 + counts of reads per barcode
