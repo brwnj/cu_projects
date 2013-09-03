@@ -16,7 +16,7 @@ from collections import defaultdict
 
 COMPOSITE_TRACK_DEF = ("track PolyA\n"
                         "compositeTrack on\n"
-                        "shortLabel Sites and Coverage\n"
+                        "shortLabel Sites & Coverage\n"
                         "longLabel Sites and Coverage tracks\n"
                         "subGroup1 view Views PKS=Classified_Sites COV=Coverage SHT=Shifts\n"
                         "subGroup2 ptype PrimaryType UNK=Unknown CD34=CD34 CD71P=CD71&#43 CD71N=CD71&#45 K562=K562 TS=Tumor NBT=NormalTissue MCF7=MCF7 PK15=PK15 PK12=PK12 NA=NA\n"
@@ -59,7 +59,7 @@ type bigBed 6 .
     track mp.c13.sites
     parent polyaSites on
     subGroups inv=MP
-    shortLabel Pillai 1, 3
+    shortLabel Pillai 1,3
     longLabel Pillai: Class 1(a) and 3(a); exon model
     bigDataUrl MP.sites.c13.bb
     color 215,48,39
@@ -68,7 +68,7 @@ type bigBed 6 .
     track mp.c1234.sites
     parent polyaSites off
     subGroups inv=MP
-    shortLabel Pillai 1(a), 2, 3(a), 4
+    shortLabel Pillai All
     longLabel Pillai: Class 1(a), 2, 3(a), and 4; exon model
     bigDataUrl MP.sites.c1234.bb
     color 215,48,39
@@ -77,7 +77,7 @@ type bigBed 6 .
     track mp.wholegene.sites
     parent polyaSites off
     subGroups inv=MP
-    shortLabel WG - Pillai 1(a), 2, 3(a), 4
+    shortLabel WG:Pillai All
     longLabel Pillai: Class 1(a), 2, 3(a), and 4; whole gene model
     bigDataUrl MP.sites.wholegene.bb
     color 189,0,38
@@ -86,7 +86,7 @@ type bigBed 6 .
     track pk.c13.sites
     parent polyaSites on
     subGroups inv=PK
-    shortLabel Kabos 1, 3
+    shortLabel Kabos 1,3
     longLabel Kabos: Class 1(a) and 3(a); exon model
     bigDataUrl PK.sites.c13.bb
     color 69,117,180
@@ -95,7 +95,7 @@ type bigBed 6 .
     track pk.c1234.sites
     parent polyaSites off
     subGroups inv=PK
-    shortLabel Kabos 1(a), 2, 3(a), 4
+    shortLabel Kabos All
     longLabel Kabos: Class 1(a), 2, 3(a), and 4; exon model
     bigDataUrl PK.sites.c1234.bb
     color 69,117,180
@@ -104,7 +104,7 @@ type bigBed 6 .
     track pk.wholegene.sites
     parent polyaSites off
     subGroups inv=PK
-    shortLabel WG - Kabos 1(a), 2, 3(a), 4
+    shortLabel WG:Kabos All
     longLabel Kabos: Class 1(a), 2, 3(a), and 4; whole gene model
     bigDataUrl PK.sites.wholegene.bb
     color 37,52,148
@@ -151,7 +151,7 @@ MP_FISHER_SHIFTS = ("track mpfishershifts\n"
 SITE_TEMPLATE = Template("        track $tname\n"
                             "        parent viewPeaks\n"
                             "        subGroups ptype=$ptype stype=$stype ttype=$ttype qtype=$qtype view=PKS inv=$inv strand=U\n"
-                            "        shortLabel $tname\n"
+                            "        shortLabel $slbl\n"
                             "        longLabel $tname\n"
                             "        bigDataUrl $filename\n"
                             "        color $color\n"
@@ -160,7 +160,7 @@ SITE_TEMPLATE = Template("        track $tname\n"
 COVERAGE_TEMPLATE = Template("        track $tname\n"
                                 "        parent viewCoverage\n"
                                 "        subGroups ptype=$ptype stype=$stype ttype=$ttype qtype=$qtype view=COV inv=$inv strand=$strand\n"
-                                "        shortLabel $tname\n"
+                                "        shortLabel $slbl\n"
                                 "        longLabel $tname\n"
                                 "        bigDataUrl $filename\n"
                                 "        color $color\n"
@@ -169,7 +169,7 @@ COVERAGE_TEMPLATE = Template("        track $tname\n"
 SHIFTS_TEMPLATE = Template("    track $tname\n"
                                 "    parent $parent\n"
                                 "    subGroups pairs=$pairs strand=$strand\n"
-                                "    shortLabel $tname\n"
+                                "    shortLabel $slbl\n"
                                 "    longLabel $tname\n"
                                 "    bigDataUrl $filename\n"
                                 "    color 37,52,148\n"
@@ -187,6 +187,20 @@ def ginv(sname):
 
 def gstrand(fname):
     return "NEG" if "neg" in fname else "POS"
+
+def gslbl(tname):
+    # handling per sample sites
+    if "classified" in tname:
+        return "{sample}cpeaks".format(sample=tname.split("_")[0])
+    # handling shifts
+    if "_to_" in tname:
+        tested = re.findall("(\d+)", tname)
+        assert len(tested) == 2
+        return "{first}>>{second}|{test}{strand}".format(first=tested[0],
+                                    second=tested[1],
+                                    test="FS" if "fisher" in tname else "DX",
+                                    strand="+" if "pos" in tname else "-")
+    return tname[0:16]
 
 def gshiftsparent(fname):
     if fname.startswith("PK"):
@@ -223,6 +237,7 @@ def print_shifts(lst, pi, meta):
                                     # stype="UNK",
                                     pairs=gpairs(s, meta),
                                     strand=gstrand(tname),
+                                    slbl=gslbl(tname),
                                     filename=s)
 
 def main(folder, meta):
@@ -252,12 +267,14 @@ def main(folder, meta):
     print CLASSIFIED_PEAKS_VIEW
     for s in files['sites']:
         sample = gsample(s)
-        print SITE_TEMPLATE.substitute(tname=gtname(s),
+        tname = gtname(s)
+        print SITE_TEMPLATE.substitute(tname=tname,
                                     ptype=md[sample]['primary_type'],
                                     stype=md[sample]['secondary_type'],
                                     ttype=md[sample]['tertiary_type'],
                                     qtype=md[sample]['quaternary_type'],
                                     inv=ginv(s),
+                                    slbl=gslbl(tname),
                                     filename=s,
                                     color=md[sample]['color'])
     print COVERAGE_VIEW
@@ -272,6 +289,7 @@ def main(folder, meta):
                                     qtype=md[sample]['quaternary_type'],
                                     inv=ginv(s),
                                     strand=gstrand(tname),
+                                    slbl=gslbl(tname),
                                     filename=s,
                                     color=md[sample]['color'])
     # should not change often, but could automate eventually
