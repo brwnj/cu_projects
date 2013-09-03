@@ -3,9 +3,6 @@
 + same variable region or same j region can be considered the same family
 + would likely have changes in the cdr3 while being close to match with very similar variable region or j region
 + report dimer (short mer) per barcode across runs
-+ counts of reads per barcode
-+ counts of reads after umi filtering per barcode
-+ counts of reads after joining per barcode
 + counts of translated productive reads per barcode
 + counts of translated unique productive reads per barcode
 
@@ -58,23 +55,31 @@
 
 #Hits-Clip
 
++ scatter plot, outliers will get labels; should be 4 obvious ones
+    + mda231
+    + mcf7
+    + plotted expression levels of miRs
+
++ 3d plot with
+    + mcf7 control v mcf7 +e
+    + mcf7 v bt474
+    + and 
+    + mcf7 v mda231
+    + the remaining side COULD be mcf7 control replicates
+
 ## tracks for PK61, PK62, PK63
 
-+ still need to run PK61-63
 + heatmap of miRNA, something that you can zoom into
 + matrix2png
 
 #Poly(A)
+normal to tumor
+normal to er+
+normal to er-
 
-+ move to hg19
++ for a gene in a sample, find the most intense site
 
-+ currently picking up genes where expression is similar and shift is observed
-+ cpox is an example across manoj's data
-+ normalize per gene
-+ get the gene count; calculate scale factor; divide each polya site by the scale factor
-+ fisher test at that polya site, output something similar to dexseq; normalize by total count
-+ qvalue calculation
-+ no need for fold change, but insert the values of the two samples being compared
+input result table > only output results involving those sites
 
 + tables for dexseq results; sites with pval, padj, basemean
 
@@ -96,4 +101,5 @@
 
 #Zhao
 
++ subtract parent from each individually, create consensus, annotate, deliver
 + deliver mutation list

@@ -32,30 +32,26 @@ python bin/mirna_reproducibility.py -a data/HELA.abundance.noa -b data/hMSC.abun
 """
 import os
 import sys
+import argparse
 import matplotlib
-matplotlib.use('Agg')
-from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
-from matplotlib.figure import Figure
-from toolshed import reader
-import pandas as pd
 import numpy as np
+import pandas as pd
+matplotlib.use('Agg')
+from toolshed import reader
+from matplotlib.figure import Figure
+from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
 
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
-
-def get_scaling_factor(abam, bbam, verbose):
-    """from two bams, calculate scaling factor for b based on number of mapped reads."""
-    if verbose:
-        sys.stderr.write(">> Counting reads in A\n")
-        #using pysam, count mapped reads in a
-        #or just use nopen and samtools view | wc -l
-    if verbose:
-        sys.stderr.write(">> Counting reads in A\n")
-        #using pysam, count mapped reads in b
-    sf = float(a) / float(b)
-    return sf
-
+# def get_scaling_factor(abam, bbam, verbose):
+#     """from two bams, calculate scaling factor for b based on number of mapped reads."""
+#     if verbose:
+#         sys.stderr.write(">> Counting reads in A\n")
+#         #using pysam, count mapped reads in a
+#         #or just use nopen and samtools view | wc -l
+#     if verbose:
+#         sys.stderr.write(">> Counting reads in A\n")
+#         #using pysam, count mapped reads in b
+#     sf = float(a) / float(b)
+#     return sf
 
 def abundance_to_dataframe(a_abundance, b_abundance):
     cases = {}
@@ -68,28 +64,26 @@ def abundance_to_dataframe(a_abundance, b_abundance):
                 cases[name][mirna['mirname']] = float(mirna['abundance'])
     return pd.DataFrame(cases)
 
-
 # Polynomial Regression
-def polyfit(x, y, degree):
-    results = {}
-
-    coeffs = np.polyfit(x, y, degree)
-
-     # Polynomial Coefficients
-    results['polynomial'] = coeffs.tolist()
-
-    # r-squared
-    p = np.poly1d(coeffs)
-    # fit values, and mean
-    yhat = [p(z) for z in x]
-    ybar = sum(y)/len(y)
-    ssreg = sum([ (yihat - ybar)**2 for yihat in yhat])
-    sstot = sum([ (yi - ybar)**2 for yi in y])
-    results['determination'] = ssreg / sstot
-
-    print results
-    return results
-    
+# def polyfit(x, y, degree):
+#     results = {}
+# 
+#     coeffs = np.polyfit(x, y, degree)
+# 
+#      # Polynomial Coefficients
+#     results['polynomial'] = coeffs.tolist()
+# 
+#     # r-squared
+#     p = np.poly1d(coeffs)
+#     # fit values, and mean
+#     yhat = [p(z) for z in x]
+#     ybar = sum(y)/len(y)
+#     ssreg = sum([ (yihat - ybar)**2 for yihat in yhat])
+#     sstot = sum([ (yi - ybar)**2 for yi in y])
+#     results['determination'] = ssreg / sstot
+# 
+#     print results
+#     return results
 
 def main(a, b):
     # imposed on group b
@@ -106,6 +100,8 @@ def main(a, b):
     df[bname] = df[bname] * (library_sizes[aname] / library_sizes[bname])
     # log2
     df = df.apply(np.log2)
+    df.to_csv(sys.stdout, sep="\t")
+    sys.exit(1)
     # correlation coefficient
     c = df[aname].corr(df[bname], method='pearson')
     r2 = c**2
@@ -128,13 +124,10 @@ def main(a, b):
     # Save the generated Scatter Plot to a PNG file.
     canvas.print_figure('%s_vs_%s__rval_%s.png' % (aname, bname, c))
 
-
 if __name__ == "__main__":
-    import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('-a', required=True, help='group a miRNA abundance')
     p.add_argument('-b', required=True, help='group b miRNA abundance')
-    args = p.parse_args()
-    
+    args = p.parse_args()    
     main(args.a, args.b)
