@@ -31,6 +31,10 @@ def main(snpeff, descriptions):
                 print "\t".join(l[h] for h in snpeff_header)
                 continue
         full_line = dict(l.items() + add.items())
+        try:
+            assert full_line.get('status')
+        except AssertionError:
+            full_line['status'] = ""
         print "\t".join(full_line[h] for h in full_header)
 
 if __name__ == '__main__':
