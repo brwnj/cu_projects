@@ -59,6 +59,8 @@
 
 #Hits-Clip
 
+PK24 and PK11
+
 + scatter plot, outliers will get labels; should be 4 obvious ones
     + mda231
     + mcf7
@@ -67,7 +69,6 @@
 + 3d plot with
     + mcf7 control v mcf7 +e
     + mcf7 v bt474
-    + and 
     + mcf7 v mda231
     + the remaining side COULD be mcf7 control replicates
 
