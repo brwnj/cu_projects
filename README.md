@@ -38,6 +38,10 @@
 
 # Duval
 
++ polyphen
++ indels mostly, annotate with descriptions if available
++ EXOME
+
 + canine exome; bladder cancer
 + experimental design
 
@@ -73,15 +77,12 @@
 + matrix2png
 
 #Poly(A)
-normal to tumor
-normal to er+
-normal to er-
 
-+ for a gene in a sample, find the most intense site
-
-input result table > only output results involving those sites
-
-+ tables for dexseq results; sites with pval, padj, basemean
++ comparisons to perform with dexseq and fisher are listed in 'comparisons'
++ name files with sample names still
++ translate comparison in short and long label to 'translation'
++ if 'exclude' do not create a track
++ if not 'exclude' need coverage, peaks, and associated comparisons
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
     + map some human to mouse and see how many map (percentage wise)
