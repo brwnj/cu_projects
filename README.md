@@ -59,13 +59,18 @@
 
 #Hits-Clip
 
-PK24 and PK11
-
++ read level comparisons
+    + er+ (5) v normal
+    + er- (5) v normal
+    + normal v tumor
+    + maybe something with her2 separating out
+    + list coming from austin
+    + concatenate all read counts into one file 
++ PK24 and PK11
 + scatter plot, outliers will get labels; should be 4 obvious ones
     + mda231
     + mcf7
     + plotted expression levels of miRs
-
 + 3d plot with
     + mcf7 control v mcf7 +e
     + mcf7 v bt474

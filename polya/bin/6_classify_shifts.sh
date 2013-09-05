@@ -20,4 +20,4 @@ sites=$RESULT/polya_sites/${sample:0:2}.sites.c13.bed.gz
 python $BIN/classify_shifts.py $infile | gzip -c > $outfile
 
 cd $SITESHIFTS
-python $BIN/visualize_shifts.py $outfile $sites
+python $BIN/visualize_dexseq_shifts.py $outfile $sites

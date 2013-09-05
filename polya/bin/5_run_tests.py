@@ -55,26 +55,27 @@ for t in reader(metadata, header=True):
             print >>sys.stderr, ">> dexseq comparison complete for", a, "and", b
             continue
         print >>sys.stderr, ">> dexseq: comparing", a, "and", b
-        
+
         if comparison_complete(fisher_results, fisher_result):
             print >>sys.stderr, ">> fisher comparison complete for", a, "and", b
             continue
         print >>sys.stderr, ">> fisher: comparing", a, "and", b
-        
+
         file_a = "{results}/{a}/{a}.{strand}.counts.txt.gz".format(**locals())
         file_b = "{results}/{b}/{b}.{strand}.counts.txt.gz".format(**locals())
         assert os.path.exists(file_a) and os.path.exists(file_b)
-        
+
         # create dexseq replicates
         rep_a = replicate(file_a)
         rep_b = replicate(file_b)
         dexseq_cmd = ("Rscript {script} {a},{a}x {file_a},{rep_a} "
                         "{b},{b}x {file_b},{rep_b} "
                         "{result}").format(script=dexseq_script, a=a,
-                                    file_a=file_a, rep_a=rep_a, b=b,
-                                    file_b=file_b, rep_b=rep_b, result=result)
+                                            file_a=file_a, rep_a=rep_a, b=b,
+                                            file_b=file_b, rep_b=rep_b,
+                                            result=result)
         dexseq_submit(dexseq_cmd)
-        
+
         fisher_cmd = ("python {fisher_script} {file_a} {file_b} | "
                         "gzip -c > {fisher_result}").format(**locals())
         fisher_submit(fisher_cmd)
