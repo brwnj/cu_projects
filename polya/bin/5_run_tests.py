@@ -17,7 +17,7 @@ results = "/vol1/home/brownj/projects/polya/results/common"
 dexseq_script = "/vol1/home/brownj/devel/polya/run_dexseq.R"
 dexseq_results = "/vol1/home/brownj/projects/polya/results/common/dexseq_results"
 fisher_script = "/vol1/home/brownj/devel/polya/fisher_test.py"
-fishser_results = "/vol1/home/brownj/projects/polya/results/common/fisher_results"
+fisher_results = "/vol1/home/brownj/projects/polya/results/common/fisher_results"
 metadata = "/vol1/home/brownj/projects/polya/results/common/hub/metadata.tsv"
 sample_column = "alias"
 comparison_column = "comparisons"
@@ -45,11 +45,10 @@ def comparison_complete(results_dir, result_file):
 for t in reader(metadata, header=True):
     for compareto, strand in zip(t[comparison_column].split(","), ['pos', 'neg']):
         if len(compareto) == 0: continue
-        comparison_complete = False
         a = t[sample_column]
         b = compareto
-        dexseq_result = "{dexseq_results}/{a}_vs_{b}.{strand}.dexseq.txt".format(**locals())
-        fisher_result = "{fisher_results}/{a}_vs_{b}.{strand}.fisher.txt.gz".format(**locals())
+        dexseq_result = "{dexseq_results}/{a}_to_{b}.{strand}.dexseq.txt".format(**locals())
+        fisher_result = "{fisher_results}/{a}_to_{b}.{strand}.fisher.txt.gz".format(**locals())
 
         if comparison_complete(dexseq_results, dexseq_result):
             print >>sys.stderr, ">> dexseq comparison complete for", a, "and", b
@@ -68,12 +67,9 @@ for t in reader(metadata, header=True):
         # create dexseq replicates
         rep_a = replicate(file_a)
         rep_b = replicate(file_b)
-        dexseq_cmd = ("Rscript {script} {a},{a}x {file_a},{rep_a} "
+        dexseq_cmd = ("Rscript {dexseq_script} {a},{a}x {file_a},{rep_a} "
                         "{b},{b}x {file_b},{rep_b} "
-                        "{result}").format(script=dexseq_script, a=a,
-                                            file_a=file_a, rep_a=rep_a, b=b,
-                                            file_b=file_b, rep_b=rep_b,
-                                            result=result)
+                        "{dexseq_result}").format(**locals())
         dexseq_submit(dexseq_cmd)
 
         fisher_cmd = ("python {fisher_script} {file_a} {file_b} | "

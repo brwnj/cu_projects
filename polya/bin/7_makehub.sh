@@ -44,13 +44,13 @@ rm *sites*.bed
 
 # this will intentionally fail when there are no new files
 # move the dexseq visualization files over
-mv $SITESHIFTS/*.bed .
+cp $SITESHIFTS/*dexseq.bed .
 # convert to BB12
-for bed in *_to_*.bed; do
+for bed in *dexseq*.bed; do
     bed2bb.py --type bed12 $CHROM_SIZES $bed
 done
 # delete beds
-rm *_to_*.bed
+rm *dexseq*.bed
 
 
 for f in $FISHERRESULTS/*fisher*txt.gz; do
@@ -59,11 +59,8 @@ for f in $FISHERRESULTS/*fisher*txt.gz; do
     fisherbb=${f/.txt.gz/.bb}
     if [[ ! -f $fisherbb ]]; then
         # create beds of fisher test results
-        python $BIN/visualize_fisher_shifts.py \
-            $f \
-            $HOME/projects/polya/results/common/polya_sites/${fbase:0:2}.sites.c13.bed.gz \
-            | bedtools sort -i - \
-            > $fisherbed
+        python $BIN/visualize_fisher_shifts.py $f $POLYASITES/${fbase:0:2}.sites.c13.bed.gz \
+            | bedtools sort -i - > $fisherbed
         # convert bed to bigbed
         bed2bb.py --type bed12 $CHROM_SIZES $fisherbed
         # delete the bed

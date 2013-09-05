@@ -91,6 +91,9 @@
 + if not 'exclude' need coverage, peaks, and associated comparisons
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
++ 86-...
++ map to human, map to mouse, what's the overlap
+
     + map some human to mouse and see how many map (percentage wise)
     + possible to mask human genome from mouse genome based on a certain length
 
