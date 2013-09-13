@@ -17,9 +17,6 @@ from genomedata import Genome
 from numpy import nansum
 from collections import defaultdict
 
-__author__ = "Joe Brown"
-__author_email__ = "brwnjm@gmail.com"
-
 
 def peak_intensity(bed, genomedata, track, sif):
     """For each BED entry (miRNA coordinate), get the max peak intensity.

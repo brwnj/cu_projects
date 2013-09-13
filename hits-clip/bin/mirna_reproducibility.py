@@ -97,9 +97,9 @@ def main(a, b):
     df = abundance_to_dataframe(args.a, args.b)
     
     # scaling
-    df[bname] = df[bname] * (library_sizes[aname] / library_sizes[bname])
+    # df[bname] = df[bname] * (library_sizes[aname] / library_sizes[bname])
     # log2
-    df = df.apply(np.log2)
+    # df = df.apply(np.log2)
     df.to_csv(sys.stdout, sep="\t")
     sys.exit(1)
     # correlation coefficient
