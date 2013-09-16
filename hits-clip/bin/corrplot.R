@@ -36,3 +36,13 @@ plot1 = ggplot(ct) + geom_point(aes(MCF7estr, MCF7), size=5, family = 'arial') +
 plot2 = ggplot(ct) + geom_point(aes(BT474, MCF7), size=5) + theme(panel.grid.major = element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank()) + coord_cartesian(ylim = c(0,24), xlim = c(0,24))
 plot3 = ggplot(ct) + geom_point(aes(MDA231, MCF7), size=5) + theme(panel.grid.major = element_blank(), panel.grid.minor=element_blank(), panel.background=element_blank()) + coord_cartesian(ylim = c(0,24), xlim = c(0,24))
 grid.arrange(plot1, plot2, plot3, ncol=3)
+
+ct = read.table("~/projects/hits-clip/data/20130913/mcf7_triplicate.normed.txt", header=TRUE, row.names=1)
+cor(ct)
+mx = cor(ct)
+corrplot(mx, method="circle", order="alphabet", cl.lim=c(0,1))
+ct <- log2(ct)
+plot1 = ggplot(ct) + geom_point(aes(PK31, PK11), size=5, family = 'arial') + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor=element_blank()) + coord_cartesian(ylim = c(0,24), xlim = c(0,24))
+plot2 = ggplot(ct) + geom_point(aes(PK51, PK11), size=5) + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor=element_blank()) + coord_cartesian(ylim = c(0,24), xlim = c(0,24))
+plot3 = ggplot(ct) + geom_point(aes(PK51, PK31), size=5) + theme_bw() + theme(panel.grid.major = element_blank(), panel.grid.minor=element_blank()) + coord_cartesian(ylim = c(0,24), xlim = c(0,24))
+grid.arrange(plot1, plot2, plot3, ncol=3)
