@@ -59,36 +59,16 @@
 
 #Hits-Clip
 
-+ read level comparisons
-    + er+ (5) v normal
-    + er- (5) v normal
-    + normal v tumor
-    + maybe something with her2 separating out
-    + list coming from austin
-    + concatenate all read counts into one file 
-+ PK24 and PK11
-+ scatter plot, outliers will get labels; should be 4 obvious ones
-    + mda231
-    + mcf7
-    + plotted expression levels of miRs
-+ 3d plot with
-    + mcf7 control v mcf7 +e
-    + mcf7 v bt474
-    + mcf7 v mda231
-    + the remaining side COULD be mcf7 control replicates
-
-## tracks for PK61, PK62, PK63
-
++ tracks for PK61, PK62, PK63
 + heatmap of miRNA, something that you can zoom into
 + matrix2png
 
 #Poly(A)
 
-+ comparisons to perform with dexseq and fisher are listed in 'comparisons'
-+ name files with sample names still
-+ translate comparison in short and long label to 'translation'
-+ if 'exclude' do not create a track
-+ if not 'exclude' need coverage, peaks, and associated comparisons
++ coverage tracks for pooled samples
++ add peter to private projects folder
+
++ compare ERP to ERN in pooled datasets
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
 + 86-...
@@ -103,13 +83,4 @@
 
 #Walter
 
-++ levin classification; score
-
-+ given list with direction, compute a score for each patient along with their group (TB, noinf, etc.)
-+ calculate threshold for plot
-+ adding total intensity at up-regulated transcripts and subtracting total intensity at all down-regulated transcripts
-
-#Zhao
-
-+ subtract parent from each individually, create consensus, annotate, deliver
-+ deliver mutation list
++ levin classification; score
