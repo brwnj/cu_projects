@@ -26,9 +26,9 @@ echo "cat $reads/500_TAGCTT_L006_R2_001.fastq.gz $reads/500_TAGCTT_L007_R2_001.f
 echo "cat $reads/522_AAACAT_L006_R1_001.fastq.gz $reads/522_AAACAT_L007_R1_001.fastq.gz > $results/522_R1.fastq.gz" | bsez concat -P duval
 echo "cat $reads/522_AAACAT_L006_R2_001.fastq.gz $reads/522_AAACAT_L007_R2_001.fastq.gz > $results/522_R2.fastq.gz" | bsez concat -P duval
 echo "cat $reads/730_GCCAAT_L002_R1_001.fastq.gz $reads/730_GCCAAT_L003_R1_001.fastq.gz > $results/730_R1.fastq.gz" | bsez concat -P duval
-echo "cat $reads/730_GCCAAT_L002_R2_001.fastq.gz $reads/730_GCCAAT_L003_R2_001.fastq.gz > $results/730_R1.fastq.gz" | bsez concat -P duval
+echo "cat $reads/730_GCCAAT_L002_R2_001.fastq.gz $reads/730_GCCAAT_L003_R2_001.fastq.gz > $results/730_R2.fastq.gz" | bsez concat -P duval
 echo "cat $reads/735_ACAGTG_L002_R1_001.fastq.gz $reads/735_ACAGTG_L003_R1_001.fastq.gz > $results/735_R1.fastq.gz" | bsez concat -P duval
-echo "cat $reads/735_ACAGTG_L002_R2_001.fastq.gz $reads/735_ACAGTG_L003_R2_001.fastq.gz > $results/735_R1.fastq.gz" | bsez concat -P duval
+echo "cat $reads/735_ACAGTG_L002_R2_001.fastq.gz $reads/735_ACAGTG_L003_R2_001.fastq.gz > $results/735_R2.fastq.gz" | bsez concat -P duval
 echo "cat $reads/868_ACTTGA_L002_R1_001.fastq.gz $reads/868_ACTTGA_L003_R1_001.fastq.gz > $results/868_R1.fastq.gz" | bsez concat -P duval
 echo "cat $reads/868_ACTTGA_L002_R2_001.fastq.gz $reads/868_ACTTGA_L003_R2_001.fastq.gz > $results/868_R2.fastq.gz" | bsez concat -P duval
 echo "cat $reads/Bililey_CGATGT_L002_R1_001.fastq.gz $reads/Bililey_CGATGT_L003_R1_001.fastq.gz > $results/Bililey_R1.fastq.gz" | bsez concat -P duval
