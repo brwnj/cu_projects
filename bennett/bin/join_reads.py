@@ -9,19 +9,16 @@ import string
 import multiprocessing
 from Bio import pairwise2
 from toolshed import nopen
-from itertools import islice, izip, izip_longest
+from itertools import islice, izip
 
 PW = pairwise2.align.localms
 COMPLEMENT = string.maketrans('ACGTNSRYMKWHBVD','TGCANSRYMKWHBVD')
 
 # https://gist.github.com/aljungberg/626518
 from multiprocessing.pool import IMapIterator
-
 def wrapper(func):
-  def wrap(self, timeout=None):
-    # Note: the timeout of 1 googol seconds introduces a rather subtle
-    # bug for Python scripts intended to run many times the age of the universe.
-    return func(self, timeout=timeout if timeout is not None else 1e100)
+  def wrap(self, timeout=1e100):
+    return func(self, timeout=timeout)
   return wrap
 IMapIterator.next = wrapper(IMapIterator.next)
 
