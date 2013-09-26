@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J igg_repertoire[1-16]
+#BSUB -J igg_repertoire[1-35]
 #BSUB -e igg_repertoire.%J.%I.err
 #BSUB -o igg_repertoire.%J.%I.out
 #BSUB -q normal
@@ -12,7 +12,6 @@ source $HOME/projects/bennett/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 bin=$HOME/projects/bennett/bin
-jobids="1"
 
 # prepend the umi back onto the reads
 i1=$READS/${sample}_I1.fastq.gz
@@ -20,40 +19,34 @@ r1_in=$READS/${sample}_R1.fastq.gz
 r2_in=$READS/${sample}_R2.fastq.gz
 r1_prependumi=${r1_in/.fastq.gz/.umi.fastq.gz}
 r2_prependumi=${r2_in/.fastq.gz/.umi.fastq.gz}
-r1_sortumi=${r1_in/.fastq.gz/.umi.sorted.fastq.gz}
-r2_sortumi=${r2_in/.fastq.gz/.umi.sorted.fastq.gz}
-r1_umifiltered=${r1_in/.fastq.gz/.umi.sorted.umifiltered.fastq.gz}
-r2_umifiltered=${r2_in/.fastq.gz/.umi.sorted.umifiltered.fastq.gz}
-r1_rmadptr=${r1_in/.fastq.gz/.umi.sorted.umifiltered.rmadptr.fastq.gz}
-r2_rmadptr=${r2_in/.fastq.gz/.umi.sorted.umifiltered.rmadptr.fastq.gz}
+r1_sortumi=${r1_in/.fastq.gz/.umisorted.fastq.gz}
+r2_sortumi=${r2_in/.fastq.gz/.umisorted.fastq.gz}
+r1_umifiltered=${r1_in/.fastq.gz/.umifiltered.fastq.gz}
+r2_umifiltered=${r2_in/.fastq.gz/.umifiltered.fastq.gz}
+r1_trimadapter=${r1_in/.fastq.gz/.trimmed.fastq.gz}
+r2_trimadapter=${r2_in/.fastq.gz/.trimmed.fastq.gz}
 joined=$READS/${sample}.joined.fastq.gz
 
+out=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.out
+err=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.err
 if [[ ! -f $r1_prependumi ]]; then
-    job=$(echo "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1_in | gzip -c > $r1_prependumi" | bsez prepend_umi -P $PI)
-    jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
-    jobids="$jobids $jobid"
+    bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1_in | gzip -c > $r1_prependumi" &
 fi
 if [[ ! -f $r2_prependumi ]]; then
-    job=$(echo "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2_in | gzip -c > $r2_prependumi" | bsez prepend_umi -P $PI)
-    jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
-    jobids="$jobids $jobid"
+    bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2_in | gzip -c > $r2_prependumi" &
 fi
-
-python -m bsub $jobids
+wait
 
 # sort the reads according to umi sequence
+out=sort_umi.$LSB_JOBID.$LSB_JOBINDEX.out
+err=sort_umi.$LSB_JOBID.$LSB_JOBINDEX.err
 if [[ ! -f $r1_sortumi ]]; then
-    job=$(echo "python $bin/process_umi.py sort $r1_prependumi $UMILENGTH | gzip -c > $r1_sortumi" | bsez sort_umi -P $PI)
-    jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
-    jobids="$jobids $jobid"
+    bsub -J sort_umi -o $out -e $err -P $PI -K "python $bin/process_umi.py sort $r1_prependumi $UMILENGTH | gzip -c > $r1_sortumi" &
 fi
 if [[ ! -f $r2_sortumi ]]; then
-    job=$(echo "python $bin/process_umi.py sort $r2_prependumi $UMILENGTH | gzip -c > $r2_sortumi" | bsez sort_umi -P $PI)
-    jobid=$(echo $job | sed -rn 's/.*<([0-9]+)>.*/\1/p')
-    jobids="$jobids $jobid"
+    bsub -J sort_umi -o $out -e $err -P $PI -K "python $bin/process_umi.py sort $r2_prependumi $UMILENGTH | gzip -c > $r2_sortumi" &
 fi
-
-python -m bsub $jobids
+wait
 
 # collapse and filter out redundant sequences per umi
 if [[ ! -f $r1_umifiltered ]] || [[ ! -f $r2_umifiltered ]]; then
@@ -61,11 +54,11 @@ if [[ ! -f $r1_umifiltered ]] || [[ ! -f $r2_umifiltered ]]; then
 fi
 
 # trim the adapters and append known primer to read name
-if [[ ! -f $r1_rmadptr ]] || [[ ! -f $r2_rmadptr ]]; then
-    python $BIN/trim_adapters.py $r1_umifiltered $r2_umifiltered $R1PRIMERS $R2PRIMERS
+if [[ ! -f $r1_trimadapter ]] || [[ ! -f $r2_trimadapter ]]; then
+    python $BIN/trim_adapters.py --mismatches 1 $r1_umifiltered $r2_umifiltered $R1PRIMERS $R2PRIMERS
 fi
 
 # join r1 and r2 based on local alignment of the overlap
 if [[ ! -f $joined ]]; then
-    echo "python $bin/join_reads.py -t 8 $r1_rmadptr $r2_rmadptr | gzip -c > $joined" | bsez join_reads -P $PI -n 8 -R span[hosts=1]
+    echo "python $bin/join_reads.py -t 8 $r1_trimadapter $r2_trimadapter | gzip -c > $joined" | bsez join_reads -P $PI -n 8 -R span[hosts=1]
 fi
