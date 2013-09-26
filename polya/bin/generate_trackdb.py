@@ -233,16 +233,16 @@ def flipstrand(fname):
 
 def print_shifts(lst, pi, meta):
     for s in lst:
-        if not s.startswith(pi): continue
         tname = flipstrand(s)
-        if pi == "NBT":
+        if pi == "pooled":
+            if s.startswith("PK") or s.startswith("MP"): continue
             print SHIFTS_TEMPLATE.substitute(tname=tname,
                                     parent="pkfishershifts",
                                     strand=gstrand(tname),
                                     slbl=tname.split(".")[0],
                                     llbl=tname,
                                     filename=s)
-        else:
+        elif s.startswith(pi):
             print SHIFTS_TEMPLATE.substitute(tname=tname,
                                     parent=gshiftsparent(s),
                                     # stype="UNK",
@@ -322,7 +322,7 @@ def main(folder, meta):
     print_shifts(files['dexseq'], "MP", md)
     print PK_FISHER_SHIFTS
     print_shifts(files['fisher'], "PK", md)
-    print_shifts(files['fisher'], "NBT", md)
+    print_shifts(files['fisher'], "pooled", md)
     print MP_FISHER_SHIFTS
     print_shifts(files['fisher'], "MP", md)
 
