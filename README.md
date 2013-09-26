@@ -1,5 +1,9 @@
 #Bennett
 
++ fasta of v-d-j for each barcode with id including cregion
++ table to display the csf to blood overlap with counts and ig used
++ deliver a few aa imgt files
+
 + same variable region or same j region can be considered the same family
 + would likely have changes in the cdr3 while being close to match with very similar variable region or j region
 + report dimer (short mer) per barcode across runs
@@ -65,8 +69,16 @@
 
 #Poly(A)
 
++ exome reference for peak classification
++ pooled coverage tracks
++ re-run testing with newly classified peaks
+
++ normalizing the pooled counts
++ scale counts within a pool
++ then compare the pools
+
 + coverage tracks for pooled samples
-+ add peter to private projects folder
++ will need to show normalized counts as well as prior to normalization
 
 + compare ERP to ERN in pooled datasets
 
@@ -83,4 +95,7 @@
 
 #Walter
 
-+ levin classification; score
++ align to H37Rv and Beijing strain
++ with and without miRNA filtering
++ strict mismatch and multiple alignment policy
++ transfer to sandbox with alignment scripts
