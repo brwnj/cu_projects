@@ -30,14 +30,14 @@ wait
 
 # convert fisher test results to bed format
 pksites=$HOME/projects/polya/results/common/polya_sites/PK.sites.c13.bed.gz
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.pos.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.neg.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.neg.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS-ERP.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.pos.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS-ERP.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.pos.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS-ERN.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.neg.fisher.txt.gz $pksites | bedtools sort -i - > NBT_to_TS-ERN.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.pos.fisher.txt.gz $pksites | bedtools sort -i - > TS-ERP_to_TS-ERN.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.neg.fisher.txt.gz $pksites | bedtools sort -i - > TS-ERP_to_TS-ERN.neg.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS.pos.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS.neg.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERP.neg.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERP.pos.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERN.pos.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERN.neg.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > TS-ERP_to_TS-ERN.pos.fisher.bed" &
+bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > TS-ERP_to_TS-ERN.neg.fisher.bed" &
 wait
 
 # convert bed to bb
