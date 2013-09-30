@@ -79,32 +79,6 @@ def trimadapters(datadir):
     return jobs
 
 
-def rumalign(samples, index, genome):
-    """align to index using rum"""
-    jobs = []
-    for sample in samples:
-        fastqs = getfilelist(DATA, sample + "_*.trm.fq.gz")
-        assert(len(fastqs) == 1)
-        
-        outdir = RESULTS + sample
-        alignresult = outdir + "/" + sample + "." + genome + ".bam"
-        alternatealignresult = outdir + "/RUM.sam"
-        if op.exists(alignresult) or op.exists(alternatealignresult): continue
-        if not op.exists(outdir):
-            os.makedirs(outdir)
-        
-        gzipfastq = fastqs[0]
-        fastq = outdir + "/" + op.splitext(op.basename(gzipfastq))[0]
-        if not op.exists(fastq):
-            bsub.poll(extract(gzipfastq, fastq))
-        #--limit-nu n
-        # Limits the number of ambiguous mappers in the final output by removing all reads that map to n locations or more.
-        cmd = "rum_runner align -v -i " + index + " -o " + outdir + " --chunks 5 --dna --name " + sample + " " + fastq
-        jobid = bsub(PI + ".align_reads", n="5", R="select[mem>28] rusage[mem=28] span[hosts=1]", verbose=True)(cmd)
-        jobs.append(jobid)
-    return jobs
-
-
 def cleanup(genome):
     """take care of the mess left by rum."""
     jobs = []
@@ -219,11 +193,6 @@ def main():
     tuberculosisindex = "/vol1/home/brownj/ref/tuberculosis/H37Rv"
     fastqc(SAMPLES)
     bsub.poll(trimadapters(DATA))
-    
-    # Rum
-    bsub.poll(rumalign(SAMPLES, INDEX, "hg19"))
-    bsub.poll(cleanup("hg19"))
-    removesams("hg19")
             
     # Bowtie
     bsub.poll(bowtiealign(SAMPLES, matureindex, "mature"))
