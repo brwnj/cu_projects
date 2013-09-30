@@ -232,6 +232,11 @@ def flipstrand(fname):
     return tname
 
 def print_shifts(lst, pi, meta):
+    """
+    lst = list of file names
+    pi = name of investigator or "pooled"
+    meta = metadata as dict
+    """
     for s in lst:
         tname = flipstrand(s)
         if pi == "pooled":
