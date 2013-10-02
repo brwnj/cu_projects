@@ -124,12 +124,9 @@ def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
         n += 1
     return n
 
-def get_name(name):
-    if ".fastq" in name:
-        sample = name.split(".fastq")[0]
-    else:
-        sample = name.split(".fq")[0]
-    return "{sample}.umifiltered.fastq.gz".format(**locals())
+def get_name(name, insert):
+    sample = name.split(".")[0]
+    return "{sample}.{insert}.fastq.gz".format(sample=sample, insert=insert)
 
 def add_qual(d, k, q):
     try:
@@ -146,8 +143,8 @@ def run_collapse(args):
     umileng = len(iupac_umi)
     cutoff = args.cutoff
     readid = 1
-    r1out = gzip.open(get_name(args.r1), 'wb')
-    r2out = gzip.open(get_name(args.r2), 'wb')
+    r1out = gzip.open(get_name(args.r1, "umifiltered"), 'wb')
+    r2out = gzip.open(get_name(args.r2, "umifiltered"), 'wb')
 
     for umi, group in groupby(izip(readfq(args.r1), readfq(args.r2)), key=lambda (rr1, rr2): rr1.seq[:umileng]):
         r1seqs = Counter()
@@ -202,8 +199,8 @@ if __name__ == "__main__":
     
     # pull out each unique sequence per UMI
     fcollapse = subp.add_parser('collapse', description="Finds unique sequences per valid UMI among paired-end reads.", help="find most abundant sequence per UMI given paired-end reads")
-    fcollapse.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI to scan.")
-    fcollapse.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI to scan.")
+    fcollapse.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI, sorted by UMI.")
+    fcollapse.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI, sorted by UMI.")
     fcollapse.add_argument('umi', metavar="UMI", help='IUPAC sequence of the UMI, e.g. NNNNNV')
     fcollapse.add_argument('-c', '--cutoff', type=int, default=200, help='shortest allowable read length after trimming at first N')
     fcollapse.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
