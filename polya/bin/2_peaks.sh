@@ -94,7 +94,7 @@ fi
 # classify the peaks
 if [[ ! -f $classified ]]; then
     # sort to be safe
-    python $BIN/classify_peaks.py $peak $posbg $negbg $FASTA $CHROM_SIZES \
+    python $BIN/classify_peaks.py --canonical-region -5 -40 $peak $posbg $negbg $FASTA $CHROM_SIZES \
         | bedtools sort -i - \
         | gzip -c > $classified
 fi
