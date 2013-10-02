@@ -26,19 +26,11 @@
 
 #Davidson
 
-+ human islet rnaseq data
-+ converet database into ORFs
-+ ORF possibilities; Howard may follow up
-+ 8-10 mer might be coming from different ORFs
-+ 25 might be a better cutoff for an ORF
-+ all possible ORFs at 25mer or another length
-+ also need info on where the read was aligned; like gene or isoform
-
-+ nonredundant list of ORFs
-+ matching protein sequence to protein sequence
-
-+ swissprot fasta header for parsing
-+ translate known and novel protein seqs in known ORFs
++ bowtie2 index without "chr"
++ map using tophat
++ call variants again
++ customDBPro with ensembl reference
++ output protein sequences
 
 # Duval
 
@@ -69,6 +61,8 @@
 
 #Poly(A)
 
++ counts are fucked up somehow. maybe use jay's solution to getting bedgraph style counts
+
 + exome reference for peak classification
 + pooled coverage tracks
 + re-run testing with newly classified peaks
@@ -92,10 +86,3 @@
     + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
-
-#Walter
-
-+ align to H37Rv and Beijing strain
-+ with and without miRNA filtering
-+ strict mismatch and multiple alignment policy
-+ transfer to sandbox with alignment scripts
