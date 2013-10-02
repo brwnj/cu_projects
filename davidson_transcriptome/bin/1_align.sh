@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1,11]
+#BSUB -J align[1-10]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -19,6 +19,12 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 if [[ ! -f $bam ]]; then
-    tophat2 -o $results -p 8 --b2-fast -G $GENES --transcriptome-index $TRANSCRIPTOME $BTBASE $fastq
-    mv $results/accepted_hits.bam $bam
+    # tophat2 -o $results -p 8 -G $GENES --transcriptome-index $TRANSCRIPTOME $BTBASE $fastq
+    # mv $results/accepted_hits.bam $bam
+    gsnap -D ~analysiscore/genomes/GMAPDB/hg19_total -d hg19_total --gunzip \
+        -t 8 -N 1 -s ~analysiscore/genomes/GMAPDB/hg19_total/hg19_total.maps/hg19_total.ensembl.splicesites \
+        -Q -n 20 -A sam \
+        | samtools view -ShuF4 - \
+        | samtools sort -o -m 8G - $sample.temp \
+        > $bam
 fi
