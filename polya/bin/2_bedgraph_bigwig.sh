@@ -54,6 +54,6 @@ for idx in ${!strands[@]}; do
                 > $bedgraph
         fi    
         bedGraphToBigWig $bedgraph $CHROM_SIZES $bigwig
-        gzip $bedgraph
+        gzip -f $bedgraph
     done
 done
