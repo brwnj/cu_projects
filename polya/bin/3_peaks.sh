@@ -52,10 +52,10 @@ fi
 
 # strand out the bam to facilitate strand specific peak calling
 if [[ ! -f $negbam ]]; then
-    samtools view -hbf16 $bam > $negbam
+    samtools view -hb -f 0x10 $bam > $negbam
 fi
 if [[ ! -f $posbam ]]; then
-    samtools view -hbF16 $bam > $posbam
+    samtools view -hb -F 0x10 $bam > $posbam
 fi
 
 # call peaks on negative strand reads
