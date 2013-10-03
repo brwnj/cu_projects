@@ -1,11 +1,10 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-69]
+#BSUB -J align[1-6]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
 #BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"
 #BSUB -n 12
-#BSUB -P pillai_kabos_polya
 
 <<DOC
 Trim the UMI from the FASTQ, align trimmed reads using Novoalign suppressing 
@@ -43,8 +42,8 @@ if [[ ! -f $umibam ]]; then
         | samtools sort -o - $sample.temp -m 8G \
         > $umibam
     samtools index $umibam
-fi
 
+fi
 # process the UMIs
 if [[ ! -f $bam ]]; then
     umitools rmdup --verbose $umibam $bam $UMI

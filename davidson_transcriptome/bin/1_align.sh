@@ -23,7 +23,7 @@ if [[ ! -f $bam ]]; then
     # mv $results/accepted_hits.bam $bam
     gsnap -D ~analysiscore/genomes/GMAPDB/hg19_total -d hg19_total --gunzip \
         -t 8 -N 1 -s ~analysiscore/genomes/GMAPDB/hg19_total/hg19_total.maps/hg19_total.ensembl.splicesites \
-        -Q -n 20 -A sam \
+        -Q -n 20 -A sam $fastq \
         | samtools view -ShuF4 - \
         | samtools sort -o -m 8G - $sample.temp \
         > $bam

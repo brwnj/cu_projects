@@ -62,6 +62,8 @@
 #Poly(A)
 
 + counts are fucked up somehow. maybe use jay's solution to getting bedgraph style counts
++ sorting needs to occur when you make the bedgraphs
++ verify that the count files are matching up with the bedgraph counts
 
 + exome reference for peak classification
     + convert current coord to exon coord and pull sequence from exome
