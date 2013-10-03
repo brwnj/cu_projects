@@ -64,8 +64,10 @@
 + counts are fucked up somehow. maybe use jay's solution to getting bedgraph style counts
 
 + exome reference for peak classification
+    + convert current coord to exon coord and pull sequence from exome
+    + building exome reference and handling different transcripts
 + pooled coverage tracks
-+ re-run testing with newly classified peaks
++ re-run testing with newly classified peaks and double check the count files
 
 + normalizing the pooled counts
 + scale counts within a pool
