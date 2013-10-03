@@ -2,11 +2,11 @@
 #BSUB -J bg.bw[1-69]
 #BSUB -e bg.bw.%J.%I.err
 #BSUB -o bg.bw.%J.%I.out
-#BSUB -q normal
+#BSUB -q short
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-Convert aligned BAMs to bedgraph and bigwig format
+Convert aligned BAMs to bedgraph and bigwig format. Overwrites any existing files.
 DOC
 
 set -o nounset -o pipefail -o errexit -x
@@ -38,18 +38,18 @@ for idx in ${!strands[@]}; do
         if [ "$strand" == "neg" ]; then
             # this adds the length of the sequence to the coordinate
             samtools view $strandarg $bamfile \
-                | awk 'BEGIN {OFS="\t"} {print $3,$4+length($10)}' \
+                | awk '{print $3,$4+length($10)}' \
                 | sort \
                 | uniq -c \
-                | awk 'BEGIN {OFS="\t"} {print $2,$3-2,$3-1,$1}' \
+                | awk 'BEGIN{FS=" "}{print $2,$3-2,$3-1,$1}' \
                 | bedtools sort -i - \
                 > $bedgraph
         else
              samtools view $strandarg $bamfile \
-                | awk 'BEGIN {OFS="\t"} {print $3,$4}' \
+                | awk '{print $3,$4}' \
                 | sort \
                 | uniq -c \
-                | awk 'BEGIN {OFS="\t"} {print $2,$3-1,$3,$1}' \
+                | awk 'BEGIN{FS=" "}{print $2,$3-1,$3,$1}' \
                 | bedtools sort -i - \
                 > $bedgraph
         fi    
