@@ -69,15 +69,6 @@
 + pooled coverage tracks
 + re-run testing with newly classified peaks and double check the count files
 
-+ normalizing the pooled counts
-+ scale counts within a pool
-+ then compare the pools
-
-+ coverage tracks for pooled samples
-+ will need to show normalized counts as well as prior to normalization
-
-+ compare ERP to ERN in pooled datasets
-
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
 + 86-...
 + map to human, map to mouse, what's the overlap
