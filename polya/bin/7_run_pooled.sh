@@ -16,6 +16,12 @@ source $HOME/projects/polya/bin/config.sh
 
 # pool specified counts
 python $HOME/projects/polya/bin/get_pool_counts.py $METADATA $HOME/projects/polya/results/common/*/*.counts.txt.gz
+# this script will filter UMI_not_removed bedgraphs
+python $HOME/projects/polya/bin/get_pooled_coverage.py $METADATA $HOME/projects/polya/results/common/*/*.bedgraph.gz
+for bedgraph in *.bedgraph; do
+    bedGraphToBigWig $bedgraph $CHROM_SIZES ${bedgraph/.bedgraph/.bw}
+    gzip -f $bedgraph
+done
 
 # run fisher tests across desired comparisons
 bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.neg.txt.gz TS-ERP.neg.txt.gz | gzip -c > NBT_to_TS-ERP.neg.fisher.txt.gz" &
@@ -51,5 +57,6 @@ bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type be
 bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES TS-ERP_to_TS-ERN.neg.fisher.bed" &
 wait
 
-# copy bbs over to the hub
+# copy bws and bbs over to the hub
 cp *.bb $HUB/hg19
+cp *.bw $HUB/hg19

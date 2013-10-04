@@ -113,14 +113,6 @@ type bigBed 6 .
 """
 
 # these will presumably have different sample subtypes
-PK_SHIFTS = ("track pkshifts\n"
-                "compositeTrack on\n"
-                "configurable on\n"
-                "shortLabel PK DEXSeq Shifts\n"
-                "longLabel Kabos: Observed DEXSeq shifts\n"
-                "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                "type bed 12 .\n")
-
 PK_FISHER_SHIFTS = ("track pkfishershifts\n"
                         "compositeTrack on\n"
                         "configurable on\n"
@@ -128,14 +120,6 @@ PK_FISHER_SHIFTS = ("track pkfishershifts\n"
                         "longLabel Kabos: Observed Fisher shifts\n"
                         "subGroup1 strand Strand POS=Positive NEG=Negative\n"
                         "type bed 12 .\n")
-
-MP_SHIFTS = ("track mpshifts\n"
-                "compositeTrack on\n"
-                "configurable on\n"
-                "shortLabel MP DEXSeq Shifts\n"
-                "longLabel Pillai: Observed DEXSeq shifts\n"
-                "subGroup1 strand Strand POS=Positive NEG=Negative\n"
-                "type bed 12 .\n")
 
 MP_FISHER_SHIFTS = ("track mpfishershifts\n"
                         "compositeTrack on\n"
@@ -205,21 +189,15 @@ def gllbl(tname, md):
         assert len(tested) == 2
         return "{first} to {second} ({test}:{strand})".format(first=md[tested[0]]['translation'],
                                     second=md[tested[1]]['translation'],
-                                    test="Fisher" if "fisher" in tname else "DEXSeq",
+                                    test="Fisher",
                                     strand=gstrand(tname))
     return "{translation} {strand}".format(translation=md[gsample(tname)]['translation'], strand=gstrand(tname))
 
 def gshiftsparent(fname):
     if fname.startswith("PK"):
-        if "fisher" in fname:
-            return "pkfishershifts"
-        else:
-            return "pkshifts"
+        return "pkfishershifts"
     if fname.startswith("MP"):
-        if "fisher" in fname:
-            return "mpfishershifts"
-        else:
-            return "mpshifts"
+        return "mpfishershifts"
 
 def flipstrand(fname):
     # since reads are being mapped to the opposite strand they belong to,
@@ -274,9 +252,6 @@ def main(folder, meta):
         if f.endswith("bw"):
             files['coverage'].append(f)
             continue
-        if "dexseq" in f:
-            files['dexseq'].append(f)
-            continue
         if "fisher" in f:
             files['fisher'].append(f)
             continue
@@ -307,7 +282,8 @@ def main(folder, meta):
     for s in files['coverage']:
         sample = gsample(s)
         tname = flipstrand(s)
-        print COVERAGE_TEMPLATE.substitute(tname=tname,
+        if s.startswith("PK") or s.startswith("MP"):
+            print COVERAGE_TEMPLATE.substitute(tname=tname,
                                     ptype=md[sample]['primary_type'],
                                     stype=md[sample]['secondary_type'],
                                     ttype=md[sample]['tertiary_type'],
@@ -318,13 +294,22 @@ def main(folder, meta):
                                     llbl=gllbl(tname, md),
                                     filename=s,
                                     color=md[sample]['color'])
+        else:
+            print COVERAGE_TEMPLATE.substitute(tname=tname,
+                                    ptype="NA",
+                                    stype="NA",
+                                    ttype="NA",
+                                    qtype="NA",
+                                    inv="PK",
+                                    strand=gstrand(tname),
+                                    slbl=tname,
+                                    llbl=tname,
+                                    filename=s,
+                                    color="37,52,148")
+
     # should not change often, but could automate eventually
     print SITES_VIEW
     # shifts
-    print PK_SHIFTS
-    print_shifts(files['dexseq'], "PK", md)
-    print MP_SHIFTS
-    print_shifts(files['dexseq'], "MP", md)
     print PK_FISHER_SHIFTS
     print_shifts(files['fisher'], "PK", md)
     print_shifts(files['fisher'], "pooled", md)
