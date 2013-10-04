@@ -26,7 +26,6 @@ for bed in *.classified.bed; do bed2bb.py --type bed6 $CHROM_SIZES $bed; done
 # delete classified peaks.bed
 rm *.classified.bed
 
-
 # copy over sites beds
 cp $POLYASITES/*sites*.bed.gz .
 # convert to BB
@@ -40,18 +39,6 @@ for bed in *sites*.bed; do bed2bb.py --type bed6 $CHROM_SIZES $bed; done
     # PK.sites.c1234.bb
     # PK.sites.wholegene.bb
 rm *sites*.bed
-
-
-# this will intentionally fail when there are no new files
-# move the dexseq visualization files over
-cp $SITESHIFTS/*dexseq.bed .
-# convert to BB12
-for bed in *dexseq*.bed; do
-    bed2bb.py --type bed12 $CHROM_SIZES $bed
-done
-# delete beds
-rm *dexseq*.bed
-
 
 for f in $FISHERRESULTS/*fisher*txt.gz; do
     fbase=$(basename $f)
@@ -69,7 +56,6 @@ for f in $FISHERRESULTS/*fisher*txt.gz; do
     # cp over the bb
     cp $fisherbb $HUB/hg19/
 done
-
 
 # run generate_trackdb.py > trackDb.txt
 python $HOME/projects/polya/bin/generate_trackdb.py . $METADATA > trackDb.txt
