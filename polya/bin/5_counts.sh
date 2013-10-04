@@ -50,7 +50,7 @@ for strand in pos neg; do
                 print full[1]"\t"full[2]"\t"$0}' \
         | cut -f1,2,4 \
         | sort -k1,1 -k2,2n \
-        | gzip -c > $countsout 
+        | gzip -c > $countsout
 done
 
 # old method
