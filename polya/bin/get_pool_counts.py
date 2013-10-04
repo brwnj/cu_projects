@@ -64,10 +64,12 @@ def main(count_files, metadata):
             for file_path in files:
                 sample = get_sample_name(file_path)
                 raw_count_data[sample] = {}
-                for toks in reader(file_path, header=['site', 'count']):
-                    raw_count_data[sample][toks['site']] = int(toks['count'])
+                for toks in reader(file_path, header=['gene', 'site', 'count']):
+                    raw_count_data[sample]["{gene}:{site}".format(gene=toks['gene'], site=toks['site'])] = int(toks['count'])
             # dataframe from dict of dicts
             count_data = pd.DataFrame(raw_count_data)
+            # will need to split into multiindex here to match new count fmt
+            count_data.index = pd.MultiIndex.from_tuples([x.split(":") for x in count_data.index], names=['gene','site'])
             # normalize the counts
             count_data = norm_deseq(count_data)
             # round the normalized counts up to int
