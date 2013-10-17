@@ -6,11 +6,3 @@ NOVOIDX=$HOME/ref/canis_familiaris/canis_familiaris.masked.nix
 PICARD=$HOME/opt/picard
 GATK=$HOME/opt/gatk/GenomeAnalysisTK.jar
 REFERENCE=$HOME/ref/canis_familiaris/canis_familiaris.fa
-
-
-<<DOC
-GATK executable
-DOC
-
-MEM=${1:-2g}
-java -Xmx${MEM} -jar /vol1/home/brownj/opt/gatk/GenomeAnalysisTK.jar

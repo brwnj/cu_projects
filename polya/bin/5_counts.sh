@@ -52,13 +52,3 @@ for strand in pos neg; do
         | sort -k1,1 -k2,2n \
         | gzip -c > $countsout
 done
-
-# old method
-
-# for strand in pos neg; do
-#     bedg=$results/$sample.$strand.bedgraph.gz
-#     out=$results/$sample.$strand.counts.txt.gz
-#     # if [[ ! -f $out ]]; then
-#     python $BIN/read_counts.py $bedg $sites $CHROM_SIZES | gzip -c > $out
-#     # fi
-# done

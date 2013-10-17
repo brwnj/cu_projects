@@ -177,10 +177,7 @@ def gslbl(tname):
     if "_to_" in tname:
         tested = re.findall("(\d+)", tname)
         assert len(tested) == 2
-        return "{first}>>{second}|{test}{strand}".format(first=tested[0],
-                                    second=tested[1],
-                                    test="FS" if "fisher" in tname else "DX",
-                                    strand="+" if "pos" in tname else "-")
+        return "{first}>>{second}{strand}".format(first=tested[0], second=tested[1], strand="+" if "pos" in tname else "-")
     return tname[0:16]
 
 def gllbl(tname, md):

@@ -8,7 +8,7 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-i was just running this script within a results dir and outputting files locally
+files are not output to .../common/pooled_results
 DOC
 
 set -o nounset -o pipefail -o errexit -x

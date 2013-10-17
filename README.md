@@ -26,9 +26,6 @@
 
 #Davidson
 
-+ bowtie2 index without "chr"
-+ map using tophat
-+ call variants again
 + customDBPro with ensembl reference
 + output protein sequences
 
@@ -61,15 +58,13 @@
 
 #Poly(A)
 
-+ counts are fucked up somehow. maybe use jay's solution to getting bedgraph style counts
-+ sorting needs to occur when you make the bedgraphs
-+ verify that the count files are matching up with the bedgraph counts
++ pooled counts from bedgraphs
++ automate the pooled processing portion
++ update the hub with the new comparisons
 
 + exome reference for peak classification
     + convert current coord to exon coord and pull sequence from exome
     + building exome reference and handling different transcripts
-+ pooled coverage tracks
-+ re-run testing with newly classified peaks and double check the count files
 
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
 + 86-...
