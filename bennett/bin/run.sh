@@ -55,7 +55,7 @@ fi
 
 # trim the adapters and append known primer to read name
 if [[ ! -f $r1_trimadapter ]] || [[ ! -f $r2_trimadapter ]]; then
-    python $BIN/trim_adapters.py --mismatches 1 $r1_umifiltered $r2_umifiltered $R1PRIMERS $R2PRIMERS
+    python $BIN/trim_adapters.py --mismatches 3 $r1_umifiltered $r2_umifiltered $R1PRIMERS $R2PRIMERS
 fi
 
 # join r1 and r2 based on local alignment of the overlap

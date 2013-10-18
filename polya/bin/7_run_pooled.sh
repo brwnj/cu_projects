@@ -8,53 +8,68 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-files are not output to .../common/pooled_results
+files are now output to .../common/pooled_results
 DOC
 
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/polya/bin/config.sh
 
-# pool specified counts
-python $HOME/projects/polya/bin/get_pool_counts.py $METADATA $HOME/projects/polya/results/common/*/*.counts.txt.gz
+cd $POOLEDRESULTS
+
 # this script will filter UMI_not_removed bedgraphs
-python $HOME/projects/polya/bin/get_pooled_coverage.py $METADATA $HOME/projects/polya/results/common/*/*.bedgraph.gz
+bedgraphs=$HOME/projects/polya/results/common/*/*.bedgraph.gz
+python $HOME/projects/polya/bin/get_pooled_coverage.py $METADATA $bedgraphs
 for bedgraph in *.bedgraph; do
     bedGraphToBigWig $bedgraph $CHROM_SIZES ${bedgraph/.bedgraph/.bw}
     gzip -f $bedgraph
 done
 
+# get the counts for each pool from the bedgraphs
+for bg in *.bedgraph.gz; do
+    for strand in pos neg; do
+
+        countsout=${bg/.bedgraph.gz}.counts.txt.gz
+        slopsites=$RESULT/polya_sites/PK.sites.c13.slop.2.$strand.bed.gz
+
+        # this mess writes out counts in gene/site/count format
+        bedtools map -c 4 -o max -null 0 -a $slopsites -b $bg \
+            | awk '{split($4, symbol, "|"); split(symbol[1], gene, ".");
+                    print gene[3]":"$4"\t"$7}' \
+            | awk '{split($1, full, ":"); split(full[2], site, ".");
+                    print full[1]"\t"full[2]"\t"$0}' \
+            | cut -f1,2,4 \
+            | sort -k1,1 -k2,2n \
+            | gzip -c > $countsout
+    done
+done
+
+ext=counts.txt.gz
 # run fisher tests across desired comparisons
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.neg.txt.gz TS-ERP.neg.txt.gz | gzip -c > NBT_to_TS-ERP.neg.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.pos.txt.gz TS-ERP.pos.txt.gz | gzip -c > NBT_to_TS-ERP.pos.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.neg.txt.gz TS.neg.txt.gz | gzip -c > NBT_to_TS.neg.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.pos.txt.gz TS.pos.txt.gz | gzip -c > NBT_to_TS.pos.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.neg.txt.gz TS-ERN.neg.txt.gz | gzip -c > NBT_to_TS-ERN.neg.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.pos.txt.gz TS-ERN.pos.txt.gz | gzip -c > NBT_to_TS-ERN.pos.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py TS-ERP.neg.txt.gz TS-ERN.neg.txt.gz | gzip -c > TS-ERP_to_TS-ERN.neg.fisher.txt.gz" &
-bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py TS-ERP.pos.txt.gz TS-ERN.pos.txt.gz | gzip -c > TS-ERP_to_TS-ERN.pos.fisher.txt.gz" &
+for strand in pos neg; do
+    bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.$strand.$ext TS-ERP.$strand.$ext | gzip -c > NBT_to_TS-ERP.$strand.fisher.txt.gz" &
+    bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.$strand.$ext TS.$strand.$ext | gzip -c > NBT_to_TS.$strand.fisher.txt.gz" &
+    bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py NBT.$strand.$ext TS-ERN.$strand.$ext | gzip -c > NBT_to_TS-ERN.$strand.fisher.txt.gz" &
+    bsub -J fisher -o fisher.out -e fisher.err -P $PROJECTID -K "python $BIN/fisher_test.py TS-ERP.$strand.$ext TS-ERN.$strand.$ext | gzip -c > TS-ERP_to_TS-ERN.$strand.fisher.txt.gz" &
+done
 wait
 
 # convert fisher test results to bed format
 pksites=$HOME/projects/polya/results/common/polya_sites/PK.sites.c13.bed.gz
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERP.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERP.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERN.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERN.neg.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.pos.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > TS-ERP_to_TS-ERN.pos.fisher.bed" &
-bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.neg.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > TS-ERP_to_TS-ERN.neg.fisher.bed" &
+for strand in pos neg; do
+    bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS.$strand.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS.$strand.fisher.bed" &
+    bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERP.$strand.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERP.$strand.fisher.bed" &
+    bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py NBT_to_TS-ERN.$strand.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > NBT_to_TS-ERN.$strand.fisher.bed" &
+    bsub -J fisher2bed -o fisher2bed.out -e fisher2bed.err -P $PROJECTID -K "python $BIN/visualize_fisher_shifts.py TS-ERP_to_TS-ERN.$strand.fisher.txt.gz $pksites | sort -k1,1 -k2,2n -k3,3n | uniq > TS-ERP_to_TS-ERN.$strand.fisher.bed" &
+done
 wait
 
 # convert bed to bb
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS.pos.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS.neg.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERP.neg.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERP.pos.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERN.pos.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERN.neg.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES TS-ERP_to_TS-ERN.pos.fisher.bed" &
-bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES TS-ERP_to_TS-ERN.neg.fisher.bed" &
+for strand in pos neg; do
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERP.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERN.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES TS-ERP_to_TS-ERN.$strand.fisher.bed" &
+done
 wait
 
 # copy bws and bbs over to the hub

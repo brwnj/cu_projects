@@ -21,3 +21,4 @@ POLYASITES=$RESULT/polya_sites
 HUB=$RESULT/hub
 FISHERRESULTS=$RESULT/fisher_results
 METADATA=$HUB/metadata.tsv
+POOLEDRESULTS=$RESULT/pooled_results

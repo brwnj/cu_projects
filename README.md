@@ -1,5 +1,7 @@
 #Bennett
 
++ cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
+
 + fasta of v-d-j for each barcode with id including cregion
 + table to display the csf to blood overlap with counts and ig used
 + deliver a few aa imgt files
@@ -58,6 +60,7 @@
 
 #Poly(A)
 
++ chromosome M: is it in the reference, is it in the exon model, do we have classified peaks there, are they just not significant changes
 + pooled counts from bedgraphs
 + automate the pooled processing portion
 + update the hub with the new comparisons
