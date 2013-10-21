@@ -25,7 +25,8 @@ outfile <- "~/projects/davidson_transcriptome/data/20130927/rpkm_share.fasta"
 pro <- OutputsharedPro(rpkms, cutoff=10, share_sample=2, proteinseq, outfile, ids)
 
 path <- "/Users/brownj/projects/davidson_transcriptome/data/20131021/vcfs"
-vcfs <- paste(path, "/", list.files(path, pattern="*vcf$"), sep='')
+vcf_files <- paste(path, "/", list.files(path, pattern="*vcf$"), sep='')
+vcfs <- lapply(vcf_files, function(x) InputVcf(x))
 shared <- Multiple_VCF(vcfs, share_num=2)
 
 
