@@ -10,7 +10,6 @@ NOVOIDX=$HOME/ref/hg19/hg19.9606.novoidx
 BTBASE=$HOME/ref/hg19/ensembl/Homo_sapiens/Ensembl/GRCh37/Sequence/Bowtie2Index/genome
 GENES=$HOME/ref/hg19/ensembl/Homo_sapiens/Ensembl/GRCh37/Annotation/Archives/archive-2013-03-06-14-23-04/Genes/genes.gtf
 TRANSCRIPTOME=$HOME/ref/hg19/transcriptome
-SEQUENCE=$HOME/ref/hg19/hg19.fa
 PICARD=$HOME/opt/picard-tools-1.96
 GATK=$HOME/opt/gatk/GenomeAnalysisTK.jar
 REFERENCE=$HOME/ref/hg19/hg19.fa
