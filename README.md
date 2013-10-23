@@ -1,12 +1,13 @@
 #Bennett
 
 + cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
+    + to be implemented after initial assessment scripts are written
 
-+ fasta of v-d-j for each barcode with id including cregion
-+ table to display the csf to blood overlap with counts and ig used
-+ deliver a few aa imgt files
++ group by v-gene, then j-gene, then d-gene
+    + then list unique cdr3 sequences
+    + for groups of cdr3 sequences, give ability to group similar based on number of mismatches
++ in the output, print simple grouped table; stats can later be done on this table
 
-+ same variable region or same j region can be considered the same family
 + would likely have changes in the cdr3 while being close to match with very similar variable region or j region
 + report dimer (short mer) per barcode across runs
 + counts of translated productive reads per barcode
@@ -27,9 +28,6 @@
 + design best output format for this task
 
 #Davidson
-
-+ customDBPro with ensembl reference
-+ output protein sequences
 
 # Duval
 
