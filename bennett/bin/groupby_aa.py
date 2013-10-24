@@ -1,31 +1,63 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Group AA sequences into families with the ability to collapse sequences based
-on a specified number of sequence mismatches.
-
-Usage:
-    groupby_aa IMGT_SEQUENCES [--mismatches=N]
-    groupby_aa (-h | --help)
-    groupby_aa --version
-
-Examples:
-    groupby_aa 5_AA-sequences_4_TGGTCA_5_150813.txt
-    groupby_aa 5_AA-sequences_4_TGGTCA_5_150813.txt --mismatches 2
-
-Options:
-    -h --help           Show this screen.
-    --version           Show version.
-    --mismatches NUM    Number of allowed mismatches when grouping CDR3
-                        sequences within a family [default: 0].
+Group AA sequences into OTUs, utilizing cd-hit. cd-hit must be in PATH.
 """
+
+#"Clustering of highly homologous sequences to reduce thesize of large protein database", Weizhong Li, Lukasz Jaroszewski & Adam Godzik. Bioinformatics, (2001) 17:282-283
+#"Tolerating some redundancy significantly speeds up clustering of large protein databases", Weizhong Li, Lukasz Jaroszewski & Adam Godzik. Bioinformatics, (2002) 18:77-82
+
+import os
+import sys
+import argparse
 import pandas as pd
-from docopt import docopt
+import subprocess as sp
+from toolshed import nopen
+from itertools import groupby
 
 def compression_level(file_name):
     return "gzip" if file_name.endswith("gz") else None
 
-def main(aa_sequences, mismatches):
+def readfa(fa):
+    with nopen(fa) as fh:
+        for header, group in groupby(fh, lambda line: line[0] == '>'):
+            if header:
+                line = group.next()
+                name = line[1:].strip()
+            else:
+                seq = ''.join(line.strip() for line in group)
+                yield name, seq
+
+def cluster_proteins(sequences, threshold):
+    """
+    sequences   pd.Series of AA sequences
+    
+    returns list of sequences.
+    """
+    # create fasta of sequences
+    input_fasta = open("cdhit_in.fasta", "wb")
+    output_fasta = "cdhit_out.fasta"
+    # generate fasta of sequences
+    for i, seq in enumerate(sequences):
+        print >>input_fasta, ">seq_{id}\n{sequence}".format(id=i, sequence=seq)
+    input_fasta.close()
+    # run fasta through cd-hit
+    cmd = "cd-hit -i {input} -o {output} -c {threshold}".format(input=input_fasta.name,
+                                                                output=output_fasta,
+                                                                threshold=threshold)
+
+    p = sp.Popen(cmd, stderr=sp.PIPE, stdout=sp.PIPE, shell=True)
+    stdout, stderr = p.communicate()
+    # parse output for remaining sequences
+    clustered_proteins = [seq for name, seq in readfa(output_fasta)]
+    # cleanup files from cd-hit call
+    os.remove(input_fasta.name)
+    os.remove(output_fasta)
+    os.remove("{output}.clstr".format(output=output_fasta))
+    # return list of remaining sequences
+    return clustered_proteins
+
+def main(aa_sequences, threshold):
     # import into a table
     compression = compression_level(aa_sequences)
     df = pd.read_table(aa_sequences, index_col=0, compression=compression)
@@ -49,7 +81,7 @@ def main(aa_sequences, mismatches):
     header = ['V-GENE','J-GENE','D-GENE','CDR3']
     print "\t".join(header)
     # no further collapsing of the CDR3 sequences
-    if mismatches == 0:
+    if threshold == 1.0:
         # adding CDR3 to groupby collapses them into uniques only
         for (v, j, d, cdr3), (dframe) in df.groupby(['V-GENE and allele','J-GENE and allele','D-GENE and allele','CDR3-IMGT']):
             print "\t".join([v,j,d,cdr3])
@@ -57,62 +89,24 @@ def main(aa_sequences, mismatches):
         for (v, j, d), (dframe) in df.groupby(['V-GENE and allele','J-GENE and allele','D-GENE and allele']):
             # remove duplicate cdr3 sequences
             dframe.drop_duplicates('CDR3-IMGT', inplace=True)
-            # if len(df) == 1:
-                # print ...
-        """
-        Homsap IGHV1-2*02 F     Homsap IGHJ4*02 F       Homsap IGHD7-27*01 F    ARALPGDAMGGLHY
-        ARALPGDAMGGLHY
-        ARALTEDAMGGLHY
-        ARALTGAAMGGLHY
-        ARALTGDAMGGLHY
-        ARALTGDAMGGLRY
-        ARALTGDAMSGLHY
-        ARALTGGAMGGLHY
-        ARALTGNAMGGLHY
-        
-        Homsap IGHV1-2*02 F     Homsap IGHJ5*02 F       Homsap IGHD4-11*01 ORF  AEETRFTITTSFDP
-        AEETRFTITTSFDP
-        AGETRFTVTTSFDP
-        AGGTRFTVTTSFDP
-        AIETMFTVTTSVDP
-        AKEPRFTVPTSFDP
-        AKEPRFTVTTSFDP
-        AKETRFTVTTSFDP
-        ARATRVTVTTPFDP
-        ARDIRFTFTTSIDP
-        ARDTRFTVTTSVDP
-        AREARFTVTTSFDP
-        AREPRFTVTTSFDP
-        ARESRFTVTTSFDP
-        ARETGFTVTTSFDP
-        ARETKFTVTTSFDP
-        ARETQFTVTTSFHP
-        ARETRCTVTTSFDP
-        ARETRFSVTTSFDP
-        ARETRFTVATSFDP
-        ARETRFTVPTSFDP
-        ARETRFTVSTSFDP
-        ARETRFTVSTSLDA
-        ARETRFTVTNSFDP
-        ARETRFTVTSSFDA
-        ARETRFTVTSSFDP
-        ARETRFTVTTPFDP
-        ARETRFTVTTSCDL
-        ARETRFTVTTSFDL
-        ARETRFTVTTSFDP
-        ARETRFTVTTSFGP
-        ARETRFTVTTSIDP
-        ARETRLTVTTSFDP
-        ARETRSTVTTSFDP
-        ARETRVTVTTSFDP
-        ARGTRFTVTTSFDP
-        ARQTRFTVTTSFDP
-        ERETRFTVTTSFDP
-        SRETRFTVTTSFDP
-        TRETRFTVTTSFDP
-        """
+            if len(dframe) == 1:
+                print "\t".join([v,j,d,dframe['CDR3-IMGT'].values[0]])
+            else:
+                # cluster the sequences based on threshold
+                sequences = cluster_proteins(dframe['CDR3-IMGT'], threshold)
+                for seq in sequences:
+                    print "\t".join([v, d, j, seq])
 
 if __name__ == '__main__':
-    args = docopt(__doc__, version='GroupBy AA 0.0.1')
-    # docopt is garbage...
-    main(args['IMGT_SEQUENCES'], int(args['--mismatches']))
+    p = argparse.ArgumentParser(description=__doc__,
+            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p.add_argument('IMGT_SEQUENCES', help="Sequences obtained from HighV-QUEST")
+    p.add_argument('IDENTITY_THRESHOLD', type=float, default=0.90,
+            help="Sequence Identity threshold: the number of identical amino \
+            acids in alignment divided by the full length of the shorter \
+            sequence.")
+    args = p.parse_args()
+    if 1 > args.IDENTITY_THRESHOLD < 0.65:
+        print >>sys.stderr, "Indentity threshold can be between 1 and 0.65, inclusive"
+        sys.exit(1)
+    main(args.IMGT_SEQUENCES, args.IDENTITY_THRESHOLD)
