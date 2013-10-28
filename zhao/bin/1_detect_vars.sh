@@ -24,35 +24,35 @@ ugvcf=${bam/.bam/.ug.vcf}
 hcvcf=${bam/.bam/.hc.vcf}
 
 # index the bam
-if [[ ! -f $bam.bai ]]; then
-    samtools index $bam
-fi
-# mark duplicates
-if [ ! -f $nodups ]; then
-    $java $PICARD/MarkDuplicates.jar \
-        ASSUME_SORTED=true \
-        INPUT=$bam \
-        OUTPUT=$nodups \
-        METRICS_FILE=$duplicatemetrics \
-        CREATE_INDEX=true \
-        MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
-        REMOVE_DUPLICATES=true \
-        MAX_RECORDS_IN_RAM=800000
-fi
-# indel realignment
-if [ -f $nodups ] && [ ! -f $targetintervals ]; then
-    $java $GATK --analysis_type RealignerTargetCreator \
-        --reference_sequence $REFERENCE \
-        --input_file $nodups \
-        --out $targetintervals
-fi
-if [ -f $targetintervals ] && [ ! -f $realigned ]; then
-    $java $GATK --analysis_type IndelRealigner \
-        --reference_sequence $REFERENCE \
-        --input_file $nodups \
-        --targetIntervals $targetintervals \
-        --out $realigned
-fi
+# if [[ ! -f $bam.bai ]]; then
+#     samtools index $bam
+# fi
+# # mark duplicates
+# if [ ! -f $nodups ]; then
+#     $java $PICARD/MarkDuplicates.jar \
+#         ASSUME_SORTED=true \
+#         INPUT=$bam \
+#         OUTPUT=$nodups \
+#         METRICS_FILE=$duplicatemetrics \
+#         CREATE_INDEX=true \
+#         MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 \
+#         REMOVE_DUPLICATES=true \
+#         MAX_RECORDS_IN_RAM=800000
+# fi
+# # indel realignment
+# if [ -f $nodups ] && [ ! -f $targetintervals ]; then
+#     $java $GATK --analysis_type RealignerTargetCreator \
+#         --reference_sequence $REFERENCE \
+#         --input_file $nodups \
+#         --out $targetintervals
+# fi
+# if [ -f $targetintervals ] && [ ! -f $realigned ]; then
+#     $java $GATK --analysis_type IndelRealigner \
+#         --reference_sequence $REFERENCE \
+#         --input_file $nodups \
+#         --targetIntervals $targetintervals \
+#         --out $realigned
+# fi
 # base recalibration
 # if [ -f $realigned ] && [ ! -f $recal_data_table ]; then
 #     $java $GATK -T BaseRecalibrator \
@@ -68,18 +68,20 @@ fi
 #         -o $recal_bam
 # fi
 # snps
-if [ -f $realigned ] && [ ! -f $ugvcf ]; then
-    $java $GATK --analysis_type UnifiedGenotyper \
-        --input_file $realigned \
-        --reference_sequence $REFERENCE \
-        --genotype_likelihoods_model BOTH \
-        --sample_ploidy 1 \
-        --out $ugvcf
-fi
-# insertions and deletions
-if [ -f $realigned ] && [ ! -f $hcvcf ]; then
-    $java $GATK --analysis_type HaplotypeCaller \
-        --input_file $realigned \
-        --reference_sequence $REFERENCE \
-        --out $hcvcf
-fi
+# if [ -f $realigned ] && [ ! -f $ugvcf ]; then
+#     $java $GATK --analysis_type UnifiedGenotyper \
+#         --input_file $realigned \
+#         --reference_sequence $REFERENCE \
+#         --genotype_likelihoods_model BOTH \
+#         --sample_ploidy 1 \
+#         --out $ugvcf
+# fi
+# # insertions and deletions
+# if [ -f $realigned ] && [ ! -f $hcvcf ]; then
+#     $java $GATK --analysis_type HaplotypeCaller \
+#         --input_file $realigned \
+#         --reference_sequence $REFERENCE \
+#         --out $hcvcf
+# fi
+
+freebayes -b $realigned -v ${bam/.bam/.freebayes.vcf} -f $REFERENCE -p 1

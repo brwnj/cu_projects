@@ -37,6 +37,11 @@
 
 #Poly(A)
 
++ chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
++ maybe put that track up on UCSC along with Peter's others
++ also interested to see peaks called in chrM among the HITS-CLIP samples
++ possibly build comprehensive trackhub to later be expanded with the HITS-CLIP data
+
 + chromosome M: is it in the reference, is it in the exon model, do we have classified peaks there, are they just not significant changes
 + pooled counts from bedgraphs
 + automate the pooled processing portion

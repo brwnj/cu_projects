@@ -2,7 +2,7 @@
 #BSUB -J intersect
 #BSUB -e intersect.%J.err
 #BSUB -o intersect.%J.out
-#BSUB -q normal
+#BSUB -q short
 #BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P zhao
@@ -14,21 +14,21 @@ DOC
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/zhao/bin/config.sh
 
-wt=$RESULTS/ACATCG/ACATCG.hc.vcf
-sup6=$RESULTS/GCCTAA/GCCTAA.hc.vcf
-sup8=$RESULTS/TGGTCA/TGGTCA.hc.vcf
+wt=$RESULTS/ACATCG/ACATCG.freebayes.vcf
+sup6=$RESULTS/GCCTAA/GCCTAA.freebayes.vcf
+sup8=$RESULTS/TGGTCA/TGGTCA.freebayes.vcf
 
-sup6sub=${sup6/.hc.vcf/.remaining.vcf}
-sup8sub=${sup8/.hc.vcf/.remaining.vcf}
+sup6sub=${sup6/.vcf/.remaining.vcf}
+sup8sub=${sup8/.vcf/.remaining.vcf}
 
-sup6badhead=${sup6/.hc.vcf/.badheader.txt}
-sup8badhead=${sup8/.hc.vcf/.badheader.txt}
+sup6badhead=${sup6/.vcf/.badheader.txt}
+sup8badhead=${sup8/.vcf/.badheader.txt}
 
-sup6preanno=${sup6/.hc.vcf/.snpeff.txt}
-sup8preanno=${sup8/.hc.vcf/.snpeff.txt}
+sup6preanno=${sup6/.vcf/.snpeff.txt}
+sup8preanno=${sup8/.vcf/.snpeff.txt}
 
-sup6anno=${sup6/.hc.vcf/.annotated.txt}
-sup8anno=${sup8/.hc.vcf/.annotated.txt}
+sup6anno=${sup6/.vcf/.annotated.txt}
+sup8anno=${sup8/.vcf/.annotated.txt}
 
 if [[ ! -f $sup6sub ]] && [[ ! -f $sup8sub ]]; then
     # subtract wt from sup samples individually
