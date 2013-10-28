@@ -10,13 +10,12 @@ from toolshed import reader
 def main(table):
     d = {}
     for toks in reader(table, header=True):
-        d[toks['Genes']] = {}
+        row_gene = toks['Genes']
+        d[row_gene] = {}
         for col_gene in toks.keys():
-            try:
-                d[toks['Genes']][col_gene] = int(toks[col_gene])
-            except ValueError:
-                # avoid adding the gene name as a count
-                continue
+            # row 1, col 1 is a generic header entry
+            if col_gene == "Genes": continue
+            d[row_gene][col_gene] = int(toks[col_gene])
     
     # print node size attributes
     node_out = open("node_size.txt", "wb")
@@ -25,8 +24,7 @@ def main(table):
         try:
             print >>node_out, "{gene}\t{count}".format(gene=k, count=d[k][k])
         except KeyError:
-            # this shouldn't occur but it does...
-            print >>node_out, "{gene}\t1".format(gene=k)
+            print >>node_out, "{gene}\t{count}".format(gene=k, count=1)
     node_out.close()
     
     # print network and edge attributes
@@ -37,7 +35,7 @@ def main(table):
     for row_gene in d.keys():
         for col_gene, count in d[row_gene].iteritems():
             if count == 0: continue
-            # filter out total mutations
+            # double checking these were filtered out
             if row_gene == col_gene: continue
             # check to see if the interaction was already added in the opposite direction
             if "{gene2}_{gene1}".format(gene2=col_gene, gene1=row_gene) in seen: continue
