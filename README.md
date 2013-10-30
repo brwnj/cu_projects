@@ -35,6 +35,9 @@
 
 #Poly(A)
 
++ fix the shift direction to something logical given the comparison name
++ see example of PEG10
+
 ###20131024
 + chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 + maybe put that track up on UCSC along with Peter's others
