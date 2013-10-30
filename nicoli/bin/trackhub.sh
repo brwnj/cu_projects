@@ -16,7 +16,7 @@ if [[ ! -d $HUB ]]; then
 fi
 # genomes.txt
 if [[ ! -f $HUB/genomes.txt ]]; then
-    genomes=$HUB.genomes.txt
+    genomes=$HUB/genomes.txt
     echo "genome $genome" > $genomes
     echo "trackDb $genome/trackDb.txt" >> $genomes
 fi
@@ -56,10 +56,10 @@ maxHeightPixels 100:75:11
 coverage_track
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
-    cp $RESULTS/$sample.*.bw $HUB/$genome
+    cp $RESULTS/$sample/$sample.*.bw $HUB/$genome
     posbw=$sample.rmd_pos.bw
     negbw=$sample.rmd_neg.bw
-    color=$(python -c 'import colorbrewer;print ",".join(map(str, colorbrewer.Paired[12][$i]))')
+    color=$(python -c 'import colorbrewer,random;print ",".join(map(str, colorbrewer.Paired[12][random.randint(0,11)]))')
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
     bigDataUrl $posbw
@@ -92,7 +92,7 @@ type bed 6 .
 peak_track
 for peaks in $RESULTS/*/*peaks.qv.passed_filter.bed.gz; do
     bb=${peaks/.bed.gz/.bb}
-    if [[! -f $bb ]]; then
+    if [[ ! -f $bb ]]; then
         bed2bb.py --type bed6 $SIZES $peaks
     fi
     # check again to make sure previous script didn't fail
