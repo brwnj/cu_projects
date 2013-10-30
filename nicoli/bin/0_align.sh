@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-10]
+#BSUB -J align[1-14]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -R "select[mem>16] rusage[mem=16] span[hosts=1]"

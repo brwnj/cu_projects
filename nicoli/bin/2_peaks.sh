@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J callpeaks[1-10]
+#BSUB -J callpeaks[1-14]
 #BSUB -e callpeaks.%J.%I.err
 #BSUB -o callpeaks.%J.%I.out
 #BSUB -q normal
@@ -9,6 +9,14 @@ set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/nicoli/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
+
+peaks=$RESULTS/$sample/$sample.rmd.peaks.bed.gz
+shuffledpeaks=$RESULTS/$sample/$sample.rmd.shuffle.peaks.bed.gz
+
+if [ -f $peaks ] && [ -f $shuffledpeaks ]; then
+    echo "processing complete for $sample"
+    exit 1
+fi
 
 for strand in pos neg; do
     symbol="+"

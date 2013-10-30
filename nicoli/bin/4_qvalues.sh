@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J qvalues[1-10]
+#BSUB -J qvalues[1-14]
 #BSUB -e qvalues.%J.%I.err
 #BSUB -o qvalues.%J.%I.out
 #BSUB -q normal
@@ -19,7 +19,9 @@ allqvals=$RESULTS/$sample/$sample.rmd.peaks.qv.all.bed.gz
 filteredqvals=$RESULTS/$sample/$sample.rmd.peaks.qv.passed_filter.bed.gz
 summary=$RESULTS/$sample/qvalue_summary.txt
 
-peaktools-qvalues -v $real $null | gzip -c > $allqvals
-awk -cheader -v CO=${cutoff} '$7<CO' $allqvals | gzip -c > $filteredqvals
-peaktools-qvalue-summary -t $cutoff $allqvals > $summary
-peaktools-qvalue-summary $allqvals >> $summary
+if [[ ! -f $filteredqvals ]]; then
+    peaktools-qvalues -v $real $null | gzip -c > $allqvals
+    awk -cheader -v CO=${cutoff} '$7<CO' $allqvals | gzip -c > $filteredqvals
+    peaktools-qvalue-summary -t $cutoff $allqvals > $summary
+    peaktools-qvalue-summary $allqvals >> $summary
+fi

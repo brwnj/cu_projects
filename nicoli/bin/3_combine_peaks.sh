@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J combinepeaks[1-10]
+#BSUB -J combinepeaks[1-14]
 #BSUB -e combinepeaks.%J.%I.err
 #BSUB -o combinepeaks.%J.%I.out
 #BSUB -q normal
@@ -10,7 +10,18 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/nicoli/bin/config.sh
 
+<<DOC
+For now, I run this inside the folder where 2_peaks.sh was run.
+DOC
+
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
+
+peaks=$RESULTS/$sample/$sample.rmd.peaks.bed.gz
+shuffledpeaks=$RESULTS/$sample/$sample.rmd.shuffle.peaks.bed.gz
+if [ -f $peaks ] && [ -f $shuffledpeaks ]; then
+    echo "processing complete for $sample"
+    exit 1
+fi
 
 peaks=$sample.rmd.peaks.bed
 shuffledpeaks=$sample.rmd.shuffle.peaks.bed
