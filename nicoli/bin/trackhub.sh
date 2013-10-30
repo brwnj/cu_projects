@@ -93,7 +93,7 @@ peak_track
 for peaks in $RESULTS/*/*peaks.qv.passed_filter.bed.gz; do
     bb=${peaks/.bed.gz/.bb}
     if [[ ! -f $bb ]]; then
-        bed2bb.py --type bed6 $SIZES $peaks
+        bed2bb.py --type bed6+1 $SIZES $peaks
     fi
     # check again to make sure previous script didn't fail
     if [[ ! -f $bb ]]; then
