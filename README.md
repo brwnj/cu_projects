@@ -30,11 +30,11 @@
 + matrix2png
 
 # Poly(A)
++ were peaks called in the chrM in the hits-clip data? peter would like to know
+
 + chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 + add UCSC chrM to refseq model and re-run pipeline from step 4.
-+ maybe put that track up on UCSC along with Peter's others
-+ also interested to see peaks called in chrM among the HITS-CLIP samples
-+ possibly build comprehensive trackhub to later be expanded with the HITS-CLIP data
++ refresh track hub
 
 ### Mouse
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
