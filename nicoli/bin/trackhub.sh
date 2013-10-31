@@ -39,19 +39,13 @@ trackdb=$HUB/$genome/trackDb.txt
 # output for coverage
 cat <<coverage_track >$trackdb
 track nicoli_coverage
-container multiWig
-noInherit on
+compositeTrack on
 shortLabel Nicoli coverage
 longLabel Nicoli coverage
+maxHeightPixels 50:20:15
 type bigWig
 configurable on
-visibility full
-aggregate transparentOverlay
-showSubtrackColorOnUi on
 autoScale on
-windowingFunction maximum
-priority 1.4
-maxHeightPixels 100:75:11
 
 coverage_track
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -59,7 +53,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     cp $RESULTS/$sample/$sample.*.bw $HUB/$genome
     posbw=$sample.rmd_pos.bw
     negbw=$sample.rmd_neg.bw
-    color=$(python -c 'import colorbrewer,random;print ",".join(map(str, colorbrewer.Paired[12][random.randint(0,11)]))')
+    color=$(python -c 'import colorbrewer,random;print ",".join(map(str, colorbrewer.Paired[10][random.randint(0,10)]))')
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
     bigDataUrl $posbw
