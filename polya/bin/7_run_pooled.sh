@@ -8,7 +8,7 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-files are now output to .../common/pooled_results
+files are now output to $RESULT/pooled_results
 DOC
 
 set -o nounset -o pipefail -o errexit -x

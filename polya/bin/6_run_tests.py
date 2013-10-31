@@ -5,11 +5,8 @@ Only the comparisons defined in the metadata sheet will be performed.
 """
 import os
 import sys
-import tempfile
-import subprocess
 from bsub import bsub
 from glob import glob
-from random import randint
 from string import Template
 from toolshed import reader
 

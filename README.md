@@ -1,19 +1,16 @@
-#Bennett
+# Bennett
 
++ _folder renaming of old samples; renaming schema_
 + cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
 + to be implemented after initial assessment scripts are written
 + viewing in a tree may be helpful for manual picking
 + barcode to cell type conversion table
 
-#Davidson
+# Davidson
 
 # Duval
 
-+ polyphen
-+ indels mostly, annotate with descriptions if available
-+ EXOME
-+ canine exome; bladder cancer
-+ experimental design
++ snpeff; deliver variants
 
 ###Expecting a list for this portion
 + chipseq; human; run through homer pipeline; will receive sample definitions at some
@@ -27,33 +24,18 @@
 + email: should receive list of oncomiRs that should also
 + annotate to mirbase; should be seeing mirbase names being counted
 
-#Hits-Clip
-
+# Hits-Clip
 + tracks for PK61, PK62, PK63
 + heatmap of miRNA, something that you can zoom into
 + matrix2png
 
-#Poly(A)
-
-+ fix the shift direction to something logical given the comparison name
-+ see example of PEG10
-
-###20131024
+# Poly(A)
 + chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 + maybe put that track up on UCSC along with Peter's others
 + also interested to see peaks called in chrM among the HITS-CLIP samples
 + possibly build comprehensive trackhub to later be expanded with the HITS-CLIP data
 
-###20131017
-+ chromosome M: is it in the reference, is it in the exon model, do we have classified peaks there, are they just not significant changes
-+ pooled counts from bedgraphs
-+ automate the pooled processing portion
-+ update the hub with the new comparisons
-+ exome reference for peak classification
-    + convert current coord to exon coord and pull sequence from exome
-    + building exome reference and handling different transcripts
-
-###Mouse
+### Mouse
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
 + 86-...
 + map to human, map to mouse, what's the overlap
