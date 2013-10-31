@@ -2,6 +2,8 @@
 # encoding: utf-8
 """
 Only the comparisons defined in the metadata sheet will be performed.
+
+Run this from the command line -- Don't submit this to queue as is.
 """
 import os
 import sys

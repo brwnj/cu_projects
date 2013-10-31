@@ -15,7 +15,7 @@ set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/polya/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
-result=$RESULT/$sample
+result=$RESULTS/$sample
 bam=$result/$sample.bam
 negbam=$result/$sample.neg.bam
 posbam=$result/$sample.pos.bam
@@ -62,7 +62,7 @@ fi
 if [[ ! -f $negpeak.gz ]]; then
     macs2 callpeak -t $negbam -n $negout --keep-dup auto \
         --nomodel -s 25 --extsize 5 --call-summits
-    bedClip $negpeak $CHROM_SIZES $negclipped_peak
+    bedClip $negpeak $SIZES $negclipped_peak
     mv $negclipped_peak $negpeak
     gzip -f $negpeak $negnarrowpeak
     rm -f $negxls $negsummit
@@ -72,7 +72,7 @@ fi
 if [[ ! -f $pospeak.gz ]]; then
     macs2 callpeak -t $posbam -n $posout --keep-dup auto \
         --nomodel -s 25 --extsize 5 --call-summits
-    bedClip $pospeak $CHROM_SIZES $posclipped_peak
+    bedClip $pospeak $SIZES $posclipped_peak
     mv $posclipped_peak $pospeak
     gzip -f $pospeak $posnarrowpeak
     rm -f $posxls $possummit
@@ -94,7 +94,7 @@ fi
 # classify the peaks
 if [[ ! -f $classified ]]; then
     # sort to be safe
-    python $BIN/classify_peaks.py --canonical-region -5 -40 $peak $posbg $negbg $FASTA $CHROM_SIZES \
+    python $BIN/classify_peaks.py --canonical-region -5 -40 $peak $posbg $negbg $FASTA $SIZES \
         | bedtools sort -i - \
         | gzip -c > $classified
 fi

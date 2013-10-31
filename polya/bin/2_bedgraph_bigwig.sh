@@ -10,11 +10,11 @@ Convert aligned BAMs to bedgraph and bigwig format. Overwrites any existing file
 DOC
 
 set -o nounset -o pipefail -o errexit -x
-
 source $HOME/projects/polya/bin/config.sh
+
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
-results=$RESULT/$sample
+results=$RESULTS/$sample
 umibam=$results/$sample.UMIs_not_removed.bam
 bam=$results/$sample.bam
 
@@ -53,7 +53,7 @@ for idx in ${!strands[@]}; do
                 | bedtools sort -i - \
                 > $bedgraph
         fi    
-        bedGraphToBigWig $bedgraph $CHROM_SIZES $bigwig
+        bedGraphToBigWig $bedgraph $SIZES $bigwig
         gzip -f $bedgraph
     done
 done

@@ -25,12 +25,12 @@ if [[ ! -f $fastq ]]; then
     umitools trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
 fi
 
-results=$RESULT/$sample
+results=$RESULTS/$sample
 if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 
-umibam=$RESULT/$sample/$sample.UMIs_not_removed.bam
+umibam=$RESULTS/$sample/$sample.UMIs_not_removed.bam
 bam=$results/$sample.bam
 stats=$results/$sample.alignment.txt
 

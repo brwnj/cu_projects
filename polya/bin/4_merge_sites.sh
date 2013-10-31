@@ -12,7 +12,7 @@ source $HOME/projects/polya/bin/config.sh
 
 samples=(MP PK)
 sample=${samples[$(($LSB_JOBINDEX - 1))]}
-peaks="$RESULT/${sample}*/*.classified.bed.gz"
+peaks="$RESULTS/${sample}*/*.classified.bed.gz"
 
 polya_sites=$RESULT/polya_sites
 if [[ ! -d $polya_sites ]]; then

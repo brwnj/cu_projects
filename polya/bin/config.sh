@@ -7,18 +7,18 @@ SAMPLES=(MP51 MP52 MP53 MP54 MP55 MP56 MP57 MP58 MP59 MP60              #10
         MP75 PK93 PK94 PK95 PK96 PK97 PK98 PK99 PK100 PK101             #60
         PK102 PK103 PK104 PK105 PK106 PK107 PK108 PK109 PK110)          #69
 NOVOIDX=$HOME/ref/hg19/hg19.9606.novoidx
-RESULT=$HOME/projects/polya/results/common
+RESULTS=$HOME/projects/polya/results/common
 DATA=$HOME/projects/polya/data/common
-CHROM_SIZES=$HOME/ref/hg19/hg19.sizes
+SIZES=$HOME/ref/hg19/hg19.sizes
 BIN=$HOME/devel/polya
 UMI=NNNNNV
 FASTA=$HOME/ref/hg19/hg19.fa
 EXONS=$BIN/ref/refseq.exons.hg19.trimmedname.bed.gz
 XREF=$BIN/ref/refseq.xref.txt.gz
 WHOLEGENE=$BIN/ref/refseq.wholegene.hg19.trimmedname.bed.gz
-SITESHIFTS=$RESULT/site_shifts
-POLYASITES=$RESULT/polya_sites
-HUB=$RESULT/hub
-FISHERRESULTS=$RESULT/fisher_results
+SITESHIFTS=$RESULTS/site_shifts
+POLYASITES=$RESULTS/polya_sites
+HUB=$RESULTS/hub
+FISHERRESULTS=$RESULTS/fisher_results
 METADATA=$HUB/metadata.tsv
-POOLEDRESULTS=$RESULT/pooled_results
+POOLEDRESULTS=$RESULTS/pooled_results

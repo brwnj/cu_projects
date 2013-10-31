@@ -20,7 +20,7 @@ cd $POOLEDRESULTS
 bedgraphs=$HOME/projects/polya/results/common/*/*.bedgraph.gz
 python $HOME/projects/polya/bin/get_pooled_coverage.py $METADATA $bedgraphs
 for bedgraph in *.bedgraph; do
-    bedGraphToBigWig $bedgraph $CHROM_SIZES ${bedgraph/.bedgraph/.bw}
+    bedGraphToBigWig $bedgraph $SIZES ${bedgraph/.bedgraph/.bw}
     gzip -f $bedgraph
 done
 
@@ -29,7 +29,7 @@ for bg in *.bedgraph.gz; do
     for strand in pos neg; do
 
         countsout=${bg/.bedgraph.gz}.counts.txt.gz
-        slopsites=$RESULT/polya_sites/PK.sites.c13.slop.2.$strand.bed.gz
+        slopsites=$RESULTS/polya_sites/PK.sites.c13.slop.2.$strand.bed.gz
 
         # this mess writes out counts in gene/site/count format
         bedtools map -c 4 -o max -null 0 -a $slopsites -b $bg \
@@ -65,10 +65,10 @@ wait
 
 # convert bed to bb
 for strand in pos neg; do
-    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS.$strand.fisher.bed" &
-    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERP.$strand.fisher.bed" &
-    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES NBT_to_TS-ERN.$strand.fisher.bed" &
-    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $CHROM_SIZES TS-ERP_to_TS-ERN.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $SIZES NBT_to_TS.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $SIZES NBT_to_TS-ERP.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $SIZES NBT_to_TS-ERN.$strand.fisher.bed" &
+    bsub -J bed2bb -o bed2bb.out -e bed2bb.err -P $PROJECTID -K "bed2bb.py --type bed12 $SIZES TS-ERP_to_TS-ERN.$strand.fisher.bed" &
 done
 wait
 
