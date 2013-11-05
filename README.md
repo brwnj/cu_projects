@@ -6,23 +6,8 @@
 + viewing in a tree may be helpful for manual picking
 + barcode to cell type conversion table
 
-# Davidson
-
 # Duval
-
 + snpeff; deliver variants
-
-###Expecting a list for this portion
-+ chipseq; human; run through homer pipeline; will receive sample definitions at some
-+ 900 miRNAs NCI60 something
-+ map our numbers and match names to those existing
-+ accession number of geo - normalized binned miRs to compare to other geo sets
-+ list of 261 from the drug resistance testing
-+ take a closer look at the park sample. it has many more positive counts than the others
-+ reduce the number to nci60 and mirbase. annotate; blast; etc
-+ gse26375
-+ email: should receive list of oncomiRs that should also
-+ annotate to mirbase; should be seeing mirbase names being counted
 
 # Hits-Clip
 + tracks for PK61, PK62, PK63
@@ -31,7 +16,6 @@
 
 # Poly(A)
 + were peaks called in the chrM in the hits-clip data? peter would like to know
-
 + chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 + add UCSC chrM to refseq model and re-run pipeline from step 4.
 + refresh track hub
@@ -45,3 +29,7 @@
     + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
+
+# Nicoli
++ combine L1 and L2
++ tracks for duplicates and without duplicates
