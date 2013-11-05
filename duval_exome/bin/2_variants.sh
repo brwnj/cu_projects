@@ -22,6 +22,11 @@ targetintervals=${bam/.bam/.intervals}
 realigned=${bam/.bam/.realign.bam}
 vcf=${bam/.bam/.vcf}
 
+if [[ -f $vcf ]]; then
+    echo "processing complete for $sample"
+    exit 0
+fi
+
 # picard
 READ_GROUP_OPTS="INPUT=$bam OUTPUT=$rgbam SORT_ORDER=coordinate RGID=$sample RGLB=PE RGPL=illumina RGPU=$sample RGSM=$sample"
 MARK_DUPLICATES_OPTS="ASSUME_SORTED=true INPUT=$rgbam OUTPUT=$nodups METRICS_FILE=$duplicatemetrics CREATE_INDEX=true MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 REMOVE_DUPLICATES=true MAX_RECORDS_IN_RAM=800000"

@@ -6,3 +6,7 @@ NOVOIDX=$HOME/ref/canis_familiaris/canis_familiaris.masked.nix
 PICARD=$HOME/opt/picard
 GATK=$HOME/opt/gatk/GenomeAnalysisTK.jar
 REFERENCE=$HOME/ref/canis_familiaris/canis_familiaris.fa
+SNPEFF=$HOME/opt/snpeff/snpEff.jar
+SNPEFFCONFIG=$HOME/opt/snpeff/snpEff.config
+BIN=$HOME/projects/duval_exome/bin
+ANNOTATION=$HOME/ref/canis_familiaris/canfam3.descriptions.gz
