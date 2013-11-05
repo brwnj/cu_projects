@@ -8,7 +8,7 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-files are now output to $RESULT/pooled_results
+files are output to $RESULT/pooled_results
 DOC
 
 set -o nounset -o pipefail -o errexit -x
@@ -26,21 +26,23 @@ done
 
 # get the counts for each pool from the bedgraphs
 for bg in *.bedgraph.gz; do
-    for strand in pos neg; do
+    # pull strand from bedgraph file name
+    strand="pos"
+    if [[ "${bg#*pos}" == "$bg" ]]; then
+        strand="neg"
+    fi
+    countsout=${bg/.bedgraph.gz}.counts.txt.gz
+    slopsites=$RESULTS/polya_sites/PK.sites.c13.slop.2.$strand.bed.gz
 
-        countsout=${bg/.bedgraph.gz}.counts.txt.gz
-        slopsites=$RESULTS/polya_sites/PK.sites.c13.slop.2.$strand.bed.gz
-
-        # this mess writes out counts in gene/site/count format
-        bedtools map -c 4 -o max -null 0 -a $slopsites -b $bg \
-            | awk '{split($4, symbol, "|"); split(symbol[1], gene, ".");
-                    print gene[3]":"$4"\t"$7}' \
-            | awk '{split($1, full, ":"); split(full[2], site, ".");
-                    print full[1]"\t"full[2]"\t"$0}' \
-            | cut -f1,2,4 \
-            | sort -k1,1 -k2,2n \
-            | gzip -c > $countsout
-    done
+    # this mess writes out counts in gene/site/count format
+    bedtools map -c 4 -o max -null 0 -a $slopsites -b $bg \
+        | awk '{split($4, symbol, "|"); split(symbol[1], gene, ".");
+                print gene[3]":"$4"\t"$7}' \
+        | awk '{split($1, full, ":"); split(full[2], site, ".");
+                print full[1]"\t"full[2]"\t"$0}' \
+        | cut -f1,2,4 \
+        | sort -k1,1 -k2,2n \
+        | gzip -c > $countsout
 done
 
 ext=counts.txt.gz
