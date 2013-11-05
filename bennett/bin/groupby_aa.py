@@ -57,10 +57,11 @@ def cluster_proteins(sequences, threshold):
     # return list of remaining sequences
     return clustered_proteins
 
-def main(aa_sequences, threshold):
+def main(aa_sequences, threshold, column_name):
     # import into a table
     compression = compression_level(aa_sequences)
     df = pd.read_table(aa_sequences, index_col=0, compression=compression)
+    assert column_name in df.columns
     # df = pd.read_table("5_AA-sequences_4_TGGTCA_5_150813.txt", index_col=0)
     # drop unproductive translations
     df = df[df.Functionality == "productive"]
@@ -78,22 +79,26 @@ def main(aa_sequences, threshold):
     df = df.join(vgene)
     df = df.join(jgene)
     df = df.join(dgene)
-    header = ['V-GENE','J-GENE','D-GENE','CDR3']
+    header = ['V-GENE', 'J-GENE', 'D-GENE', column_name]
     print "\t".join(header)
     # no further collapsing of the CDR3 sequences
     if threshold == 1.0:
-        # adding CDR3 to groupby collapses them into uniques only
-        for (v, j, d, cdr3), (dframe) in df.groupby(['V-GENE and allele','J-GENE and allele','D-GENE and allele','CDR3-IMGT']):
-            print "\t".join([v,j,d,cdr3])
+        # adding sequence to groupby collapses them into uniques only
+        for (v, j, d, sequence), (dframe) in df.groupby(['V-GENE and allele', 'J-GENE and allele', 'D-GENE and allele', column_name]):
+            print "\t".join([v, j, d, sequence])
     else:
-        for (v, j, d), (dframe) in df.groupby(['V-GENE and allele','J-GENE and allele','D-GENE and allele']):
-            # remove duplicate cdr3 sequences
-            dframe.drop_duplicates('CDR3-IMGT', inplace=True)
+        for (v, j, d), (dframe) in df.groupby(['V-GENE and allele', 'J-GENE and allele', 'D-GENE and allele']):
+            # remove duplicate sequences
+            dframe.drop_duplicates(column_name, inplace=True)
             if len(dframe) == 1:
-                print "\t".join([v,j,d,dframe['CDR3-IMGT'].values[0]])
+                try:
+                    print "\t".join([v, j, d, dframe[column_name].values[0]])
+                except TypeError:
+                    # no sequence present; "NaN" in dataframe; ignore
+                    continue
             else:
                 # cluster the sequences based on threshold
-                sequences = cluster_proteins(dframe['CDR3-IMGT'], threshold)
+                sequences = cluster_proteins(dframe[column_name], threshold)
                 for seq in sequences:
                     print "\t".join([v, d, j, seq])
 
@@ -101,12 +106,14 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('IMGT_SEQUENCES', help="Sequences obtained from HighV-QUEST")
-    p.add_argument('IDENTITY_THRESHOLD', type=float, default=0.90,
+    p.add_argument('-c', '--column', default="CDR3-IMGT",
+            help="Column name of which to base sequence clustering")
+    p.add_argument('-t', '--identity-threshold', type=float, default=0.90,
             help="Sequence Identity threshold: the number of identical amino \
             acids in alignment divided by the full length of the shorter \
             sequence.")
     args = p.parse_args()
-    if 1 > args.IDENTITY_THRESHOLD < 0.65:
+    if 1 > args.identity_threshold < 0.65:
         print >>sys.stderr, "Indentity threshold can be between 1 and 0.65, inclusive"
         sys.exit(1)
-    main(args.IMGT_SEQUENCES, args.IDENTITY_THRESHOLD)
+    main(args.IMGT_SEQUENCES, args.identity_threshold, args.column)
