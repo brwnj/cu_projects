@@ -8,4 +8,9 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/nicoli/bin/config.sh
 
-bam2gd.py $SIZES $FASTAS $RESULTS/L*/*rmd.bam -o $GENOMEDATA -p nicoli
+bams=$RESULTS/L*/*bam
+for file in $bams; do
+    samtools index $file
+done
+
+bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p nicoli

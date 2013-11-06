@@ -1,55 +1,47 @@
 #!/usr/bin/env bash
-#BSUB -J callpeaks[1-14]
-#BSUB -e callpeaks.%J.%I.err
-#BSUB -o callpeaks.%J.%I.out
-#BSUB -q normal
-#BSUB -P nicoli
+<<DOC
+Just run this script. Don't submit to LSF.
+DOC
 
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/nicoli/bin/config.sh
 
-sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
+for track in `genomedata-info tracknames_continuous $GENOMEDATA`; do
+    # peaks=$RESULTS/$sample/$sample.rmd.peaks.bed.gz
+    # shuffledpeaks=$RESULTS/$sample/$sample.rmd.shuffle.peaks.bed.gz
 
-peaks=$RESULTS/$sample/$sample.rmd.peaks.bed.gz
-shuffledpeaks=$RESULTS/$sample/$sample.rmd.shuffle.peaks.bed.gz
-
-if [ -f $peaks ] && [ -f $shuffledpeaks ]; then
-    echo "processing complete for $sample"
-    exit 1
-fi
-
-for strand in pos neg; do
     symbol="+"
-    if [[ "$strand" == "neg" ]]; then
+    if [[ "${track#*pos}" == "$track" ]]; then
         symbol="-"
     fi
-    # regular peaks
-    runscript="$sample.$strand.peaks.sh"
-    echo "#!/usr/bin/env bash" > $runscript
-    echo "#BSUB -J $sample.$strand.peaks[1-25]" >> $runscript
-    echo "#BSUB -e $sample.$strand.%J.%I.err" >> $runscript
-    echo "#BSUB -o $sample.$strand.%J.%I.out" >> $runscript
-    echo "#BSUB -q normal" >> $runscript
-    echo "#BSUB -P nicoli" >> $runscript
-    echo "
-chromosomes=($CHROMOSOMES)
-chromosome=\${chromosomes[\$((\$LSB_JOBINDEX - 1))]}
-peaktools-identify-peaks -t ${sample}.rmd_${strand} -c \$chromosome -w 30 -v -s $symbol $GENOMEDATA | gzip -c > $sample.\$chromosome.$strand.rmd.peaks.bed.gz
-" >> $runscript
+
+    runscript=$track.peaks.sh
+    cat <<rs >$runscript
+#!/usr/bin/env bash
+#BSUB -J $track.peaks[1-25]
+#BSUB -e $track.peaks.%J.%I.err
+#BSUB -o $track.peaks.%J.%I.out
+#BSUB -q normal
+#BSUB -P nicoli
+
+source $HOME/projects/nicoli/bin/config.sh
+chromosome=\${CHROMOSOMES[\$((\$LSB_JOBINDEX - 1))]}
+peaktools-identify-peaks -t $track -c \$chromosome -w 30 -v -s $symbol \$GENOMEDATA | gzip -c > $track.\$chromosome.peaks.bed.gz
+rs
     bsub < $runscript
 
-    #shuffled peaks
-    runscript="$sample.$strand.shuffle.peaks.sh"
-    echo "#! /usr/bin/env bash" > $runscript
-    echo "#BSUB -J $sample.$strand.shuffle[1-25]" >> $runscript
-    echo "#BSUB -e %J.%I.err" >> $runscript
-    echo "#BSUB -o %J.%I.out" >> $runscript
-    echo "#BSUB -q normal" >> $runscript
-    echo "#BSUB -P nicoli" >> $runscript
-    echo "
-chromosomes=($CHROMOSOMES)
-chromosome=\${chromosomes[\$((\$LSB_JOBINDEX - 1))]}
-peaktools-identify-peaks -t ${sample}.rmd_${strand} -c \$chromosome -w 30 -v -s $symbol --shuffle-data $GENOMEDATA | gzip -c > $sample.\$chromosome.$strand.rmd.shuffle.peaks.bed.gz
-" >> $runscript
+    runscript=$track.shuffle.peaks.sh
+    cat <<rs >$runscript
+#!/usr/bin/env bash
+#BSUB -J $track.shuffled_peaks[1-25]
+#BSUB -e $track.shuffled_peaks.%J.%I.err
+#BSUB -o $track.shuffled_peaks.%J.%I.out
+#BSUB -q normal
+#BSUB -P nicoli
+
+source $HOME/projects/nicoli/bin/config.sh
+chromosome=\${CHROMOSOMES[\$((\$LSB_JOBINDEX - 1))]}
+peaktools-identify-peaks -t $track -c \$chromosome -w 30 -v -s $symbol --shuffle-data \$GENOMEDATA | gzip -c > $track.\$chromosome.shuffle.peaks.bed.gz
+rs
     bsub < $runscript
 done
