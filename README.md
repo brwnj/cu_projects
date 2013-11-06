@@ -1,5 +1,12 @@
 # Bennett
 
+MS13-02 <-- 4
+ON07-05
+ON09-03 <-- 2
+ON10-01 <-- 3
+ON10-03
+unidentified
+
 + _folder renaming of old samples; renaming schema_
 + cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
 + to be implemented after initial assessment scripts are written

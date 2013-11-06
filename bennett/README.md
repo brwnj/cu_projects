@@ -13,6 +13,9 @@ smith-waterman for these with given threshold
 'APQRFTTLGVEMRGGPFDV--', 
 '-----ARAIFTMRGGISPVED'
 
+python ~/projects/bennett/bin/groupby_aa.py 5_AA-sequences_ON09-03_ACATCG.combined.txt.gz -t .7 | gzip -c > ON09-03_ACATCG.grouped_aa.70.txt.gz
+awk -tc header 'NR>1{gsub(/Homsap /, ""); gsub(/ /, "_"); print ">"NR";"$1";"$2";"$3"\n"$4}' ON09-03_ACATCG.grouped_aa.70.txt.gz > ON09-03_ACATCG.grouped_aa.70.fasta
+
 ON10-01
 ================================================================================
 IRNFLATYSFDY

@@ -4,6 +4,7 @@
 Combine IMGT AA sequences results into single files for each sample.
 """
 import sys
+import gzip
 import argparse
 import os.path as op
 from toolshed import reader, header
@@ -16,7 +17,7 @@ def main(result_files):
     # leaves one entry per unique sample
     for sample in samples:
         # open a new file to facilitate the join
-        out = open("{sample}.combined.txt".format(sample=sample), "wb")
+        out = gzip.open("{sample}.combined.txt.gz".format(sample=sample), "wb")
         i = 1
         print >>out, "\t".join(common_header)
         for result_file in result_files:
