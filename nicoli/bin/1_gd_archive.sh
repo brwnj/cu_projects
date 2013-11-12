@@ -10,7 +10,10 @@ source $HOME/projects/nicoli/bin/config.sh
 
 bams=$RESULTS/L*/*bam
 for file in $bams; do
-    samtools index $file
+    if [[ ! -f $file.bai ]]; then
+        samtools index $file
+    fi
 done
-
-bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p nicoli
+if [[ ! -d $GENOMEDATA ]]; then
+    bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p nicoli
+fi
