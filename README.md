@@ -1,25 +1,17 @@
 # Bennett
 
-MS13-02 <-- 4
-ON07-05
-ON09-03 <-- 2
-ON10-01 <-- 3
-ON10-03
-unidentified
-
-+ _folder renaming of old samples; renaming schema_
 + cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
 + to be implemented after initial assessment scripts are written
 + viewing in a tree may be helpful for manual picking
 + barcode to cell type conversion table
++ markus really liked the local alignment results more so than the current way
++ figure out why CG1 is missing the match shown in 9/16 email
 
 # Duval
-+ snpeff; deliver variants
++ deliver variants
 
 # Hits-Clip
-+ tracks for PK61, PK62, PK63
-+ heatmap of miRNA, something that you can zoom into
-+ matrix2png
++ ucsc hub
 
 # Poly(A)
 + were peaks called in the chrM in the hits-clip data? peter would like to know
@@ -37,6 +29,9 @@ unidentified
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
 
-# Nicoli
-+ combine L1 and L2
-+ tracks for duplicates and without duplicates
+
+#Hanson
++ snpeff
++ deliver variants within:
+    + Murderball  chr7:21000000-35000000
+    + Nomo        chr15:95000000-104000000

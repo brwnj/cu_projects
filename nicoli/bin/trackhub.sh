@@ -50,9 +50,11 @@ autoScale on
 coverage_track
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
-    cp $RESULTS/$sample/$sample.*.bw $HUB/$genome
-    posbw=$sample.rmd_pos.bw
-    negbw=$sample.rmd_neg.bw
+    cp $RESULTS/$sample/*.bw $HUB/$genome
+    posbw=${sample}_pos.bw
+    negbw=${sample}_neg.bw
+    posuniqbw=$sample.rmd_pos.bw
+    neguniqbw=$sample.rmd_neg.bw
     color=$(python -c 'import colorbrewer,random;print ",".join(map(str, colorbrewer.Paired[10][random.randint(0,10)]))')
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
@@ -67,6 +69,22 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     bigDataUrl $negbw
     shortLabel $sample coverage NEG
     longLabel $sample coverage negative (-) strand
+    type bigWig
+    parent nicoli_coverage
+    color $color
+    
+    track ${posuniqbw/.bw}
+    bigDataUrl $posuniqbw
+    shortLabel $sample unique coverage POS
+    longLabel $sample unique coverage positive (+) strand
+    type bigWig
+    parent nicoli_coverage
+    color $color
+    
+    track ${neguniqbw/.bw}
+    bigDataUrl $neguniqbw
+    shortLabel $sample unique coverage NEG
+    longLabel $sample unique coverage negative (-) strand
     type bigWig
     parent nicoli_coverage
     color $color
