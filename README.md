@@ -1,11 +1,11 @@
 # Bennett
 
 + cutoff for umi to only take the most abundant sequences accounting for the majority of what's present
-+ to be implemented after initial assessment scripts are written
 + viewing in a tree may be helpful for manual picking
 + barcode to cell type conversion table
 + markus really liked the local alignment results more so than the current way
 + figure out why CG1 is missing the match shown in 9/16 email
+    + rerun alignments using local aligner and give those results
 
 # Duval
 + deliver variants
