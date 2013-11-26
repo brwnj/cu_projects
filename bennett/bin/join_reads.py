@@ -5,13 +5,13 @@ Join reads based on local alignment, taking higher quality base where mismatches
 are present.
 """
 import sys
+import time
 import string
 import multiprocessing
 from Bio import pairwise2
 from toolshed import nopen
 from itertools import islice, izip
 
-PW = pairwise2.align.localms
 COMPLEMENT = string.maketrans('ACGTNSRYMKWHBVD','TGCANSRYMKWHBVD')
 
 # https://gist.github.com/aljungberg/626518
@@ -52,7 +52,7 @@ def rev_comp(seq):
 def decode(x):
     return ord(x) - 33
 
-def process_chunk(chunk):
+def join_reads(chunk):
     r1, r2 = chunk
     r1.name = r1.name.split()[0]
     r2.name = r2.name.split()[0]
@@ -60,9 +60,11 @@ def process_chunk(chunk):
     # reverse r2
     r2.seq = rev_comp(r2.seq)
     r2.qual = r2.qual[::-1]
+
     try:
         # get best match
-        r1aln, r2aln, score, start, stop = PW(r1.seq, r2.seq, 1, -1, -5, -3)[0]
+        r1aln, r2aln, score, start, stop = pairwise2.align.localms(r1.seq, r2.seq, 1, -1, -5, -3)[0]
+    
         # assume overlapping is NOT occurring on 5' end
         if r1aln.startswith("-----"): pass
         seq = ""
@@ -101,12 +103,13 @@ def process_chunk(chunk):
         pass
 
 def main(R1, R2, threads):
-    """For each pair, perform local alignment, fix the mismatches, and output
-    joined read with qual.
+    """for each pair:
+            perform local alignment
+            fix the mismatches
+            output joined read with qual
     """
     p = multiprocessing.Pool(threads)
-    # 10,000 records at a time over `threads` number of threads
-    for r in p.imap(process_chunk, izip(readfq(R1), readfq(R2)), 10000):
+    for r in p.imap_unordered(join_reads, izip(readfq(R1), readfq(R2))):
         print r
 
 if __name__ == '__main__':
