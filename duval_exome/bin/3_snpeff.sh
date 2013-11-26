@@ -24,3 +24,16 @@ if [[ ! -f $annotated ]]; then
     mv $tmp $snpeff
     python $BIN/annotate.py $snpeff $ANNOTATION > $annotated
 fi
+
+vcf=$RESULTS/$sample/$sample.freebayes.vcf
+snpeff=$RESULTS/$sample/$sample.snpeff.freebayes.txt
+annotated=$RESULTS/$sample/$sample.annotated_snps.freebayes.txt
+
+if [[ ! -f $annotated ]]; then
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canis_familiaris $vcf > $snpeff
+    # clip the header
+    tmp=$RESULTS/$sample/$sample.tmp
+    tail -n +3 $snpeff > $tmp
+    mv $tmp $snpeff
+    python $BIN/annotate.py $snpeff $ANNOTATION > $annotated
+fi

@@ -21,11 +21,12 @@ duplicatemetrics=${bam/.bam/.dup_metrics.txt}
 targetintervals=${bam/.bam/.intervals}
 realigned=${bam/.bam/.realign.bam}
 vcf=${bam/.bam/.vcf}
+freebayesvcf=${bam/.bam/.freebayes.vcf}
 
-if [[ -f $vcf ]]; then
-    echo "processing complete for $sample"
-    exit 0
-fi
+# if [[ -f $vcf ]]; then
+#     echo "processing complete for $sample"
+#     exit 0
+# fi
 
 # picard
 READ_GROUP_OPTS="INPUT=$bam OUTPUT=$rgbam SORT_ORDER=coordinate RGID=$sample RGLB=PE RGPL=illumina RGPU=$sample RGSM=$sample"
@@ -57,4 +58,7 @@ if [ -f $targetintervals ] && [ ! -f $realigned ]; then
 fi
 if [ -f $realigned ] && [ ! -f $vcf ]; then
     $java $GATK $UNIFIED_GENOTYPER
+fi
+if [ -f $realigned ] && [ ! -f $freebayesvcf ]; then
+    freebayes -b $realigned -v $freebayesvcf -f $REFERENCE -0
 fi
