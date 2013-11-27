@@ -53,7 +53,7 @@ if __name__ == '__main__':
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument("fastqs", nargs="+", help="fastqs to convert")
-    p.add_argument("-n", default=150000, type=int,
+    p.add_argument("-n", default=500000, type=int,
             help="number of lines per fasta")
     args = vars(p.parse_args())
     main(**args)
