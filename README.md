@@ -8,7 +8,10 @@
     + rerun alignments using local aligner and give those results
 
 # Duval
-+ deliver variants
++ mapping stats and fastqc results if specified
++ deliver freebayes variants
++ overlap tumor and normal, take unique
++ filter by coverage, mutation type
 
 # Hits-Clip
 + ucsc hub
