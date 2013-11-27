@@ -23,10 +23,10 @@ realigned=${bam/.bam/.realign.bam}
 vcf=${bam/.bam/.vcf}
 freebayesvcf=${bam/.bam/.freebayes.vcf}
 
-# if [[ -f $vcf ]]; then
-#     echo "processing complete for $sample"
-#     exit 0
-# fi
+if [[ -f $vcf ]]; then
+    echo "processing complete for $sample"
+    exit 0
+fi
 
 # picard
 READ_GROUP_OPTS="INPUT=$bam OUTPUT=$rgbam SORT_ORDER=coordinate RGID=$sample RGLB=PE RGPL=illumina RGPU=$sample RGSM=$sample"
