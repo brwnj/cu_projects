@@ -9,9 +9,9 @@ SAMPLES=(ON10-03_ACATCG ON10-03_ATTGGC ON10-03_CACTGT ON10-03_CGTGAT
          ON09-03_TGGTCA ON10-01_ACATCG ON10-01_ATTGGC ON10-01_CACTGT
          ON10-01_CGTGAT ON10-01_GCCTAA ON10-01_TGGTCA unidentified_ACATCG
          unidentified_ATTGGC unidentified_CACTGT unidentified_CGTGAT unidentified_GATCTG
-         unidentified_GCCTAA unidentified_TCAAGT unidentified_TGGTCA latest_ACATCG
-         latest_ATTGGC latest_CACTGT latest_CGTGAT latest_GATCTG
-         latest_GCCTAA latest_TCAAGT latest_TGGTCA
+         unidentified_GCCTAA unidentified_TCAAGT unidentified_TGGTCA ON08-08_GC
+         TUM09-527_GC latest_CACTGT ON08-08_naive latest_GATCTG
+         ON08-08_memory TUM09-527_plasmablast ON08-08_plasmablast
          )
 
 PI=bennett
