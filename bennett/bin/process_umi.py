@@ -10,7 +10,7 @@ from toolshed import nopen
 from collections import Counter, defaultdict
 from itertools import islice, groupby, izip
 
-__version__ = "0.2"
+__version__ = "0.3"
 
 IUPAC = {"A":"A","T":"T","C":"C","G":"G","R":"GA","Y":"TC",
          "M":"AC","K":"GT","S":"GC","W":"AT","H":"ACT",
@@ -56,8 +56,8 @@ def run_sort(args):
     else:
         cmd = "cat %s | " % args.fastq
     # sort by the UMI, then by read name for paired-end sync
-    cmd += ("""awk '{printf($0);n++;if(n%4==0){printf("\\n")}else{printf("\\t")}}' | """
-                """awk '{i=substr($2,1,length); print i"\\t"$0}' | """
+    cmd += ("""awk 'BEGIN{OFS=FS="\\t"}{printf($0);n++;if(n%4==0){printf("\\n")}else{printf("\\t")}}' | """
+                """awk 'BEGIN{OFS=FS="\\t"}{i=substr($2,1,length); print i"\\t"$0}' | """
                 """sort -k1,1 -k2,2 | """
                 """cut -f 2,3,4,5 | """
                 """tr "\\t" "\\n\"""").replace("length", args.length)
@@ -92,55 +92,43 @@ def distance(a, b):
             dists.append(ed.distance(a[i:i+lb], b))
         return min(dists)
 
-
-def process_pairs(r1out, r2out, r1seqs, r2seqs, r1seq_to_name, r2name_to_seq, r1seq_to_qual, r2seq_to_qual, umi, read_id):
-    """prints most abundant sequence observed across a particular UMI.
+def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
+                    r1seq_to_qual, r2seq_to_qual, umi, mismatches, read_id):
+    """prints every unique read per umi and add the UMI sequence to the name."""
     
-    r1out - file handle
-    r2out - file handle
-    r1seqs - counter for R1
-    r2seqs - counter for R2
-    r1seq_to_name - dictionary to lookup name by sequence
-    r2name_to_seq - dictionary to lookup sequence by name
-    r1seq_to_qual - dictionary to obtain quality score
-    r2seq_to_qual - dictionary to obtain quality score
-    umi - the sequence being processed
-    read_id - digit for unique output read ids
-    """
-    # most_common_r1_seq, most_common_r1_count = r1seqs.most_common(1)[0]
-    # most_common_r2_seq, most_common_r2_count = r2seqs.most_common(1)[0]
-    # 
-    # print >>sys.stderr, most_common_r1_count
-    # print >>sys.stderr, most_common_r2_count
-    score_cutoff = 4
-    best_score = 0
-    r1_score = 0
-    r2_score = 0
-    best_r1_seq = ""
-    best_r2_seq = ""
+    ignore = set()
+    seen = set()
+    r1_sequence_set = set(r1seqs)
+    # iterate over sequences from most abundant to least
+    for target, t_count in r1seqs.most_common():
+        # not going to combine the noise
+        if t_count == 1:
+            ignore.add(target)
+            continue
+        if target in seen: continue
+        seen.add(target)
+        for query, q_count in r1seqs.most_common():
+            if query in seen: continue
+            ed = distance(target, query)
+            if ed <= mismatches:
+                for name in r1seq_to_name[query]:
+                    # add similar read names to appropriate bin
+                    r1seq_to_name[target].append(name)
+                    ignore.add(query)
+                    seen.add(query)
 
-    # i think 3 is enough tries; leaving it hardcoded
-    for r1_sequence, r1_count in r1seqs.most_common(3):
-        r2seq_counter = Counter()
-        for name in r1seq_to_name[r1_sequence]:
-            r2seq_counter.update([r2name_to_seq[name]])
-        r2_most_common_seq, r2_most_common_count = r2seq_counter.most_common(1)[0]
-        scores = [r1_count, r2_most_common_count]
-        score = sum(scores) * (min(scores) / float(max(scores)))
-        
-        # print >>sys.stderr, "{score}: {r1} {r2}".format(score=score, r1=r1_count, r2=r2_most_common_count)
-        
-        if score > best_score:
-            best_score = score
-            best_r1_seq = r1_sequence
-            r1_score = r1_count
-            best_r2_seq = r2_most_common_seq
-            r2_score = r2_most_common_count
+    chosen_seqs = r1_sequence_set - ignore
 
-    if best_score >= score_cutoff:
-        print >>sys.stderr, "{best}: {r1} {r2}\n".format(best=best_score, r1=r1_score, r2=r2_score)
-        r1out.write("@r_%d:%s 1\n%s\n+\n%s\n" % (read_id, umi, best_r1_seq, r1seq_to_qual[best_r1_seq]))
-        r2out.write("@r_%d:%s 2\n%s\n+\n%s\n" % (read_id, umi, best_r2_seq, r2seq_to_qual[best_r2_seq]))
+    # find most abundant R2 and print reads
+    for seq in chosen_seqs:
+        r2seqs = Counter()
+        for name in r1seq_to_name[seq]:
+            # list of read names used in this bin
+            r2seqs.update([r2name_to_seq[name]])            
+
+        r2_seq = r2seqs.most_common(1)[0][0]
+        r1out.write("@read_%d:%s 1\n%s\n+\n%s\n" % (read_id, umi, seq, r1seq_to_qual[seq]))
+        r2out.write("@read_%d:%s 2\n%s\n+\n%s\n" % (read_id, umi, r2_seq, r2seq_to_qual[r2_seq]))
         read_id += 1
     return read_id
 
@@ -158,23 +146,23 @@ def add_qual(d, k, q):
 
 def run_collapse(args):
     """r1, r2, umi, mismatches"""
-    mmatch = args.mismatches
+    mismatches = args.mismatches
     iupac_umi = args.umi
     umileng = len(iupac_umi)
     cutoff = args.cutoff
     readid = 1
-    r1out = gzip.open(get_name(args.r1, "umifiltered"), 'wb')
-    r2out = gzip.open(get_name(args.r2, "umifiltered"), 'wb')
+    r1_out = gzip.open(get_name(args.r1, "umifiltered"), 'wb')
+    r2_out = gzip.open(get_name(args.r2, "umifiltered"), 'wb')
 
     for umi, group in groupby(izip(readfq(args.r1), readfq(args.r2)), key=lambda (rr1, rr2): rr1.seq[:umileng]):
         if not valid_umi(iupac_umi, umi): continue
-        r1seqs = Counter()
+        r1_seqs = Counter()
         r1seq_to_name = defaultdict(list)
         r2name_to_seq = {}
         r1seq_to_qual = {}
         r2seq_to_qual = {}
 
-        r2seqs = Counter()
+        # r2_seqs = Counter()
 
         for r1, r2 in group:
             assert r2.seq[:umileng] == umi
@@ -192,18 +180,18 @@ def run_collapse(args):
             assert len(trimmed_r1_seq) == len(trimmed_r1_qual)
             assert len(trimmed_r2_seq) == len(trimmed_r2_qual)
 
-            r1seqs.update([trimmed_r1_seq])
+            r1_seqs.update([trimmed_r1_seq])
             r1seq_to_name[trimmed_r1_seq].append(r1.name)
             r2name_to_seq[r2.name] = trimmed_r2_seq
             
-            r2seqs.update([trimmed_r2_seq])
+            # r2_seqs.update([trimmed_r2_seq])
             
             # maintains best qual per seq
             r1seq_to_qual = add_qual(r1seq_to_qual, trimmed_r1_seq, trimmed_r1_qual)
             r2seq_to_qual = add_qual(r2seq_to_qual, trimmed_r2_seq, trimmed_r2_qual)
 
         # process UMI group, writing to files, and returning current read id
-        readid = process_pairs(r1out, r2out, r1seqs, r2seqs, r1seq_to_name, r2name_to_seq, r1seq_to_qual, r2seq_to_qual, umi, readid)
+        readid = process_pairs(r1_out, r2_out, r1_seqs, r1seq_to_name, r2name_to_seq, r1seq_to_qual, r2seq_to_qual, umi, mismatches, readid)
 
 def main(args):
     args.func(args)
@@ -224,7 +212,7 @@ if __name__ == "__main__":
     fcollapse.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI, sorted by UMI.")
     fcollapse.add_argument('r2', metavar="R2", help="R2 FASTQ with UMI, sorted by UMI.")
     fcollapse.add_argument('umi', metavar="UMI", help='IUPAC sequence of the UMI, e.g. NNNNNV')
-    fcollapse.add_argument('-c', '--cutoff', type=int, default=200, help='shortest allowable read length after trimming at first N')
+    fcollapse.add_argument('-c', '--cutoff', type=int, default=180, help='shortest allowable read length after trimming at first N')
     fcollapse.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
     fcollapse.set_defaults(func=run_collapse)
     
