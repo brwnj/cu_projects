@@ -20,7 +20,10 @@ corrplot(mat, method="circle", order="alphabet", cl.lim=c(0,1))
 corrRect(c(3,3,3,2,5), col="red", lwd=2)
 
 ct = read.table("~/projects/hits-clip/data/20130829/pk11_pk24.txt", header=TRUE, row.names=1)
-plot(log2(ct), cex=0.5)
+cds = newCountDataSet(ct, conditions=c(rep("t",1),rep("c",1)))
+cds = estimateSizeFactors(cds)
+normcounts = counts(cds, normalized=TRUE)
+plot(log2(normcounts), cex=0.5)
 
 library(ggplot2)
 library(reshape2)
