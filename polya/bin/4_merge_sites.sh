@@ -19,6 +19,8 @@ if [[ ! -d $polya_sites ]]; then
     mkdir -p $polya_sites
 fi
 
+# would no longer test the 3a sites because we're saying they're artifacts
+
 sites13=$polya_sites/$sample.sites.c13.bed.gz
 sites1234=$polya_sites/$sample.sites.c1234.bed.gz
 siteswhole=$polya_sites/$sample.sites.wholegene.bed.gz
