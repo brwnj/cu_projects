@@ -19,13 +19,19 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 r1=$DATA/${sample}_R1.fastq.gz
 r2=$DATA/${sample}_R2.fastq.gz
 
-tempr1=
-tempr2=
+tempr1=${r1/.fastq.gz/.length_trimmed.fastq}
+tempr2=${r2/.fastq.gz/.length_trimmed.fastq}
 
-trimmedr1=
-trimmedr2=
+trimmedr1=${r1/.fastq.gz/.quality_trimmed.fastq.gz}
+trimmedr2=${r2/.fastq.gz/.quality_trimmed.fastq.gz}
 
-python trimfq -m 220
-
-seqtk trimfq -e 80 $r1 > 
-seqtk trimfq -e 80 $r2
+if [[ ! -f $trimmedr1 ]]; then
+    trimfq.py -m 220 $r1 > $tempr1
+    seqtk trimfq $tempr1 | gzip -c > $trimmedr1
+    rm $tempr1
+fi
+if [[ ! -f $trimmedr2 ]]; then
+    trimfq.py -m 220 $r2 > $tempr2
+    seqtk trimfq $tempr2 | gzip -c > $trimmedr2
+    rm $tempr1
+fi
