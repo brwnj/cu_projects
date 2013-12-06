@@ -11,7 +11,7 @@
 + check the QC, should need to trim back to 220bp
 + also quality trim with seqtk
 
-# Duval
+#Duval
 + mapping stats and fastqc results if specified
 + deliver freebayes variants
 + overlap tumor and normal, take unique
@@ -25,8 +25,12 @@ Tumor   Normal
 Sample 353 is tagged GGCTAC
 Sample 353M2 is tagged GAAACC
 
-# Hits-Clip
+#HITS-CLIP
++ liftover to hg19
 + ucsc hub
+
+austin needs to recreate a pk11_v_pk24.pdf
+
 
 #Leung
 + map the data i have transferred
@@ -38,6 +42,8 @@ http://seqanswers.com/wiki/How-to/exome_analysis
 + chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 + add UCSC chrM to refseq model and re-run pipeline from step 4.
 + refresh track hub
+
++ AGTAAA,TATAAA,TTTAAA,AATATA,AATACA,CATAAA,AAAATA,GATAAA,TATATA,ACTAAA,AGATAA,AATAGA,ATTACA,AGAATA,AAGAAA,AATGAA
 
 ### Mouse
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
@@ -55,3 +61,6 @@ http://seqanswers.com/wiki/How-to/exome_analysis
 + deliver variants within:
     + Murderball  chr7:21000000-35000000
     + Nomo        chr15:95000000-104000000
+    
+#Nicoli
++ liftover data to hg19
