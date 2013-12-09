@@ -18,42 +18,5 @@ results=$RESULTS/$sample
 umibam=$results/$sample.UMIs_not_removed.bam
 bam=$results/$sample.bam
 
-# samtools view -F 0x10 = forward strand
-# samtools view -f 0x10 = reverse strand
-
-strands=(pos neg)
-strandargs=("-F 0x10" "-f 0x10")
-
-for idx in ${!strands[@]}; do
-
-    strand=${strands[$idx]}
-    strandarg=${strandargs[$idx]}
-
-    for bamfile in $bam $umibam; do
-
-        bambase=$(basename $bamfile .bam)
-        bedgraph=$results/$bambase.$strand.bedgraph
-        bigwig=$results/$bambase.$strand.bw
-
-        if [ "$strand" == "neg" ]; then
-            # this adds the length of the sequence to the coordinate
-            samtools view $strandarg $bamfile \
-                | awk '{print $3,$4+length($10)}' \
-                | sort \
-                | uniq -c \
-                | awk 'BEGIN{FS=" "}{print $2,$3-2,$3-1,$1}' \
-                | bedtools sort -i - \
-                > $bedgraph
-        else
-             samtools view $strandarg $bamfile \
-                | awk '{print $3,$4}' \
-                | sort \
-                | uniq -c \
-                | awk 'BEGIN{FS=" "}{print $2,$3-1,$3,$1}' \
-                | bedtools sort -i - \
-                > $bedgraph
-        fi    
-        bedGraphToBigWig $bedgraph $SIZES $bigwig
-        gzip -f $bedgraph
-    done
-done
+bam2bw.py -5 -b -v $bam $SIZES pillai_kabos_polya
+bam2bw.py -5 -b -v $umibam $SIZES pillai_kabos_polya
