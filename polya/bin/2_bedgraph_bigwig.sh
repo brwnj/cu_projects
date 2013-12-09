@@ -18,5 +18,5 @@ results=$RESULTS/$sample
 umibam=$results/$sample.UMIs_not_removed.bam
 bam=$results/$sample.bam
 
-bam2bw.py -5 -b -v $bam $SIZES pillai_kabos_polya
-bam2bw.py -5 -b -v $umibam $SIZES pillai_kabos_polya
+bam2bw.py -5 -v $bam $SIZES pillai_kabos_polya
+bam2bw.py -5 -v $umibam $SIZES pillai_kabos_polya
