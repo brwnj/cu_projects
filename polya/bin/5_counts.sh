@@ -14,33 +14,18 @@ source $HOME/projects/polya/bin/config.sh
 get the counts. overwrite existing count files.
 DOC
 
-slop=2
-
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
-sites=$RESULTS/polya_sites/${sample:0:2}.sites.c13.bed.gz
-slopsitesneg=$RESULTS/polya_sites/${sample:0:2}.sites.c13.slop.$slop.neg.bed.gz
-slopsitespos=$RESULTS/polya_sites/${sample:0:2}.sites.c13.slop.$slop.pos.bed.gz
+slopsitesneg=$POLYASITES/${sample:0:2}.test_sites.slop.$SLOP.neg.bed.gz
+slopsitespos=$POLYASITES/${sample:0:2}.test_sites.slop.$SLOP.pos.bed.gz
 results=$RESULTS/$sample
-
-# this adds slop to the polyA sites
-if [[ ! -f $slopsitesneg ]]; then
-    bedtools slop -b $slop -i $sites -g $SIZES \
-        | awk '$6 == "+"' \
-        | bedtools sort -i - \
-        | gzip -c > $slopsitesneg
-fi
-if [[ ! -f $slopsitespos ]]; then
-    bedtools slop -b $slop -i $sites -g $SIZES \
-        | awk '$6 == "-"' \
-        | bedtools sort -i - \
-        | gzip -c > $slopsitespos
-fi
 
 for strand in pos neg; do
 
     bedg=$results/$sample.$strand.bedgraph.gz
     countsout=$results/$sample.$strand.counts.txt.gz
-    slopsites=$RESULTS/polya_sites/${sample:0:2}.sites.c13.slop.$slop.$strand.bed.gz
+    slopsites=$POLYASITES/${sample:0:2}.test_sites.slop.$SLOP.$strand.bed.gz
+
+    python $BIN/read_counts.py $bedg $slopsites | gzip -c > $countsout
 
     # this mess writes out counts in gene/site/count format
     bedtools map -c 4 -o max -null 0 -a $slopsites -b $bedg \
