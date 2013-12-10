@@ -14,29 +14,49 @@ samples=(MP PK)
 sample=${samples[$(($LSB_JOBINDEX - 1))]}
 peaks="$RESULTS/${sample}*/*.classified.bed.gz"
 
-polya_sites=$RESULT/polya_sites
-if [[ ! -d $polya_sites ]]; then
-    mkdir -p $polya_sites
+if [[ ! -d $POLYASITES ]]; then
+    mkdir -p $POLYASITES
 fi
 
-# would no longer test the 3a sites because we're saying they're artifacts
+testsites=$POLYASITES/$sample.test_sites.bed.gz
+allsites=$POLYASITES/$sample.all_sites.bed.gz
+siteswhole=$POLYASITES/$sample.wholegene_sites.bed.gz
 
-sites13=$polya_sites/$sample.sites.c13.bed.gz
-sites1234=$polya_sites/$sample.sites.c1234.bed.gz
-siteswhole=$polya_sites/$sample.sites.wholegene.bed.gz
+slopsitesneg=$POLYASITES/$sample.test_sites.slop.$SLOP.neg.bed.gz
+slopsitespos=$POLYASITES/$sample.test_sites.slop.$SLOP.pos.bed.gz
 
-if [[ ! -f $sites13 ]]; then
-    python $BIN/merge_sites.py -n2 -c3 -c3a -x $XREF $EXONS $peaks \
+if [[ ! -d $POLYASITES ]]; then
+    mkdir -p $POLYASITES
+fi
+
+if [[ ! -f $testsites ]]; then
+    python $BIN/merge_sites.py -n2 -c3 -c3a -c5 -c5a -x $XREF $EXONS $peaks \
         | bedtools sort -i - \
-        | gzip -c > $sites13
+        | gzip -c > $testsites
 fi
-if [[ ! -f $sites1234 ]]; then
-    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -x $XREF $EXONS $peaks \
+
+if [[ ! -f $allsites ]]; then
+    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $EXONS $peaks \
         | bedtools sort -i - \
-        | gzip -c > $sites1234
+        | gzip -c > $allsites
 fi
+
 if [[ ! -f $siteswhole ]]; then
-    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -x $XREF $WHOLEGENE $peaks \
+    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $WHOLEGENE $peaks \
         | bedtools sort -i - \
         | gzip -c > $siteswhole
+fi
+
+# this adds slop to the polyA sites
+if [[ ! -f $slopsitesneg ]]; then
+    bedtools slop -b $SLOP -i $testsites -g $SIZES \
+        | awk '$6 == "+"' \
+        | bedtools sort -i - \
+        | gzip -c > $slopsitesneg
+fi
+if [[ ! -f $slopsitespos ]]; then
+    bedtools slop -b $SLOP -i $testsites -g $SIZES \
+        | awk '$6 == "-"' \
+        | bedtools sort -i - \
+        | gzip -c > $slopsitespos
 fi
