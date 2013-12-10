@@ -18,6 +18,7 @@ XREF=$BIN/ref/refseq.xref.txt.gz
 WHOLEGENE=$BIN/ref/refseq.wholegene.hg19.trimmedname.bed.gz
 SITESHIFTS=$RESULTS/site_shifts
 POLYASITES=$RESULTS/polya_sites
+SLOP=2
 HUB=$RESULTS/hub
 FISHERRESULTS=$RESULTS/fisher_results
 METADATA=$HUB/metadata.tsv
