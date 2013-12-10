@@ -8,7 +8,7 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
-Trim the UMI from the FASTQ, align trimmed reads using Novoalign suppressing 
+Trim the UMI from the FASTQ, align trimmed reads using Novoalign suppressing
 all reads that align more than once, then remove UMI duplicates from the
 alignment.
 DOC
@@ -20,9 +20,12 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
 unprocessed_fastq=$DATA/$sample.fq.gz
 fastq=$DATA/$sample.umi.fq.gz
+
+bin=$HOME/devel/umitools
+
 # trim the UMI
 if [[ ! -f $fastq ]]; then
-    umitools trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
+    python $bin/umitools.py trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
 fi
 
 results=$RESULTS/$sample
@@ -43,10 +46,12 @@ if [[ ! -f $umibam ]]; then
         | samtools sort -o - $sample.temp -m 8G \
         > $umibam
     samtools index $umibam
+    bam2bw.py -5 -v $umibam $SIZES pillai_kabos_polya
 fi
 
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    umitools rmdup --verbose $umibam $bam $UMI
+    python $bin/umitools.py rmdup $umibam $bam $UMI
     samtools index $bam
+    bam2bw.py -5 -v $bam $SIZES pillai_kabos_polya
 fi
