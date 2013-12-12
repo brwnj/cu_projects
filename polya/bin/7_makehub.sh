@@ -31,13 +31,7 @@ cp $POLYASITES/*sites*.bed.gz .
 # convert to BB
 gunzip -f *sites*.bed.gz
 for bed in *sites*.bed; do bed2bb.py --type bed6 $SIZES $bed; done
-# these file names must match:
-    # MP.sites.c13.bb
-    # MP.sites.c1234.bb
-    # MP.sites.wholegene.bb
-    # PK.sites.c13.bb
-    # PK.sites.c1234.bb
-    # PK.sites.wholegene.bb
+# these file names are hard coded into the python script: generate_trackdb.py
 rm *sites*.bed
 
 for f in $FISHERRESULTS/*fisher*txt.gz; do
@@ -46,7 +40,7 @@ for f in $FISHERRESULTS/*fisher*txt.gz; do
     fisherbb=${f/.txt.gz/.bb}
     if [[ ! -f $fisherbb ]]; then
         # create beds of fisher test results
-        python $BIN/visualize_fisher_shifts.py $f $POLYASITES/${fbase:0:2}.sites.c13.bed.gz \
+        python $BIN/visualize_fisher_shifts.py $f $POLYASITES/${fbase:0:2}.test_sites.bed.gz \
             | bedtools sort -i - > $fisherbed
         # convert bed to bigbed
         bed2bb.py --type bed12 $SIZES $fisherbed

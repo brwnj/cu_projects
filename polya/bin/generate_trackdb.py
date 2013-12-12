@@ -57,57 +57,57 @@ subGroup1 inv Investigator MP=Pillai PK=Kabos
 visibility full
 type bigBed 6 .
 
-    track mp.c13.sites
+    track mp.test_sites
     parent polyaSites on
     subGroups inv=MP
-    shortLabel Pillai 1,3
-    longLabel Pillai: Class 1(a) and 3(a); exon model
-    bigDataUrl MP.sites.c13.bb
+    shortLabel Pillai 1,3,5
+    longLabel Pillai: Class 1(a), 3(a), 5(a); exon model
+    bigDataUrl MP.test_sites.bb
     color 215,48,39
     type bigBed 6 .
 
-    track mp.c1234.sites
+    track mp.all_sites
     parent polyaSites off
     subGroups inv=MP
     shortLabel Pillai All
-    longLabel Pillai: Class 1(a), 2, 3(a), and 4; exon model
-    bigDataUrl MP.sites.c1234.bb
+    longLabel Pillai: Class 1(a), 2, 3(a), 4, 5(a), and 6; exon model
+    bigDataUrl MP.all_sites.bb
     color 215,48,39
     type bigBed 6 .
 
-    track mp.wholegene.sites
+    track mp.wholegene_sites
     parent polyaSites off
     subGroups inv=MP
     shortLabel WG:Pillai All
-    longLabel Pillai: Class 1(a), 2, 3(a), and 4; whole gene model
-    bigDataUrl MP.sites.wholegene.bb
+    longLabel Pillai: Class 1(a), 2, 3(a), 4, 5(a), and 6; whole gene model
+    bigDataUrl MP.wholegene_sites.bb
     color 189,0,38
     type bigBed 6 .
 
-    track pk.c13.sites
+    track pk.test_sites
     parent polyaSites on
     subGroups inv=PK
-    shortLabel Kabos 1,3
-    longLabel Kabos: Class 1(a) and 3(a); exon model
-    bigDataUrl PK.sites.c13.bb
+    shortLabel Kabos 1,3,5
+    longLabel Kabos: Class 1(a), 3(a), 5(a); exon model
+    bigDataUrl PK.test_sites.bb
     color 69,117,180
     type bigBed 6 .
 
-    track pk.c1234.sites
+    track pk.all_sites
     parent polyaSites off
     subGroups inv=PK
     shortLabel Kabos All
-    longLabel Kabos: Class 1(a), 2, 3(a), and 4; exon model
-    bigDataUrl PK.sites.c1234.bb
+    longLabel Kabos: Class 1(a), 2, 3(a), 4, 5(a), and 6; exon model
+    bigDataUrl PK.all_sites.bb
     color 69,117,180
     type bigBed 6 .
 
-    track pk.wholegene.sites
+    track pk.wholegene_sites
     parent polyaSites off
     subGroups inv=PK
     shortLabel WG:Kabos All
-    longLabel Kabos: Class 1(a), 2, 3(a), and 4; whole gene model
-    bigDataUrl PK.sites.wholegene.bb
+    longLabel Kabos: Class 1(a), 2, 3(a), 4, 5(a), and 6; whole gene model
+    bigDataUrl PK.wholegene_sites.bb
     color 37,52,148
     type bigBed 6 .
 """
@@ -125,7 +125,7 @@ MP_FISHER_SHIFTS = ("track mpfishershifts\n"
                         "compositeTrack on\n"
                         "configurable on\n"
                         "shortLabel MP Fisher Shifts\n"
-                        "longLabel Pillai: Observed Fisher shifts\n"                        
+                        "longLabel Pillai: Observed Fisher shifts\n"
                         "subGroup1 strand Strand POS=Positive NEG=Negative\n"
                         "type bed 12 .\n")
 

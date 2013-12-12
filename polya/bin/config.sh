@@ -23,3 +23,10 @@ HUB=$RESULTS/hub
 FISHERRESULTS=$RESULTS/fisher_results
 METADATA=$HUB/metadata.tsv
 POOLEDRESULTS=$RESULTS/pooled_results
+
+if [[ ! -d $HUB ]]; then
+    mkdir -p $HUB
+fi
+if [[ ! -d $POOLEDRESULTS ]]; then
+    mkdir -p $POOLEDRESULTS
+fi

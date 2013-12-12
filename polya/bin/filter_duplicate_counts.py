@@ -20,7 +20,7 @@ def main(count_file):
             elif toks['count'] in observed[gene_symbol]:
                 continue
 
-        print "\t".join(t for t in toks.values())
+        print "{gene}\t{name}\t{count}".format(gene=toks['gene'], name=toks['fullname'], count=toks['count'])
 
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)

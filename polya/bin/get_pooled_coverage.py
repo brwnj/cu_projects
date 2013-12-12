@@ -12,6 +12,7 @@ from bsub import bsub
 from toolshed import reader
 from itertools import combinations
 from collections import defaultdict
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 def get_sample_name(fname, pattern):
     """
@@ -88,8 +89,7 @@ def main(bedgraphs, metadata):
             combined_df[pool].astype('int').to_csv("{pool}.{strand}.bedgraph".format(pool=pool, strand=strand), sep="\t")
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description=__doc__,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument("metadata")
     p.add_argument("bedgraphs", nargs="+", help="sorted sample bedgraph files")
     args = p.parse_args()
