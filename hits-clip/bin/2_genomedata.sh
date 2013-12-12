@@ -1,43 +1,23 @@
-#! /usr/bin/env bash
-#BSUB -J genomedata
-#BSUB -e genomedata.%J.err
-#BSUB -o genomedata.%J.out
-#BSUB -P hits-clip
-
-set -o nounset -o errexit -o pipefail -x
+#!/usr/bin/env bash
+#BSUB -J gdarch
+#BSUB -e gdarch.%J.err
+#BSUB -o gdarch.%J.out
+#BSUB -q normal
+#BSUB -P pillai_kabos_hitsclip
 
 <<DOC
-Create or add tracks to genomedata archive.
-
-To add tracks:
-    genomedata-open-data
-    genomedata-load-data
-    genomedata-close-data
+create genomedata archive.
 DOC
 
-# will include duplicate and non-duplicate bams
-archive=$HOME/projects/hits-clip/data/combined.rmd.genomedata
-# sizes=$HOME/ref/hg18/hg18.sizes
-# fasta=$HOME/ref/hg18/fa_per_chr
-# bams="$HOME/projects/hits-clip/results/common/samples/*/*.bam"
-# 
-# bam2gd -o $archive $sizes $fasta $bams
+set -o nounset -o pipefail -o errexit -x
+source $HOME/projects/hits-clip/bin/config.sh
 
-# this should be able to add tracks as well
-
-# It's worth noting that I changed the way files were named in later iterations
-# of this pipeline.
-
-# tracks to add
-samples="PK61 PK62 PK63"
-results=$HOME/projects/hits-clip/results/common/samples
-for sample in $samples; do
-    for strand in pos neg; do
-        # note the order of strand and rmd extension between bedgraph and track
-        bedgraph=$results/$sample/$sample.rmd.$strand.bedgraph.gz
-        track=$sample.$strand.rmd
-        genomedata-open-data $archive $track
-        zcat $bedgraph | genomedata-load-data $archive $track
-    done
+bams=$RESULTS/*/*bam
+for file in $bams; do
+    if [[ ! -f $file.bai ]]; then
+        samtools index $file
+    fi
 done
-genomedata-close-data $archive
+if [[ ! -d $GENOMEDATA ]]; then
+    bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p pillai_kabos_hitsclip
+fi
