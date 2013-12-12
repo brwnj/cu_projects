@@ -37,8 +37,6 @@ Sample 353M2 is tagged GAAACC
 http://seqanswers.com/wiki/How-to/exome_analysis
 
 # Poly(A)
-+ were peaks called in the chrM in the hits-clip data? peter would like to know
-+ chrM UCSC gene model, fisher testing on the combined set (only chrM genes) across samples
 
 ### Mouse
 + map to mouse, then to human for peter's previous samples (samples with an 'a')
@@ -57,7 +55,7 @@ http://seqanswers.com/wiki/How-to/exome_analysis
 #Nicoli
 + liftover data to hg19
 
-#sequence_clustering
+#cpipe
 + filtering rRNA
 + we're seing 5' noise prior to the mIR sequence
 + the contaminant type will obviously depend on the library's composition
