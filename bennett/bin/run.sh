@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J igg_repertoire[1-51]
+#BSUB -J igg_repertoire[1-56]
 #BSUB -e igg_repertoire.%J.%I.err
 #BSUB -o igg_repertoire.%J.%I.out
 #BSUB -q normal
