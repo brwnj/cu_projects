@@ -3,8 +3,8 @@
 """
 Add gene descriptions onto snpeff output.
 """
-import argparse
 from toolshed import reader, header
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 def descriptions_to_dict(fname):
     d = {}
@@ -19,6 +19,7 @@ def main(snpeff, descriptions):
     descriptions_dict = descriptions_to_dict(descriptions)
     print "\t".join(full_header)
     for l in reader(snpeff):
+        if not l.has_key(snpeff_header[0]): continue
         add = {}
         try:
             add = descriptions_dict[l['Gene_ID']]
@@ -32,8 +33,7 @@ def main(snpeff, descriptions):
         print "\t".join(full_line[h] for h in full_header)
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description=__doc__,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument("snpeff_output")
     p.add_argument("gene_descriptions")
     args = p.parse_args()

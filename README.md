@@ -8,14 +8,16 @@
 
 + sequencing in gao's core rather than pollock
 
++ google doc to save numbers
+
+from which population are the csf cells originating
+
 #Cohrs
 + design saved in starred email
 + check the QC, should need to trim back to 220bp
 + also quality trim with seqtk
 
 #Duval
-+ mapping stats and fastqc results if specified
-+ deliver freebayes variants
 + overlap tumor and normal, take unique
 + filter by coverage, mutation type
 

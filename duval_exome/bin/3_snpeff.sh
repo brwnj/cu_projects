@@ -30,7 +30,7 @@ snpeff=$RESULTS/$sample/$sample.snpeff.freebayes.txt
 annotated=$RESULTS/$sample/$sample.annotated_snps.freebayes.txt
 
 if [[ ! -f $annotated ]]; then
-    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canis_familiaris $vcf > $snpeff
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream canis_familiaris $vcf > $snpeff
     # clip the header
     tmp=$RESULTS/$sample/$sample.tmp
     tail -n +3 $snpeff > $tmp
