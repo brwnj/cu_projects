@@ -13,27 +13,19 @@ source $HOME/projects/duval_exome/bin/config.sh
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
 vcf=$RESULTS/$sample/$sample.vcf
-snpeff=$RESULTS/$sample/$sample.snpeff.txt
-annotated=$RESULTS/$sample/$sample.annotated_snps.txt
+snpeff=$RESULTS/$sample/$sample.snpeff.txt.gz
+annotated=$RESULTS/$sample/$sample.annotated_snps.txt.gz
 
 if [[ ! -f $annotated ]]; then
-    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canis_familiaris $vcf > $snpeff
-    # clip the header
-    tmp=$RESULTS/$sample/$sample.tmp
-    tail -n +3 $snpeff > $tmp
-    mv $tmp $snpeff
-    python $BIN/annotate.py $snpeff $ANNOTATION > $annotated
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canis_familiaris $vcf | gzip -c > $snpeff
+    python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
 fi
 
 vcf=$RESULTS/$sample/$sample.freebayes.vcf
-snpeff=$RESULTS/$sample/$sample.snpeff.freebayes.txt
-annotated=$RESULTS/$sample/$sample.annotated_snps.freebayes.txt
+snpeff=$RESULTS/$sample/$sample.snpeff.freebayes.txt.gz
+annotated=$RESULTS/$sample/$sample.annotated_snps.freebayes.txt.gz
 
 if [[ ! -f $annotated ]]; then
-    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream canis_familiaris $vcf > $snpeff
-    # clip the header
-    tmp=$RESULTS/$sample/$sample.tmp
-    tail -n +3 $snpeff > $tmp
-    mv $tmp $snpeff
-    python $BIN/annotate.py $snpeff $ANNOTATION > $annotated
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream canis_familiaris $vcf | gzip -c > $snpeff
+    python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
 fi
