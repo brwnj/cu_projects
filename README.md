@@ -18,25 +18,14 @@ from which population are the csf cells originating
 + also quality trim with seqtk
 
 #Duval
-+ overlap tumor and normal, take unique
-+ filter by coverage, mutation type
-
-Tumor   Normal
-500     172160
-353     353M2
-400     166408
-
-Sample 353 is tagged GGCTAC
-Sample 353M2 is tagged GAAACC
 
 #HITS-CLIP
 + liftover to hg19
 + ucsc hub
 
 #Leung
-+ map the data i have transferred
-+ gatk up to realigned bam
-http://seqanswers.com/wiki/How-to/exome_analysis
++ transfer all data
++ call variants on everything
 
 # Poly(A)
 
