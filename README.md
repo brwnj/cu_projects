@@ -1,21 +1,14 @@
 # Bennett
-+ umi cutoff now takes top matches down to cutoff of 5
 + viewing in a tree may be helpful for manual picking
 + barcode to cell type conversion table!
 + markus really liked the local alignment results more so than the current way
 + figure out why CG1 is missing the match shown in 9/16 email
     + rerun alignments using local aligner and give those results
-
-+ sequencing in gao's core rather than pollock
-
 + google doc to save numbers
-
-from which population are the csf cells originating
++ from which population are the csf cells originating
 
 #Cohrs
-+ design saved in starred email
-+ check the QC, should need to trim back to 220bp
-+ also quality trim with seqtk
++ HOMER pipeline with design
 
 #Duval
 
@@ -45,6 +38,7 @@ from which population are the csf cells originating
 
 #Nicoli
 + liftover data to hg19
++ continue pipeline
 
 #cpipe
 + filtering rRNA
@@ -61,4 +55,3 @@ from which population are the csf cells originating
 + vervet monkey just wants to know what the sequence is; annotation
 + crystal's project wants to know everything, including the garbage things
 + clean up counts by sno or mir or whatever
-+

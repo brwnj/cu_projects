@@ -24,8 +24,7 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 if [[ ! -f $bam ]]; then
-    gsnap -D ~analysiscore/genomes/GMAPDB/hg19_semiTotal -d hg19_semiTotal --gunzip \
-        -t 8 -N 1 -s ~analysiscore/genomes/GMAPDB/hg19_semiTotal/hg19_semiTotal.maps/hg19_semiTotal.ensembl.splicesites \
+    gsnap -D $GMAPDB -d hg19_semiTotal --gunzip -t 8 -N 1 -s $SPLICESITES \
         --read-group-id $sample --read-group-name $sample --read-group-library $sample --read-group-platform Illumina \
         -B 3 -Q -n 20 -A sam $r1 $r2 \
         | samtools view -ShuF4 - \
