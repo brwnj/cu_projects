@@ -1,5 +1,5 @@
-#! /usr/bin/env bash
-#BSUB -J peaks[1-69]
+#!/usr/bin/env bash
+#BSUB -J peaks[1-70]
 #BSUB -e peaks.%J.%I.err
 #BSUB -o peaks.%J.%I.out
 #BSUB -q normal
@@ -60,8 +60,8 @@ fi
 
 # call peaks on negative strand reads
 if [[ ! -f $negpeak.gz ]]; then
-    macs2 callpeak -t $negbam -n $negout --keep-dup auto \
-        --nomodel -s 25 --extsize 5 --call-summits
+    macs2 callpeak -t $negbam -n $negout --keep-dup auto --nomodel -s 25 --extsize 5
+    cut -f1-5 $negnarrowpeak > $negpeak
     bedClip $negpeak $SIZES $negclipped_peak
     mv $negclipped_peak $negpeak
     gzip -f $negpeak $negnarrowpeak
@@ -70,8 +70,8 @@ fi
 
 # call peaks on positive strand reads
 if [[ ! -f $pospeak.gz ]]; then
-    macs2 callpeak -t $posbam -n $posout --keep-dup auto \
-        --nomodel -s 25 --extsize 5 --call-summits
+    macs2 callpeak -t $posbam -n $posout --keep-dup auto --nomodel -s 25 --extsize 5
+    cut -f1-5 $posnarrowpeak > $pospeak
     bedClip $pospeak $SIZES $posclipped_peak
     mv $posclipped_peak $pospeak
     gzip -f $pospeak $posnarrowpeak
@@ -82,11 +82,7 @@ fi
 if [[ ! -f $peak ]]; then
     # peaks called on the negative reads are from positive stranded genes
     zcat $negpeak.gz $pospeak.gz \
-        | awk 'BEGIN{OFS=FS="\t"}{
-            split($4, basename, "/");
-            $4 = basename[length(basename)];
-            if($4~"neg"){$6="+"}
-            if($4~"pos"){$6="-"}print}' \
+        | awk 'BEGIN{OFS=FS="\t"}{split($4, basename, "/"); $4 = basename[length(basename)]; if($4~"neg"){$6="+"} if($4~"pos"){$6="-"} print}' \
         | bedtools sort -i - \
         | gzip -c > $peak
 fi
