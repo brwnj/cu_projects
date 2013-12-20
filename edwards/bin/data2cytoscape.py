@@ -4,29 +4,26 @@
 parse data table into cytoscape files
 """
 
-import argparse
 from toolshed import reader
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 def main(table):
     d = {}
-    for toks in reader(table, header=True):
+    for toks in reader(table, header=True, sep=" "):
         row_gene = toks['Genes']
         d[row_gene] = {}
         for col_gene in toks.keys():
             # row 1, col 1 is a generic header entry
             if col_gene == "Genes": continue
             d[row_gene][col_gene] = int(toks[col_gene])
-    
+
     # print node size attributes
     node_out = open("node_size.txt", "wb")
     print >>node_out, "source\ttotal_mutations"
     for k in d.keys():
-        try:
-            print >>node_out, "{gene}\t{count}".format(gene=k, count=d[k][k])
-        except KeyError:
-            print >>node_out, "{gene}\t{count}".format(gene=k, count=1)
+        print >>node_out, "{gene}\t{count}".format(gene=k, count=d[k][k])
     node_out.close()
-    
+
     # print network and edge attributes
     interaction_type = "pp"
     network_out = open("network.txt", "wb")
@@ -44,8 +41,7 @@ def main(table):
     network_out.close()
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description=__doc__,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('table')
     args = p.parse_args()
     main(args.table)
