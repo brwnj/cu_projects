@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 <<DOC
-Just run this script. Don't submit to LSF.
+Due to the heredocs, DO NOT submit this script to the queue!
 DOC
 
 set -o nounset -o pipefail -o errexit -x

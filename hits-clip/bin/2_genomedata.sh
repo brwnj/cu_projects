@@ -22,5 +22,6 @@ done
 wait
 
 if [[ ! -d $GENOMEDATA ]]; then
-    bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p pillai_kabos_hitsclip
+    # no need to wait for this to finish
+    bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p pillai_kabos_hitsclip &
 fi
