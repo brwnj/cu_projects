@@ -1,5 +1,5 @@
 #! /usr/bin/env bash
-#BSUB -J counts[1-69]
+#BSUB -J counts[1-70]
 #BSUB -e counts.%J.%I.err
 #BSUB -o counts.%J.%I.out
 #BSUB -q short
@@ -30,3 +30,5 @@ for strand in pos neg; do
     # remove temp
     rm $countsout.tmp.gz
 done
+
+# python ~/devel/polya/misc/primary_site_annotation_table.py ~/projects/polya/results/common/*/*counts.txt.gz | gzip -c > primary_site_annotation_table.txt.gz
