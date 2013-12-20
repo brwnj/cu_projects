@@ -39,8 +39,10 @@
 #Nicoli
 + liftover data to hg19
 + continue pipeline
++ take seed sequences from miRBase
++ map back to the mRNA enriched regions to come up with the linkages and miRNA quantification
 
-#cpipe
+#mer_pipe
 + filtering rRNA
 + we're seing 5' noise prior to the mIR sequence
 + the contaminant type will obviously depend on the library's composition
@@ -55,3 +57,9 @@
 + vervet monkey just wants to know what the sequence is; annotation
 + crystal's project wants to know everything, including the garbage things
 + clean up counts by sno or mir or whatever
+
+#Tesla
++ set up experiment to test execution time to cpus used
++ test common aligners gsnap, novoalign, etc using 1,2,4,6,8,12 cpus
++ plot results
++ gsnap also has -B and could test 0,1,2,3,4,5

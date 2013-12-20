@@ -1,19 +1,62 @@
-#! /usr/bin/env bash
-SAMPLES=(ON10-03_ACATCG ON10-03_ATTGGC ON10-03_CACTGT ON10-03_CGTGAT
-         ON10-03_GATCTG ON10-03_GCCTAA ON10-03_TCAAGT ON10-03_TGGTCA
-         MS13-02_ACATCG MS13-02_ATTGGC MS13-02_CACTGT MS13-02_CGTGAT
-         MS13-02_GATCTG MS13-02_GCCTAA MS13-02_TCAAGT MS13-02_TGGTCA
-         ON07-05_ACATCG ON07-05_ATTGGC ON07-05_CACTGT ON07-05_CGTGAT
-         ON07-05_GATCTG ON07-05_GCCTAA ON07-05_TCAAGT ON07-05_TGGTCA
-         ON09-03_ACATCG ON09-03_CACTGT ON09-03_CGTGAT ON09-03_GCCTAA
-         ON09-03_TGGTCA ON10-01_ACATCG ON10-01_ATTGGC ON10-01_CACTGT
-         ON10-01_CGTGAT ON10-01_GCCTAA ON10-01_TGGTCA unidentified_ACATCG
-         unidentified_ATTGGC unidentified_CACTGT unidentified_CGTGAT unidentified_GATCTG
-         unidentified_GCCTAA unidentified_TCAAGT unidentified_TGGTCA ON08-08_GC
-         TUM09-527_GC latest_CACTGT ON08-08_naive latest_GATCTG
-         ON08-08_memory TUM09-527_plasmablast ON08-08_plasmablast ON10-03B_naive
-         ON10-03B_GC1 ON10-03B_GC2 ON10-03B_memory ON10-03B_plasmablast
-         )
+#!/usr/bin/env bash
+set -o nounset
+
+SAMPLES=(
+control_ACATCG
+control_ATTGGC
+control_CACTGT
+control_CGTGAT
+control_GATCTG
+control_GCCTAA
+control_TCAAGT
+control_TGGTCA
+MS13-02_gc1blood
+MS13-02_gc1csf
+MS13-02_memoryblood
+MS13-02_memorycsf
+MS13-02_naiveblood
+MS13-02_naivecsf
+MS13-02_plasmablastblood
+MS13-02_plasmablastcsf
+ON07-05_gc1
+ON07-05_memory
+ON07-05_naive
+ON07-05_plasmablast
+ON08-08_gc
+ON08-08_memory
+ON08-08_naive
+ON08-08_plasmablast
+ON09-03A_gc1
+ON09-03A_gc2
+ON09-03A_memory
+ON09-03A_naive
+ON09-03A_plasmablast
+ON09-03B_memory
+ON09-03B_naive
+ON09-03B_plasmablast
+ON10-01A_gc1
+ON10-01A_gc2
+ON10-01A_memory
+ON10-01A_naive
+ON10-01A_plasmablast
+ON10-01B_gc1
+ON10-01B_gc2
+ON10-01B_memory
+ON10-01B_naive
+ON10-01B_plasmablast
+ON10-03A_gc1
+ON10-03A_gc2
+ON10-03A_memory
+ON10-03A_naive
+ON10-03A_plasmablast
+ON10-03B_gc1
+ON10-03B_gc2
+ON10-03B_memory
+ON10-03B_naive
+ON10-03B_plasmablast
+TUM09-527_gc
+TUM09-527_plasmablast
+)
 
 PI=bennett
 RESULTS=$HOME/projects/bennett/results/common
