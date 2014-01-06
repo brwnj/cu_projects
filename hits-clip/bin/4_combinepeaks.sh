@@ -16,7 +16,8 @@ DOC
 
 # serial processing of files... :(
 for track in `genomedata-info tracknames_continuous $GENOMEDATA`; do
-    sample=$(echo ${track  /_*} | cut -f1 -d.)
+
+    sample=$(echo ${track/_*} | cut -f1 -d.)
     peaks=$RESULTS/$sample/$track.peaks.bed
     shuffledpeaks=$RESULTS/$sample/$track.shuffle.peaks.bed
     rm -f $peaks $shuffledpeaks

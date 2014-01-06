@@ -18,7 +18,7 @@ def main(table):
             d[row_gene][col_gene] = int(toks[col_gene])
 
     # print node size attributes
-    node_out = open("node_size.txt", "wb")
+    node_out = open("node_attrs.txt", "wb")
     print >>node_out, "source\ttotal_mutations"
     for k in d.keys():
         print >>node_out, "{gene}\t{count}".format(gene=k, count=d[k][k])
