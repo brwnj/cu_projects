@@ -18,7 +18,7 @@ cd $POOLEDRESULTS
 
 # this script will filter UMI_not_removed bedgraphs
 bedgraphs=$HOME/projects/polya/results/common/*/*.bedgraph.gz
-python $HOME/projects/polya/bin/get_pooled_coverage.py $METADATA $bedgraphs
+python $HOME/projects/polya/bin/get_pooled_coverage.py -v $METADATA $bedgraphs
 for bedgraph in *.bedgraph; do
     bedGraphToBigWig $bedgraph $SIZES ${bedgraph/.bedgraph/.bw}
     gzip -f $bedgraph
