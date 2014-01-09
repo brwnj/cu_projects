@@ -20,8 +20,8 @@ STATS=$READS/count_table.txt
 # in SAMPLES
 for f in ${SAMPLES[@]}; do
     ONE=$ONE" "$READS/${f}_R1.fastq.gz
-    TWO=$TWO" "$READS/${f}_R1.umi.sorted.umifiltered.fastq.gz
-    THREE=$THREE" "$READS/${f}_R1.umi.sorted.umifiltered.rmadptr.fastq.gz
+    TWO=$TWO" "$READS/${f}_R1.umifiltered.fastq.gz
+    THREE=$THREE" "$READS/${f}_R1.trimmed.fastq.gz
     FOUR=$FOUR" "$READS/$f.joined.fastq.gz
 done
 
