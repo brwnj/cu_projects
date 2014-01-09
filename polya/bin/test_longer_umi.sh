@@ -46,11 +46,11 @@ bsub -J prepend_umi -o $sample.11bp.trim.out -e $sample.11bp.trim.err -P $PROJEC
 
 wait
 
-bsub -J align -o $sample.7bp.map.out -e $sample.7bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi1 -o SAM -n 50 -r None -c 8 -k 2> $stats1 | samtools view -ShuF4 - | samtools sort -o - $sample.7bp.temp -m 8G > $umi1bam" &
-bsub -J align -o $sample.8bp.map.out -e $sample.8bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi2 -o SAM -n 50 -r None -c 8 -k 2> $stats2 | samtools view -ShuF4 - | samtools sort -o - $sample.8bp.temp -m 8G > $umi2bam" &
-bsub -J align -o $sample.9bp.map.out -e $sample.9bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi3 -o SAM -n 50 -r None -c 8 -k 2> $stats3 | samtools view -ShuF4 - | samtools sort -o - $sample.9bp.temp -m 8G > $umi3bam" &
-bsub -J align -o $sample.10bp.map.out -e $sample.10bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi4 -o SAM -n 50 -r None -c 8 -k 2> $stats4 | samtools view -ShuF4 - | samtools sort -o - $sample.10bp.temp -m 8G > $umi4bam" &
-bsub -J align -o $sample.11bp.map.out -e $sample.11bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi5 -o SAM -n 50 -r None -c 8 -k 2> $stats5 | samtools view -ShuF4 - | samtools sort -o - $sample.11bp.temp -m 8G > $umi5bam" &
+bsub -J align -o $sample.7bp.map.out -e $sample.7bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi1 -o SAM -n 50 -r None -c 8 -k 2> $stats1 | samtools view -ShuF4 - | samtools sort -o - $sample.7bp.temp -m 8G > $umi1bam"
+bsub -J align -o $sample.8bp.map.out -e $sample.8bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi2 -o SAM -n 50 -r None -c 8 -k 2> $stats2 | samtools view -ShuF4 - | samtools sort -o - $sample.8bp.temp -m 8G > $umi2bam"
+bsub -J align -o $sample.9bp.map.out -e $sample.9bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi3 -o SAM -n 50 -r None -c 8 -k 2> $stats3 | samtools view -ShuF4 - | samtools sort -o - $sample.9bp.temp -m 8G > $umi3bam"
+bsub -J align -o $sample.10bp.map.out -e $sample.10bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi4 -o SAM -n 50 -r None -c 8 -k 2> $stats4 | samtools view -ShuF4 - | samtools sort -o - $sample.10bp.temp -m 8G > $umi4bam"
+bsub -J align -o $sample.11bp.map.out -e $sample.11bp.map.err -P $PROJECTID -K -R "select[mem>10] rusage[mem=10] span[hosts=1]" -n 8 "novoalign -d $NOVOIDX -f $umi5 -o SAM -n 50 -r None -c 8 -k 2> $stats5 | samtools view -ShuF4 - | samtools sort -o - $sample.11bp.temp -m 8G > $umi5bam"
 
 # wait
 
