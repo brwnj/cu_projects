@@ -14,7 +14,7 @@ DOC
 # REPLICATES=(idx0 "PK23" "PK11 PK31 PK51" "PK12 PK32" "PK24 PK42 PK54" \
 #             "PK21 PK41 PK52" "PK22 PK53" "MP1 MP21 MP35" "MP2 MP20 MP34"\
 #             "MP36 MP43.ACTG MP43.TCGA MP44.ACTG MP44.TCGA"\
-#             "MP42.ACTG MP45.ACTG MP45.TCGA" "MP24 MP38") 
+#             "MP42.ACTG MP45.ACTG MP45.TCGA" "MP24 MP38")
 # SAMPLE=${SAMPLES[${LSB_JOBINDEX}]}
 # REPLICATE=${REPLICATES[${LSB_JOBINDEX}]}
 # SAMPLE=something
@@ -32,7 +32,7 @@ function combine_replicates()
     # sample_name replicates strand
     REPLICATES="$1"
     STRAND=${2:-"both"}
-    
+
     # neither "fixed" nor clipped
     BADBED="$SAMPLE.$STRAND.peaks.bad.bed.gz"
     # exclude cases where start < stop
@@ -41,7 +41,7 @@ function combine_replicates()
     CLIPPED="$SAMPLE.$STRAND.peaks.bed"
     # UCSC track
     TRACK="$SAMPLE.$STRAND.peaks.track.bed"
-    
+
     if [ ! -f "$REPLICATE_DATA/$SAMPLE/$CLIPPED.gz" ]; then
         if [ x$SAMPLE == "xBT474herc" ]; then
             zcat $REPLICATES | gzip -c > $BADBED
@@ -59,7 +59,7 @@ function combine_replicates()
     fi
 }
 
-# write the full path of each sample replicate and creates pos and neg from 
+# write the full path of each sample replicate and creates pos and neg from
 # qvalue file
 function run_replicates()
 {
