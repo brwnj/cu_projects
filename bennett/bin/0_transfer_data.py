@@ -55,5 +55,6 @@ for index, row in meta.iterrows():
             copyfile(fastq, r1)
         elif not os.path.exists(r2) and "R2" in base:
             copyfile(fastq, r2)
-        else:
-            continue
+
+    if not os.path.exists(index_read):
+        print >>sys.stderr, "reads not found for", patient, ":", barcode

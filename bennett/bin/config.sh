@@ -18,10 +18,14 @@ MS13-02_naiveblood
 MS13-02_naivecsf
 MS13-02_plasmablastblood
 MS13-02_plasmablastcsf
-ON07-05_gc1
-ON07-05_memory
-ON07-05_naive
-ON07-05_plasmablast
+ON07-05A_gc1
+ON07-05A_memorya
+ON07-05A_memoryb
+ON07-05A_naive
+ON07-05A_plasmablasta
+ON07-05A_plasmablastb
+ON07-05B_memory
+ON07-05B_plasmablasts
 ON08-08_gc
 ON08-08_memory
 ON08-08_naive
@@ -31,6 +35,8 @@ ON09-03A_gc2
 ON09-03A_memory
 ON09-03A_naive
 ON09-03A_plasmablast
+ON09-03B_gc1
+ON09-03B_gc2
 ON09-03B_memory
 ON09-03B_naive
 ON09-03B_plasmablast
@@ -54,14 +60,12 @@ ON10-03B_gc2
 ON10-03B_memory
 ON10-03B_naive
 ON10-03B_plasmablast
-TUM09-527_gc
-TUM09-527_plasmablast
 ON11-04_gc
 ON11-04_memory
 ON11-04_naive
 ON11-04_plasmablasts
-ON07-05B_memory
-ON07-05B_plasmablasts
+TUM09-527_gc
+TUM09-527_plasmablast
 )
 
 PI=bennett
