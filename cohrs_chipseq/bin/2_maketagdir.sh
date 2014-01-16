@@ -21,7 +21,14 @@ RIGGC1_S6   R IgG   1
 RIGGF1_S8   R IgG   2
 DOC
 
-echo "makeTagDirectory $RESULTS/H3K9ac $RESULTS/H3K9acB1_S5/H3K9acB1_S5.bam $RESULTS/H3KacE1_S7/H3KacE1_S7.bam" | bsez maketagdir -P cohrs_chipseq
-echo "makeTagDirectory $RESULTS/H3PAN $RESULTS/H3PANA1_S1/H3PANA1_S1.bam $RESULTS/H3PAND1_S3/H3PAND1_S3.bam" | bsez maketagdir -P cohrs_chipseq
-echo "makeTagDirectory $RESULTS/INPUT $RESULTS/INPUT_S2/INPUT_S2.bam $RESULTS/INPUT_S4/INPUT_S4.bam" | bsez maketagdir -P cohrs_chipseq
-echo "makeTagDirectory $RESULTS/R_IgG $RESULTS/RIGGC1_S6/RIGGC1_S6.bam $RESULTS/RIGGC1_S8/RIGGC1_S8.bam" | bsez maketagdir -P cohrs_chipseq
+echo "makeTagDirectory $RESULTS/H3K9ac_1 $RESULTS/H3K9acB1_S5/H3K9acB1_S5.bam" | bsez maketagdir -P cohrs_chipseq
+echo "makeTagDirectory $RESULTS/H3K9ac_2 $RESULTS/H3KacE1_S7/H3KacE1_S7.bam" | bsez maketagdir -P cohrs_chipseq
+
+echo "makeTagDirectory $RESULTS/H3PAN_1 $RESULTS/H3PANA1_S1/H3PANA1_S1.bam" | bsez maketagdir -P cohrs_chipseq
+echo "makeTagDirectory $RESULTS/H3PAN_2 $RESULTS/H3PAND1_S3/H3PAND1_S3.bam" | bsez maketagdir -P cohrs_chipseq
+
+echo "makeTagDirectory $RESULTS/INPUT_1 $RESULTS/INPUT_S2/INPUT_S2.bam" | bsez maketagdir -P cohrs_chipseq
+echo "makeTagDirectory $RESULTS/INPUT_2 $RESULTS/INPUT_S4/INPUT_S4.bam" | bsez maketagdir -P cohrs_chipseq
+
+echo "makeTagDirectory $RESULTS/R_IgG_1 $RESULTS/RIGGC1_S6/RIGGC1_S6.bam" | bsez maketagdir -P cohrs_chipseq
+echo "makeTagDirectory $RESULTS/R_IgG_2 $RESULTS/RIGGC1_S8/RIGGC1_S8.bam" | bsez maketagdir -P cohrs_chipseq
