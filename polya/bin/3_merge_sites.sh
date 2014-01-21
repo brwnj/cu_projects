@@ -25,38 +25,26 @@ siteswhole=$POLYASITES/$sample.wholegene_sites.bed.gz
 slopsitesneg=$POLYASITES/$sample.test_sites.slop.$SLOP.neg.bed.gz
 slopsitespos=$POLYASITES/$sample.test_sites.slop.$SLOP.pos.bed.gz
 
-if [[ ! -d $POLYASITES ]]; then
-    mkdir -p $POLYASITES
-fi
 
-if [[ ! -f $testsites ]]; then
-    python $BIN/merge_sites.py -n2 -c3 -c3a -c5 -c5a -x $XREF $EXONS $peaks \
-        | bedtools sort -i - \
-        | gzip -c > $testsites
-fi
+python $BIN/merge_sites.py -n2 -c3 -c3a -c5 -c5a -x $XREF $EXONS $peaks \
+    | bedtools sort -i - \
+    | gzip -c > $testsites
 
-if [[ ! -f $allsites ]]; then
-    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $EXONS $peaks \
-        | bedtools sort -i - \
-        | gzip -c > $allsites
-fi
+python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $EXONS $peaks \
+    | bedtools sort -i - \
+    | gzip -c > $allsites
 
-if [[ ! -f $siteswhole ]]; then
-    python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $WHOLEGENE $peaks \
-        | bedtools sort -i - \
-        | gzip -c > $siteswhole
-fi
+python $BIN/merge_sites.py -n2 -c2 -c3 -c3a -c4 -c5 -c5a -c6 -x $XREF $WHOLEGENE $peaks \
+    | bedtools sort -i - \
+    | gzip -c > $siteswhole
 
 # this adds slop to the polyA sites
-if [[ ! -f $slopsitesneg ]]; then
-    bedtools slop -b $SLOP -i $testsites -g $SIZES \
-        | awk '$6 == "+"' \
-        | bedtools sort -i - \
-        | gzip -c > $slopsitesneg
-fi
-if [[ ! -f $slopsitespos ]]; then
-    bedtools slop -b $SLOP -i $testsites -g $SIZES \
-        | awk '$6 == "-"' \
-        | bedtools sort -i - \
-        | gzip -c > $slopsitespos
-fi
+bedtools slop -b $SLOP -i $testsites -g $SIZES \
+    | awk '$6 == "+"' \
+    | bedtools sort -i - \
+    | gzip -c > $slopsitesneg
+
+bedtools slop -b $SLOP -i $testsites -g $SIZES \
+    | awk '$6 == "-"' \
+    | bedtools sort -i - \
+    | gzip -c > $slopsitespos

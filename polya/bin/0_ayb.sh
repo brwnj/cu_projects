@@ -16,8 +16,8 @@ DOC
 set -o nounset -o errexit -o pipefail -x
 source $HOME/projects/polya/bin/config.sh
 
-lane=3
-date=20130816
+lane=6
+date=20140121
 
 # 50 bp
 bs=R6I14C37

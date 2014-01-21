@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-70]
+#BSUB -J align[1-74]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -21,11 +21,9 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 unprocessed_fastq=$DATA/$sample.fq.gz
 fastq=$DATA/$sample.umi.fq.gz
 
-bin=$HOME/devel/umitools
-
 # trim the UMI
 if [[ ! -f $fastq ]]; then
-    python $bin/umitools.py trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
+    umitools.py trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
 fi
 
 results=$RESULTS/$sample
@@ -36,6 +34,7 @@ fi
 umibam=$RESULTS/$sample/$sample.UMIs_not_removed.bam
 bam=$results/$sample.bam
 stats=$results/$sample.alignment.txt
+umibed=$results/$sample.umi_trimming.bed
 
 # align the reads
 if [[ ! -f $umibam ]]; then
@@ -51,7 +50,7 @@ fi
 
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    python $bin/umitools.py rmdup $umibam $bam $UMI
+    umitools.py rmdup $umibam $bam > $umibed
     samtools index $bam
     bam2bw.py -5 -v $bam $SIZES pillai_kabos_polya
 fi
