@@ -31,7 +31,7 @@ def readfa(fa):
 def cluster_proteins(sequences, threshold):
     """
     sequences   pd.Series of AA sequences
-    
+
     returns list of sequences.
     """
     # create fasta of sequences
@@ -114,6 +114,6 @@ if __name__ == '__main__':
             sequence.")
     args = p.parse_args()
     if 1 > args.identity_threshold < 0.65:
-        print >>sys.stderr, "Indentity threshold can be between 1 and 0.65, inclusive"
+        print >>sys.stderr, "Identity threshold can be between 1 and 0.65, inclusive"
         sys.exit(1)
     main(args.IMGT_SEQUENCES, args.identity_threshold, args.column)
