@@ -4,58 +4,65 @@
 Align observed CDR3 sequences to target sequences obtained outside of NGS.
 """
 
+import os
 import sys
-import argparse
+import pandas as pd
 from Bio import pairwise2
 from toolshed import reader
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
-class Alignment(object):
-    __slots__ = ['query', 'target', 'score', 'start', 'stop']
+def main(queries, targets, identity, shortest):
+    query_sets = {}
 
-    def __init__(self, args):
-        for a, v in zip(self.__slots__, args):
-            setattr(self, a, v)
+    for query_file in queries:
+        sample_id = os.path.basename(query_file).split("_", 2)[-1].rsplit("_", 1)[0]
+        queries = set([toks['CDR3-IMGT'] for toks in reader(query_file) if toks['Functionality'] == "productive" and len(toks['CDR3-IMGT']) >= shortest])
+        query_sets[sample_id] = queries
 
-    def __repr__(self):
-        return "Alignment ({query} to {target})".format(query=self.query,
-                target=self.target)
+    # process target sequences
+    target_df = pd.read_table(targets)
 
-    def __str__(self):
-        return "\n".join(str(getattr(self, s)) for s in self.__slots__)
+    # data['patient']['peptide_source:peptide_sequence:miseq_result'] = 1
+    data = {}
 
-    @property
-    def alignment_length(self):
-        return abs(self.stop - self.start)
+    for sample_id, queries in query_sets.iteritems():
 
-def process_chunk(chunk):
-    query, target = chunk
-    print target
-    return False
-    for aln in pairwise2.align.localms(query, target, 1, -1, -1, -1):
-        return Alignment(aln), target
+        print >>sys.stderr, "processing peptides for", sample_id
+        data[sample_id] = {}
 
-def main(queries, targets, mismatches, shortest=5):
-    queries = set([toks['CDR3-IMGT'] for toks in reader(queries) if toks['Functionality'] == "productive" and len(toks['CDR3-IMGT']) > shortest])
-    targets = set([target.strip("\r\n") for target in open(targets, 'rb') if len(target) > shortest])
+        for source, series in target_df.iteritems():
 
-    print >>sys.stderr, "comparing", len(queries), "unique query sequences"
-    print >>sys.stderr, "against", len(targets), "targets"
+            for idx, target in series.iteritems():
 
-    for query in queries:
-        for target in targets:
-            for a_query, a_target, score, start, stop in pairwise2.align.localms(query, target, 1, -1, -5, -1):
-                if score > len(target) - mismatches:
-                    print a_query
-                    print a_target
+                if not isinstance(target, basestring): continue
+                target_length = len(target)
+
+                if target_length < shortest: continue
+
+                for query in queries:
+
+                    query_length = len(query)
+
+                    longest = float(max([target_length, query_length]))
+
+                    for a_query, a_target, score, start, stop in pairwise2.align.localms(query, target, 1, -1, -5, -1):
+                        if score / longest > identity:
+                            # add matched alignment
+                            data[sample_id]["{source}:{known}:{miseq}".format(source=source, known=target, miseq=query)] = 1
+
+
+    df = pd.DataFrame(data)
+    df.index = pd.MultiIndex.from_tuples([x.split(":") for x in df.index], names=['peptide_source', 'peptide_sequence', 'miseq_result'])
+    df.to_csv(sys.stdout, sep="\t", na_rep="0")
 
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__,
             formatter_class=ArgumentDefaultsHelpFormatter)
-    p.add_argument('queries', help="IMGT AA sequence file (5)")
-    p.add_argument('targets', help="target sequences")
-    p.add_argument("-m", "--mismatches", type=int, default=3)
+    p.add_argument('-q', '--queries', nargs="+", help="IMGT AA sequence files -- should be 5_*.txt")
+    p.add_argument('-t', '--targets', help="target sequence file with peptide sequences per column, header with source id")
+    p.add_argument("-i", "--identity", type=float, default=0.75, help="sequence identity threshold -- number identical divided by length of the shorter sequence")
+    p.add_argument("-s", "--shortest", type=int, default=6, help="shortest allowable peptide sequence")
     args = vars(p.parse_args())
 
     main(**args)

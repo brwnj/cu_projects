@@ -30,10 +30,20 @@ joined=$READS/${sample}.joined.fastq.gz
 out=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.out
 err=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.err
 if [[ ! -f $r1_prependumi ]]; then
-    bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1_in | gzip -c > $r1_prependumi" &
+    # check for samples from Gao...
+    if [[ condition ]]; then
+        bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py $i1 $r1_in | gzip -c > $r1_prependumi" &
+    else
+        bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1_in | gzip -c > $r1_prependumi" &
+    fi
 fi
+
 if [[ ! -f $r2_prependumi ]]; then
-    bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2_in | gzip -c > $r2_prependumi" &
+    if [[ condition ]]; then
+        bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py $i1 $r2_in | gzip -c > $r2_prependumi" &
+    else
+        bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2_in | gzip -c > $r2_prependumi" &
+    fi
 fi
 wait
 
@@ -43,6 +53,7 @@ err=sort_umi.$LSB_JOBID.$LSB_JOBINDEX.err
 if [[ ! -f $r1_sortumi ]]; then
     bsub -J sort_umi -o $out -e $err -P $PI -K "python $bin/process_umi.py sort $r1_prependumi $UMILENGTH | gzip -c > $r1_sortumi" &
 fi
+
 if [[ ! -f $r2_sortumi ]]; then
     bsub -J sort_umi -o $out -e $err -P $PI -K "python $bin/process_umi.py sort $r2_prependumi $UMILENGTH | gzip -c > $r2_sortumi" &
 fi

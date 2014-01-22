@@ -32,12 +32,8 @@ def readfq(fq):
 def main(index, fastq, begin, end):
     for idx, rec in izip(readfq(index), readfq(fastq)):
         assert idx.name.partition(" ")[0] == rec.name.partition(" ")[0]
-        if end:
-            idx.seq = idx.seq[begin:end]
-            idx.qual = idx.qual[begin:end]
-        else:
-            idx.seq = idx.seq[begin:]
-            idx.qual = idx.qual[begin:]
+        idx.seq = idx.seq[begin:end]
+        idx.qual = idx.qual[begin:end]
         rec.seq = idx.seq + rec.seq
         rec.qual = idx.qual + rec.qual
         print rec
@@ -50,7 +46,7 @@ if __name__ == '__main__':
     p.add_argument("fastq", metavar="FASTQ", help="R1 or R2")
     p.add_argument("-b", dest="begin", default=0, type=int,
             help="exclusive 0-based start of index read to save")
-    p.add_argument("-e", dest="end", type=int,
+    p.add_argument("-e", dest="end", type=int, default=None,
             help="inclusive 0-based end of index read to save")
     args = vars(p.parse_args())
     main(**args)

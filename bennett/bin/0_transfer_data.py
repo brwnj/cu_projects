@@ -17,7 +17,7 @@ def wget(prefix, url):
 data = "/vol1/home/brownj/projects/bennett/data/common"
 meta_tsv = "/vol1/home/brownj/projects/bennett/data/common/metadata.tsv"
 meta = pd.read_table(meta_tsv, index_col=['patient', 'barcode'])
-run_from_path = re.compile(r"Data/(.*)/Data")
+run_from_path = re.compile(r"(\d+.*?)/")
 meta['run'] = meta.url.apply(lambda x: run_from_path.findall(x)[0])
 
 # transfer from miseq to tesla
@@ -46,15 +46,30 @@ for index, row in meta.iterrows():
     r1 = "{data}/{patient}_{cell_type}_R1.fastq.gz".format(data=data, patient=patient, cell_type=row['cell_type'])
     r2 = "{data}/{patient}_{cell_type}_R2.fastq.gz".format(data=data, patient=patient, cell_type=row['cell_type'])
 
-    for fastq in run_fastqs:
-        base = os.path.basename(fastq)
-        if not base.startswith(barcode): continue
-        if not os.path.exists(index_read) and "I1" in base:
-            copyfile(fastq, index_read)
-        elif not os.path.exists(r1) and "R1" in base:
-            copyfile(fastq, r1)
-        elif not os.path.exists(r2) and "R2" in base:
-            copyfile(fastq, r2)
+    lab = [fq for fq in run_fastqs if "_R3_" in os.path.basename(fq)]
+
+    if len(lab) == 0:
+        # pollock lab
+        for fastq in run_fastqs:
+            base = os.path.basename(fastq)
+            if not base.startswith(barcode): continue
+            if not os.path.exists(index_read) and "I1" in base:
+                copyfile(fastq, index_read)
+            elif not os.path.exists(r1) and "R1" in base:
+                copyfile(fastq, r1)
+            elif not os.path.exists(r2) and "R2" in base:
+                copyfile(fastq, r2)
+    else:
+        # gao lab
+        for fastq in run_fastqs:
+            base = os.path.basename(fastq)
+            if not base.endswith(".fastq.gz"): continue
+            if not os.path.exists(index_read) and "R2" in base:
+                copyfile(fastq, index_read)
+            elif not os.path.exists(r1) and "R1" in base:
+                copyfile(fastq, r1)
+            elif not os.path.exists(r2) and "R3" in base:
+                copyfile(fastq, r2)
 
     if not os.path.exists(index_read):
         print >>sys.stderr, "reads not found for", patient, ":", barcode
