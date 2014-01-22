@@ -3,23 +3,13 @@
 """
 Align observed CDR3 sequences to target sequences obtained outside of NGS.
 """
+
 import sys
 import argparse
-import multiprocessing
-from itertools import product
-from toolshed import reader
 from Bio import pairwise2
+from toolshed import reader
+from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
-# https://gist.github.com/aljungberg/626518
-from multiprocessing.pool import IMapIterator
-
-def wrapper(func):
-  def wrap(self, timeout=None):
-    # Note: the timeout of 1 googol seconds introduces a rather subtle
-    # bug for Python scripts intended to run many times the age of the universe.
-    return func(self, timeout=timeout if timeout is not None else 1e100)
-  return wrap
-IMapIterator.next = wrapper(IMapIterator.next)
 
 class Alignment(object):
     __slots__ = ['query', 'target', 'score', 'start', 'stop']
@@ -27,9 +17,6 @@ class Alignment(object):
     def __init__(self, args):
         for a, v in zip(self.__slots__, args):
             setattr(self, a, v)
-        self.score = float(self.score)
-        self.start = int(self.start)
-        self.stop = int(self.stop)
 
     def __repr__(self):
         return "Alignment ({query} to {target})".format(query=self.query,
@@ -44,37 +31,31 @@ class Alignment(object):
 
 def process_chunk(chunk):
     query, target = chunk
+    print target
+    return False
     for aln in pairwise2.align.localms(query, target, 1, -1, -1, -1):
         return Alignment(aln), target
 
-def main(cdr3s, targets, mismatches, threads):
-    cdr3s = [cdr3.strip("\r\n") for cdr3 in open(cdr3s, 'rb')]
-    targets = [target.strip("\r\n") for target in open(targets, 'rb')]
+def main(queries, targets, mismatches, shortest=5):
+    queries = set([toks['CDR3-IMGT'] for toks in reader(queries) if toks['Functionality'] == "productive" and len(toks['CDR3-IMGT']) > shortest])
+    targets = set([target.strip("\r\n") for target in open(targets, 'rb') if len(target) > shortest])
 
-    p = multiprocessing.Pool(threads)
-    for result in p.imap(process_chunk, product(cdr3s, targets), 100):
-        try:
-            alignment, target_seq = result
-        except TypeError:
-            # no alignments
-            continue
-        try:
-            if alignment.score > len(target_seq) - mismatches:
-                print alignment
-        except AttributeError:
-            # no alignments
-            pass
+    print >>sys.stderr, "comparing", len(queries), "unique query sequences"
+    print >>sys.stderr, "against", len(targets), "targets"
+
+    for query in queries:
+        for target in targets:
+            for a_query, a_target, score, start, stop in pairwise2.align.localms(query, target, 1, -1, -5, -1):
+                if score > len(target) - mismatches:
+                    print a_query
+                    print a_target
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description=__doc__,
-            formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    p.add_argument('observed_cdr3')
-    p.add_argument('targets')
+    p = ArgumentParser(description=__doc__,
+            formatter_class=ArgumentDefaultsHelpFormatter)
+    p.add_argument('queries', help="IMGT AA sequence file (5)")
+    p.add_argument('targets', help="target sequences")
     p.add_argument("-m", "--mismatches", type=int, default=3)
-    p.add_argument("-t", "--threads", type=int, default=1)
     args = vars(p.parse_args())
-
-    cpus = multiprocessing.cpu_count()
-    args['threads'] = cpus if args['threads'] > cpus
 
     main(**args)
