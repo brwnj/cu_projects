@@ -51,7 +51,6 @@ def main(queries, targets, identity, shortest):
                             # add matched alignment
                             data[sample_id]["{source}:{known}:{miseq}".format(source=source, known=target, miseq=query)] = 1
 
-
     df = pd.DataFrame(data)
     df.index = pd.MultiIndex.from_tuples([x.split(":") for x in df.index], names=['peptide_source', 'peptide_sequence', 'miseq_result'])
     df.to_csv(sys.stdout, sep="\t", na_rep="0")
