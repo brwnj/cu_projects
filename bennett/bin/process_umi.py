@@ -23,14 +23,14 @@ def readfq(fq):
             self.seq = args[1]
             self.qual = args[3]
             assert len(self.seq) == len(self.qual)
-    
+
         def __repr__(self):
             return "Fastq({name})".format(name=self.name)
-    
+
         def __str__(self):
             return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
                     seq=self.seq, qual=self.qual)
-    
+
     with nopen(fq) as fh:
         fqclean = (x.strip("\r\n") for x in fh if x.strip())
         while True:
@@ -82,6 +82,7 @@ def distance(a, b):
     """find best edit distance between two strings of potentially uneven length.
     """
     la, lb = len(a), len(b)
+    assert isinstance(a, basestring), isinstance(b, basestring)
     if la < lb:
         return distance(b, a)
     if la == lb:
@@ -92,29 +93,61 @@ def distance(a, b):
             dists.append(ed.distance(a[i:i+lb], b))
         return min(dists)
 
+def collapse_counter(counter, n):
+    """
+    collapse partial matches and combine counts going from most common
+    to least.
+    """
+    keys = [k for k,v in counter.most_common()]
+    seen = set()
+
+    for k in keys:
+
+        if k in seen: continue
+        seen.add(k)
+
+        for l in keys:
+            if l in seen: continue
+
+            if distance(k, l) <= n:
+                counter[k] += counter[l]
+                counter[l] = 0
+                seen.add(l)
+
+    return counter
+
 def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
                     r1seq_to_qual, r2seq_to_qual, umi, mismatches, read_id):
     """prints every unique read per umi and add the UMI sequence to the name."""
-    
+
     ignore = set()
     seen = set()
     r1_sequence_set = set(r1seqs)
-    # iterate over sequences from most abundant to least
-    for target, t_count in r1seqs.most_common():
-        # not going to combine the noise
-        if t_count == 1:
+
+    r1_collapsed = collapse_counter(r1seqs)
+
+    # iterate over sequences from most abundant to least, combining
+    # based on mismatch
+    for target, t_count in r1_collapsed.most_common():
+
+        if t_count <= 1:
             ignore.add(target)
             continue
+
         if target in seen: continue
         seen.add(target)
-        for query, q_count in r1seqs.most_common():
+
+        for query, q_count in r1_collapsed.most_common():
+
             if query in seen: continue
             ed = distance(target, query)
+
             if ed <= mismatches:
+
                 for name in r1seq_to_name[query]:
-                    # add similar read names to appropriate bin
+
+                    # group read names based on sequence similarity
                     r1seq_to_name[target].append(name)
-                    ignore.add(query)
                     seen.add(query)
 
     chosen_seqs = r1_sequence_set - ignore
@@ -124,7 +157,7 @@ def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
         r2seqs = Counter()
         for name in r1seq_to_name[seq]:
             # list of read names used in this bin
-            r2seqs.update([r2name_to_seq[name]])            
+            r2seqs.update([r2name_to_seq[name]])
 
         r2_seq = r2seqs.most_common(1)[0][0]
         r1out.write("@read_%d:%s 1\n%s\n+\n%s\n" % (read_id, umi, seq, r1seq_to_qual[seq]))
@@ -167,7 +200,7 @@ def run_collapse(args):
         for r1, r2 in group:
             assert r2.seq[:umileng] == umi
             assert r1.name.split()[0] == r2.name.split()[0]
-            
+
             # trim UMI and clip at first N
             trimmed_r1_seq = r1.seq.split("N", 1)[0][umileng:]
             trimmed_r2_seq = r2.seq.split("N", 1)[0][umileng:]
@@ -176,16 +209,16 @@ def run_collapse(args):
 
             trimmed_r1_qual = r1.qual[umileng:len(trimmed_r1_seq) + umileng]
             trimmed_r2_qual = r2.qual[umileng:len(trimmed_r2_seq) + umileng]
-            
+
             assert len(trimmed_r1_seq) == len(trimmed_r1_qual)
             assert len(trimmed_r2_seq) == len(trimmed_r2_qual)
 
             r1_seqs.update([trimmed_r1_seq])
             r1seq_to_name[trimmed_r1_seq].append(r1.name)
             r2name_to_seq[r2.name] = trimmed_r2_seq
-            
+
             # r2_seqs.update([trimmed_r2_seq])
-            
+
             # maintains best qual per seq
             r1seq_to_qual = add_qual(r1seq_to_qual, trimmed_r1_seq, trimmed_r1_qual)
             r2seq_to_qual = add_qual(r2seq_to_qual, trimmed_r2_seq, trimmed_r2_qual)
@@ -206,7 +239,7 @@ if __name__ == "__main__":
     fsort.add_argument('fastq', metavar='FASTQ', help='unsorted reads with incorporated UMI')
     fsort.add_argument('length', metavar='LENGTH', help='length of the UMI sequence')
     fsort.set_defaults(func=run_sort)
-    
+
     # pull out each unique sequence per UMI
     fcollapse = subp.add_parser('collapse', description="Finds unique sequences per valid UMI among paired-end reads.", help="find most abundant sequence per UMI given paired-end reads")
     fcollapse.add_argument('r1', metavar="R1", help="R1 FASTQ with UMI, sorted by UMI.")
@@ -215,6 +248,6 @@ if __name__ == "__main__":
     fcollapse.add_argument('-c', '--cutoff', type=int, default=180, help='shortest allowable read length after trimming at first N')
     fcollapse.add_argument('-m', '--mismatches', type=int, default=3, help='allowable mismatches when finding unique sequences')
     fcollapse.set_defaults(func=run_collapse)
-    
+
     args = p.parse_args()
     main(args)

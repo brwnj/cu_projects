@@ -5,6 +5,7 @@ transfer miseq files to project/data/common
 """
 import os
 import re
+import sys
 import fnmatch
 import pandas as pd
 import subprocess as sp
@@ -35,7 +36,7 @@ fastqs = defaultdict(list)
 for root, dirnames, filenames in os.walk("{data}/genomics-cluster.ucdenver.pvt".format(data=data)):
     for filename in fnmatch.filter(filenames, "*.fastq.gz"):
         path = os.path.join(root, filename)
-        run = run_from_path.findall(path)[0]
+        run = sorted(run_from_path.findall(path), key=len, reverse=True)[0]
         fastqs[run].append(path)
 
 # copy over files and rename

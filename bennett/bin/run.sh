@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J igg_repertoire[1-64]
+#BSUB -J igg_repertoire[65-72]
 #BSUB -e igg_repertoire.%J.%I.err
 #BSUB -o igg_repertoire.%J.%I.out
 #BSUB -q normal
@@ -31,7 +31,7 @@ out=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.out
 err=prepend_umi.$LSB_JOBID.$LSB_JOBINDEX.err
 if [[ ! -f $r1_prependumi ]]; then
     # check for samples from Gao...
-    if [[ condition ]]; then
+    if [[ $(awk -cfastx '{print length($seq)}' $i1 | head -1) == 8 ]]; then
         bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py $i1 $r1_in | gzip -c > $r1_prependumi" &
     else
         bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r1_in | gzip -c > $r1_prependumi" &
@@ -39,7 +39,7 @@ if [[ ! -f $r1_prependumi ]]; then
 fi
 
 if [[ ! -f $r2_prependumi ]]; then
-    if [[ condition ]]; then
+    if [[ $(awk -cfastx '{print length($seq)}' $i1 | head -1) == 8 ]]; then
         bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py $i1 $r2_in | gzip -c > $r2_prependumi" &
     else
         bsub -J prepend_umi -o $out -e $err -P $PI -K "python $bin/prepend_umi.py -b 6 -e 14 $i1 $r2_in | gzip -c > $r2_prependumi" &
