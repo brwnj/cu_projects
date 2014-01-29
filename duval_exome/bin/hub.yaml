@@ -1,0 +1,40 @@
+hub_name: Duval
+shortLabel: Canine Exome
+longLabel: Canine Exome
+genome: canFam3
+email: brwnjm@gmail.com
+url: http://amc-sandbox.ucdenver.edu/~brownj/duval/hub
+out: .
+chrom_sizes:
+
+composite_tracks:
+
+    track_1:
+        track: Alignments
+        type: bam
+        shortLabel: Alignments
+        longLabel: Unprocessed canine exome alignments
+        files: [/Users/brownj/projects/duval_exome/data/20140127/1025.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/113.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/166408.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/172160.realign.bam]
+        track_settings:
+            bamColorMode: strand
+            showNames: off
+            maxWindowToDraw: 10000
+
+    track_2:
+        name: Coverage
+        stranded: False     # look for 'pos'/'neg' in file name?
+        type: bigWig
+        shortLabel: Coverage
+        longLabel: Read density
+        maxHeightPixels: 50:20:15
+        configurable: on
+        autoScale: on
+        # if not bigWig, looks for stranded bigWigs
+        files: [/Users/brownj/projects/duval_exome/data/20140127/1025.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/113.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/166408.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/172160.realign.bam]
+
+    track_3:
+        name: Capture
+        type: bigBed 3 .
+        shortLabel: Exome Capture
+        longLabel: SureSelect intervals
+        files: [/Users/brownj/projects/duval_exome/data/20140127/canFam3_SureDesign.bed.gz]
