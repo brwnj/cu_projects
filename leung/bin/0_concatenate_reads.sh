@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J concatenate_reads[1-2]
+#BSUB -J concatenate_reads[1-24]
 #BSUB -e concatenate_reads.%J.%I.err
 #BSUB -o concatenate_reads.%J.%I.out
 #BSUB -q normal
@@ -19,5 +19,5 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 r1=$DATA/common/${sample}_R1.fastq.gz
 r2=$DATA/common/${sample}_R2.fastq.gz
 
-zcat $DATA/20131127/${sample}*R1*fastq.gz | gzip -c > $r1
-zcat $DATA/20131127/${sample}*R2*fastq.gz | gzip -c > $r2
+zcat $RAWDATA/${sample}*R1*fastq.gz | gzip -c > $r1
+zcat $RAWDATA/${sample}*R2*fastq.gz | gzip -c > $r2
