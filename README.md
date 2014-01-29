@@ -1,23 +1,26 @@
 # Bennett
 + viewing in a tree may be helpful for manual picking
-+ barcode to cell type conversion table!
-+ markus really liked the local alignment results more so than the current way
-+ figure out why CG1 is missing the match shown in 9/16 email
-    + rerun alignments using local aligner and give those results
-+ google doc to save numbers
-+ from which population are the csf cells originating
++ 93 plasmablast, align to 9-3 A and B populations
++ proteimoics sheet, align to whole IMGT resultant seq with fewer mismatches, write table
 
 #Cohrs
 + HOMER pipeline with design
 
 #Duval
++ UCSC session with alignments loaded
++ ingenuity for ensembl gene name to gene symbol along with any additional details
++ coverage measures for each sample across capture intervals
++ along with coverage, count the number of (not synonymous) variants
++ set up the script to filter variant count based on coverage of individual mutations
++ homozygousity rate over mutation rate
++ LD block to identify regions of mass deletions
 
 #HITS-CLIP
++ new samples through pipeline
 + liftover to hg19
 + ucsc hub
 
 #Leung
-+ transfer all data
 + call variants on everything
 
 # Poly(A)
@@ -33,33 +36,29 @@
         + are there gains in using longer length reads
 
 
-#Hanson
-+ delivered
-
 #Nicoli
 + liftover data to hg19
 + continue pipeline
 + take seed sequences from miRBase
 + map back to the mRNA enriched regions to come up with the linkages and miRNA quantification
 
-#mer_pipe
-+ filtering rRNA
-+ we're seing 5' noise prior to the mIR sequence
-+ the contaminant type will obviously depend on the library's composition
-+ how do we know when the bin has crap on the edge of it
-+ ends could be actually 3' or 5' real mutations
-+ if something matches ribosomal RNA; continue
-+ if illumina adapter is present, trim it
-+ blat all sequences; prefiltering to rRNA database
-+ align all sequences to genome, annotate to mapped position
-+ annotate upstream and downstream to nearest gene as well
-+ soft clipping will help trim those illumina adapters
-+ vervet monkey just wants to know what the sequence is; annotation
-+ crystal's project wants to know everything, including the garbage things
-+ clean up counts by sno or mir or whatever
+#Williams;chipseq
++ do things
 
 #Tesla
 + set up experiment to test execution time to cpus used
 + test common aligners gsnap, novoalign, etc using 1,2,4,6,8,12 cpus
 + plot results
 + gsnap also has -B and could test 0,1,2,3,4,5
+
+#Projects
++ williams chipseq
++ cohrs chipseq
++ duval canine exome
++ kabos polya
++ kabos hitsclip
++ kabos ribosome profiling
++ kabos lincRNA expression profiling
++ bennett ig repertoire in neuromyelitis optica (NMO)
++ bennett ig repertoire in multiple sclerosis (MS)
++ nicoli miRNA quantification and networks of interactions
