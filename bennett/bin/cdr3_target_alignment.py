@@ -17,16 +17,24 @@ def main(queries, targets, identity, shortest):
 
     for query_file in queries:
         sample_id = os.path.basename(query_file).split("_", 2)[-1].rsplit("_", 1)[0]
-        queries = set([toks['CDR3-IMGT'] for toks in reader(query_file) if toks['Functionality'] == "productive" and len(toks['CDR3-IMGT']) >= shortest])
-        query_sets[sample_id] = queries
+        query_sets[sample_id] = {}
+
+        for toks in reader(query_file):
+            if not toks['Functionality'] == "productive": continue
+            if not len(toks['CDR3-IMGT']) >= shortest: continue
+
+            # read_7:AAAAAAAT:Cm2:VH3Fr1
+            vh_family = toks['Sequence ID'].rsplit(":", 1)[1]
+            # only care about unique CDR3s
+            query_sets[sample_id][toks['CDR3-IMGT']] = {'vdj':toks['V-D-J-REGION'], 'vh_family':vh_family}
 
     # process target sequences
     target_df = pd.read_table(targets)
 
-    # data['patient']['peptide_source:peptide_sequence:miseq_result'] = 1
+    # data['patient']['peptide_source:peptide_sequence:miseq_result:alignment:vdj:vh_family'] = 1
     data = {}
 
-    for sample_id, queries in query_sets.iteritems():
+    for sample_id, cdr3s in query_sets.iteritems():
 
         print >>sys.stderr, "processing peptides for", sample_id
         data[sample_id] = {}
@@ -40,19 +48,29 @@ def main(queries, targets, identity, shortest):
 
                 if target_length < shortest: continue
 
-                for query in queries:
+                for query, toks in cdr3s.iteritems():
 
                     query_length = len(query)
 
-                    longest = float(max([target_length, query_length]))
+                    shortest = float(min([target_length, query_length]))
 
                     for a_query, a_target, score, start, stop in pairwise2.align.localms(query, target, 1, -1, -5, -1):
-                        if score / longest > identity:
+                        if score / shortest > identity:
                             # add matched alignment
-                            data[sample_id]["{source}:{known}:{miseq}".format(source=source, known=target, miseq=query)] = 1
+                            # when new patient shows up, will likely not overlap
+                            # do to all these things being in the key
+                            k = "{source}:{known}:{miseq}:{alignment}:{vdj}:{vh}".format(\
+                                    source=source,
+                                    known=target,
+                                    miseq=query,
+                                    alignment=a_query,
+                                    vdj=toks['vdj'],
+                                    vh=toks['vh_family'])
+                            data[sample_id][k] = 1
 
     df = pd.DataFrame(data)
-    df.index = pd.MultiIndex.from_tuples([x.split(":") for x in df.index], names=['peptide_source', 'peptide_sequence', 'miseq_result'])
+    df.index = pd.MultiIndex.from_tuples([x.split(":") for x in df.index], \
+                names=['peptide_source', 'peptide_sequence', 'miseq_result', 'alignment', 'VDJ', 'VH'])
     df.to_csv(sys.stdout, sep="\t", na_rep="0")
 
 if __name__ == '__main__':
