@@ -15,12 +15,15 @@ r1=$DATA/${sample}_R1.fastq.gz
 r2=$DATA/${sample}_R2.fastq.gz
 results=$RESULTS/$sample
 bam=$results/$sample.bam
+stats=$results/$sample.alignment_stats.txt
+
 if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
+
 if [[ ! -f $bam ]]; then
     novoalign -d $NOVOIDX -f $r1 $r2 -o SAM "@RG\tID:$sample\tSM:$sample\tPU:Illumina\tLB:PE" -r None -i 250 100 -c 8 -k \
-        2> $sample.alignment.txt \
+        2> $stats \
         | samtools view -ShuF4 - \
         | samtools sort -o -m 8G - $sample.temp \
         > $bam

@@ -44,7 +44,7 @@ for (( i = 0; i < ${#normal_samples[@]}; i++ )); do
     if [[ ! -f $snpeff ]]; then
         java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG \
             -fi $TARGETS -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic \
-            -no-intron -no-upstream canis_familiaris $vcf | gzip -c > $snpeff
+            -no-intron -no-upstream canFam3 $vcf | gzip -c > $snpeff
     fi
     if [[ ! -f $annotated ]]; then
         python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
@@ -82,7 +82,7 @@ for (( i = 0; i < ${#tumor_samples[@]}; i++ )); do
     if [[ ! -f $snpeff ]]; then
         java -jar $SNPEFF eff -noStats -v -c $SNPEFFCONFIG \
             -fi $TARGETS -o txt -minQ 100 -minC 10 -no-downstream -no-intergenic \
-            -no-intron -no-upstream canis_familiaris $vcf | gzip -c > $snpeff
+            -no-intron -no-upstream canFam3 $vcf | gzip -c > $snpeff
     fi
     if [[ ! -f $annotated ]]; then
         python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated

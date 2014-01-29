@@ -17,7 +17,7 @@ snpeff=$RESULTS/$sample/$sample.snpeff.txt.gz
 annotated=$RESULTS/$sample/$sample.annotated_snps.txt.gz
 
 if [[ ! -f $annotated ]]; then
-    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canis_familiaris $vcf | gzip -c > $snpeff
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt canFam3 $vcf | gzip -c > $snpeff
     python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
 fi
 
@@ -26,6 +26,6 @@ snpeff=$RESULTS/$sample/$sample.snpeff.freebayes.txt.gz
 annotated=$RESULTS/$sample/$sample.annotated_snps.freebayes.txt.gz
 
 if [[ ! -f $annotated ]]; then
-    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream canis_familiaris $vcf | gzip -c > $snpeff
+    java -jar $SNPEFF eff -chr chr -noStats -v -c $SNPEFFCONFIG -o txt -minQ 10 -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream canFam3 $vcf | gzip -c > $snpeff
     python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
 fi
