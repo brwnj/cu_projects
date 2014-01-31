@@ -6,16 +6,16 @@ samples: [MP1, MP10, MP11, MP2, MP20, MP21, MP22, MP23, MP24, MP30, MP31, MP34,
              PK63, MCF10A, PK12-0, PK12-24, PK12-6]
 trimmed_samples: [MCF10A, PK12-0, PK12-24, PK12-6]
 adapter_sequence: CCGCTGGAAGTGACTGACAC
-trim_script: ~/projects/hits-clip/bin/scripts/trim_adapter.py
+trim_script: /vol1/home/brownj/projects/hits-clip/bin/scripts/trim_adapter.py
 project_id: hits-clip
-fastqs: ~/projects/hits-clip/data/common
-results: ~/projects/hits-clip/results/common
-chrom_sizes: ~/ref/hg19/hg19.sizes
+fastqs: /vol1/home/brownj/projects/hits-clip/data/common
+results: /vol1/home/brownj/projects/hits-clip/results/common
+chrom_sizes: /vol1/home/brownj/ref/hg19/hg19.sizes
 align:
-    index: ~/ref/hg19/hg19.9606.novoidx
+    index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
     cpus: 10
-genomedata: ~/projects/hits-clip/results/common/hitsclip.gd
-fastas: ~/ref/hg19/fa_per_chr
+genomedata: /vol1/home/brownj/projects/hits-clip/results/common/hitsclip.gd
+fastas: /vol1/home/brownj/ref/hg19/fa_per_chr
 replicates: {BMEC:[MP42ACTG, MP45ACTG, MP45TCGA],
                 BT474:[PK21, PK41, PK52],
                 BT474estr:[PK22, PK53],

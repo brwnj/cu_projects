@@ -19,31 +19,48 @@ results = Path(config['results'])
 if not results.exists():
     results.mkdir(parents=True)
 
+TRIM = Template(("python {script} --reverse-complement -a {adapter} "
+                    "$untrimmed | gzip -c > $trimmed").format(\
+                        script=config['trim_script'],
+                        adapter=config['adapter_sequence']))
+
 NOVOALIGN = Template(("novoalign -d $index -f $fastq -a -o SAM -r A 20 -e 100 -c $cpus -k 2> $summary "
                         "| samtools view -ShuF4 - "
                         "| samtools sort -o - $sample.temp -m 8G "
                         "> $bam"))
 
 @task()
-def trim():
-    """trim reads by design using script that checks for sequence."""
+def trim_sequences():
+    """
+    trim reads by design using script that checks for sequence.
+
+    writes new fastq will same name as previous
+    renames untrimmed fastq $sample.untrimmed.fastq.gz
+    """
     submit = bsub("trim", P=config['project_id'], verbose=True)
     for sample in config['trimmed_samples']:
         # name of the original file and the eventual result
         fastq = fastqs / "{sample}.fastq.gz".format(sample=sample)
-        # rename
-        untrimmed_fastq = "{base}.untrimmed.fastq.gz".format(base=fastq.absolute().as_posix().split(".fastq.gz")[0])
-        fastq.rename(untrimmed_fastq)
+        # renamed fastq
+        untrimmed_fastq = Path("{base}.untrimmed.fastq.gz".format(base=fastq.as_posix().split(".fastq.gz")[0]))
+        # check if complete
+        if untrimmed_fastq.exists() and fastq.exists(): continue
+
+        fastq.rename(untrimmed_fastq.as_posix())
         # trim
-        python adapter_trim.py -a adapter -l 3 untrimmed_fastq | gzip -c > fastq
-        python ../../bin/scripts/trim_adapter.py --reverse-complement -a CCGCTGGAAGTGACTGACAC PK12-24.untrimmed.fastq.gz | gzip -c > PK12-24.fastq.gz
-        print cmd
-        # submit(cmd)
+        cmd = TRIM.substitute(untrimmed=untrimmed_fastq.as_posix(), trimmed=fastq.as_posix())
+        submit(cmd)
 
 
 @task()
 def align():
-    """align the reads using Novoalign."""
+    """
+    align the reads using Novoalign.
+
+    writes $sample.bam to $results/$sample/$sample.bam
+    also writes an alignment summary in the same dir as
+    $sample.alignment_stats.txt
+    """
     cpus = str(config['align']['cpus'])
     novoidx = Path(config['align']['index'])
     assert novoidx.exists(), "index not found"
@@ -73,10 +90,20 @@ def align():
 
 @task()
 def removedups():
-    # if [[ ! -f $rmdups_bam ]]; then
-    #     samtools rmdup -s $bam $rmdups_bam
-    # fi
-    pass
+    """
+    uses samtools rmdup to quickly eliminate most PCR artifacts.
+
+    writes new $sample.rmd.bam into $results/$sample/$sample.rmdup.bam
+    """
+    submit = bsub("removedups", P=config['project_id'], verbose=True)
+
+    for sample in config['samples']:
+        bam = results / sample / "{sample}.bam".format(sample=sample)
+        rmdup = results / sample / "{sample}.rmd.bam".format(sample=sample)
+        if rmdup.exists(): continue
+        cmd = "samtools rmdup -s {bam} {rmdup}".format(bam=bam.as_posix(),
+                                                        rmdup=rmdup.as_posix())
+        submit(cmd)
 
 
 @task()
@@ -99,4 +126,16 @@ def genomedata():
     if the archive exists and there are tracks in there, need to add tracks
     one at a time!
     """
+    # index all bams >> sample.bam.bai
+    jobs = []
+    submit = bsub("indexing", P=config['project_id'], verbose=True)
+    for bam in results.glob(*.bam):
+        bai = Path("{bam}.bai".format(bam=bam.as_posix()))
+        if bai.exists(): continue
+        cmd = "samtools index {bam}"
+        job = submit(cmd)
+        jobs.append(job.job_id)
+
+
+
     pass

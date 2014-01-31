@@ -72,6 +72,7 @@ def main(fastq, adapter_sequence, seed_length, min_read_length, reverse_compleme
             if not seed_found:
                 seed_not_found += 1
 
+    print >>sys.stderr, fastq
     print >>sys.stderr, "Total reads:", total_reads
     print >>sys.stderr, "Passing reads:", len(index_start_locations_passed)
     print >>sys.stderr, "Average passing read length:", average(index_start_locations_passed)
