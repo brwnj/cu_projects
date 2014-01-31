@@ -124,7 +124,7 @@ def process_pairs(r1out, r2out, r1seqs, r1seq_to_name, r2name_to_seq,
     seen = set()
     r1_sequence_set = set(r1seqs)
 
-    r1_collapsed = collapse_counter(r1seqs)
+    r1_collapsed = collapse_counter(r1seqs, 3)
 
     # iterate over sequences from most abundant to least, combining
     # based on mismatch

@@ -20,14 +20,14 @@ def readfq(fq):
             self.seq = args[1]
             self.qual = args[3]
             assert len(self.seq) == len(self.qual)
-    
+
         def __repr__(self):
             return "Fastq({name})".format(name=self.name)
-    
+
         def __str__(self):
             return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
                     seq=self.seq, qual=self.qual)
-    
+
     with nopen(fq) as fh:
         fqclean = (x.strip("\r\n") for x in fh if x.strip())
         while True:
@@ -41,16 +41,16 @@ def readfa(fa):
         def __init__(self, name, seq):
             self.name = name
             self.seq = seq
-    
+
         def __repr__(self):
             return "Fasta({name})".format(name=self.name)
-    
+
         def __str__(self):
             return ">{name}\n{seq}".format(
                         name=self.name,
                         seq="\n".join([self.seq[i:i + 70] for i in \
                                 range(0, len(self.seq), 70)]))
-    
+
     with nopen(fa) as fh:
         for header, group in groupby(fh, lambda line: line[0] == '>'):
             if header:
@@ -118,10 +118,10 @@ def main(args):
         # find start of RC of primer in opposing sequence
         r1_right_trim = trim_loc(r1.seq[r1_left_trim:], rev_comp(r2_primers[p2]))
         r2_right_trim = trim_loc(r2.seq[r2_left_trim:], rev_comp(r1_primers[p1]))
-        
+
         r1.name = "{id}:{cregion}:{fwork} 1".format(id=r1.name.split()[0], cregion=p1, fwork=p2)
         r2.name = "{id}:{cregion}:{fwork} 2".format(id=r2.name.split()[0], cregion=p1, fwork=p2)
-        
+
         # do the trimming of seq and qual
         r1_full_trim = r1_right_trim + r1_left_trim
         r1.seq = r1.seq[r1_left_trim:r1_full_trim]
