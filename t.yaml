@@ -1,7 +1,0 @@
-samples: [sample1, sample2]
-project_id: hits-clip
-fastqs: /vol1/home/brownj/projects/hits-clip/data/common
-results: /vol1/home/brownj/projects/hits-clip/results/common
-align:
-    index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
-    cpus: 10

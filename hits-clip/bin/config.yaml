@@ -1,0 +1,33 @@
+samples: [MP1, MP10, MP11, MP2, MP20, MP21, MP22, MP23, MP24, MP30, MP31, MP34,
+             MP35, MP36, MP38, MP39ACTG, MP39TCGA, MP40, MP41, MP42ACTG,
+             MP42TCGA, MP43ACTG, MP43TCGA, MP44ACTG, MP44TCGA, MP45ACTG,
+             MP45TCGA, MP7, MP9, PK11, PK12, PK21, PK22, PK23, PK24, PK31, PK32,
+             PK33, PK41, PK42, PK51, PK52, PK53, PK54, helaa, helab, PK61, PK62,
+             PK63, MCF10A, PK12-0, PK12-24, PK12-6]
+trimmed_samples: [MCF10A, PK12-0, PK12-24, PK12-6]
+adapter_sequence: CCGCTGGAAGTGACTGACAC
+trim_script: ~/projects/hits-clip/bin/scripts/trim_adapter.py
+project_id: hits-clip
+fastqs: ~/projects/hits-clip/data/common
+results: ~/projects/hits-clip/results/common
+chrom_sizes: ~/ref/hg19/hg19.sizes
+align:
+    index: ~/ref/hg19/hg19.9606.novoidx
+    cpus: 10
+genomedata: ~/projects/hits-clip/results/common/hitsclip.gd
+fastas: ~/ref/hg19/fa_per_chr
+replicates: {BMEC:[MP42ACTG, MP45ACTG, MP45TCGA],
+                BT474:[PK21, PK41, PK52],
+                BT474estr:[PK22, PK53],
+                BT474herc:[PK23],
+                HELA:[helaa, helab],
+                hMSC:[MP36, MP43ACTG, MP43TCGA, MP44ACTG, MP44TCGA],
+                HS27A:[MP1, MP21, MP35],
+                HS5:[MP2, MP20, MP34],
+                HUVEC:[MP24, MP38],
+                MCF7:[PK11, PK31, PK51],
+                MCF7estr:[PK12, PK32],
+                MDA231:[PK24, PK42, PK54],
+                MCF7_E_72:[PK61],
+                MCF7_TAM_72:[PK62],
+                MCF7_TAMRES:[PK63]}
