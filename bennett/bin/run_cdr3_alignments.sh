@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J cdr3_local_alignment[1-5]
+#BSUB -J cdr3_local_alignment[1-3]
 #BSUB -e cdr3_local_alignment.%J.%I.err
 #BSUB -o cdr3_local_alignment.%J.%I.out
 #BSUB -q normal
@@ -10,7 +10,9 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/bennett/bin/config.sh
 
-mismatches=(".85" ".75" ".65" ".55" ".50")
+mismatches=(".85" ".75" ".65")
 mismatch=${mismatches[$(($LSB_JOBINDEX - 1))]}
 
-python $HOME/projects/bennett/bin/cdr3_target_alignment.py -i $mismatch -q $RESULTS/5_*.txt -t $RESULTS/peptide_seqs.tsv > $RESULTS/alignments.$mismatch.tsv
+for l in 2 3 4 5; do
+    python $HOME/projects/bennett/bin/target_alignment.py -l $l -i $mismatch -q $RESULTS/5_*.txt -t $RESULTS/peptide_seqs.tsv > $RESULTS/alignments.m${mismatch}.l$l.tsv
+done
