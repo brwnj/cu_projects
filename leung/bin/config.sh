@@ -32,3 +32,5 @@ DATA=$HOME/projects/leung/data
 RESULTS=$HOME/projects/leung/results/common
 SPLICESITES=~analysiscore/genomes/GMAPDB/hg19_semiTotal/hg19_semiTotal.maps/hg19_semiTotal.ensembl.splicesites
 GMAPDB=~analysiscore/genomes/GMAPDB/hg19_semiTotal
+REFERENCE=$HOME/ref/hg19/hg19.fa
+PICARD=$HOME/opt/picard

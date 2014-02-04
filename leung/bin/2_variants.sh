@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J variants[1-2]
+#BSUB -J variants[1-24]
 #BSUB -e variants.%J.%I.err
 #BSUB -o variants.%J.%I.out
 #BSUB -q normal
@@ -12,15 +12,14 @@ source $HOME/projects/leung/bin/config.sh
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
-java='java -Xmx24g -jar'
-bam=$RESULTS/$sample/$sample.bam
-rgbam=${bam/.bam/.rg.bam}
-nodups=${bam/.bam/.nodups.bam}
-reordered=${bam/.bam/.reordered.bam}
-duplicatemetrics=${bam/.bam/.dup_metrics.txt}
-targetintervals=${bam/.bam/.intervals}
-realigned=${bam/.bam/.realign.bam}
-freebayesvcf=${bam/.bam/.vcf}
+java='java -Xmx16g -jar'
+base_name=$RESULTS/$sample/$sample
+bam=$base_name.bam
+rgbam=$base_name.rg.bam
+nodups=$base_name.nodups.bam
+reordered=$base_name.reordered.bam
+duplicatemetrics=$base_name.dup_metrics.txt
+vcf=$base_name.vcf
 
 if [[ -f $vcf ]]; then
     echo "processing complete for $sample"
@@ -31,26 +30,17 @@ fi
 MARK_DUPLICATES_OPTS="ASSUME_SORTED=true INPUT=$rgbam OUTPUT=$nodups METRICS_FILE=$duplicatemetrics CREATE_INDEX=true MAX_FILE_HANDLES_FOR_READ_ENDS_MAP=1000 REMOVE_DUPLICATES=true MAX_RECORDS_IN_RAM=800000"
 REORDER_SAM_OPTS="INPUT=$nodups OUTPUT=$reordered REFERENCE=$REFERENCE"
 
-# gatk
-REALIGNER_TARGET_CREATOR="--analysis_type RealignerTargetCreator --reference_sequence $REFERENCE --input_file $reordered --out $targetintervals"
-INDEL_REALIGNER="--analysis_type IndelRealigner --reference_sequence $REFERENCE --input_file $reordered --targetIntervals $targetintervals --out $realigned"
-UNIFIED_GENOTYPER="--analysis_type UnifiedGenotyper --input_file $realigned --reference_sequence $REFERENCE --genotype_likelihoods_model BOTH --out $vcf"
-
 if [ -f $rgbam ] && [ ! -f $nodups ]; then
     $java $PICARD/MarkDuplicates.jar $MARK_DUPLICATES_OPTS
 fi
+
 # reorder the bam to match the reference contig order
 if [ -f $nodups ] && [ ! -f $reordered ]; then
     $java $PICARD/ReorderSam.jar $REORDER_SAM_OPTS
     # must index the new bam
     samtools index $reordered
 fi
-if [ -f $reordered ] && [ ! -f $targetintervals ]; then
-    $java $GATK $REALIGNER_TARGET_CREATOR
-fi
-if [ -f $targetintervals ] && [ ! -f $realigned ]; then
-    $java $GATK $INDEL_REALIGNER
-fi
-if [ -f $realigned ] && [ ! -f $vcf ]; then
+
+if [ -f $reordered ] && [ ! -f $vcf ]; then
     freebayes -b $realigned -v $vcf -f $REFERENCE -0
 fi

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J align[1-2]
+#BSUB -J "align[1-24]%8"
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -23,6 +23,7 @@ bam=$results/$sample.bam
 if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
+
 if [[ ! -f $bam ]]; then
     gsnap -D $GMAPDB -d hg19_semiTotal --gunzip -t 8 -N 1 -s $SPLICESITES \
         --read-group-id $sample --read-group-name $sample --read-group-library $sample --read-group-platform Illumina \
