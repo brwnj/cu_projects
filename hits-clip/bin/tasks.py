@@ -18,6 +18,8 @@ assert fastqs.is_dir()
 results = Path(config['results'])
 if not results.exists():
     results.mkdir(parents=True)
+chrom_sizes = Path(config['chrom_sizes'])
+assert chrom_sizes.exists()
 
 TRIM = Template(("python {script} --reverse-complement -a {adapter} "
                     "$untrimmed | gzip -c > $trimmed").format(\
@@ -79,13 +81,27 @@ def align():
         if bam.exists(): continue
 
         alignment_summary = results / sample / '{sample}.alignment_stats.txt'.format(sample=sample)
-        cmd = NOVOALIGN.substitute(index=novoidx.as_posix(),
+        align = NOVOALIGN.substitute(index=novoidx.as_posix(),
                                     fastq=fastq.as_posix(),
                                     cpus=cpus,
                                     summary=alignment_summary,
                                     sample=sample,
                                     bam=bam)
-        submit(cmd)
+        samtools_index = "samtools index {bam}".format(**locals())
+        job = submit(align).then(samtools_index)
+
+
+# @task()
+# def indexbams():
+#     """
+#     create and index for any bam in the results directory.
+#     """
+#     submit = bsub("index", P=config['project_id'], verbose=True)
+#     for bam in results.glob('*/*.bam'):
+#         bai = Path("{bam}.bai".format(bam=bam.as_posix()))
+#         if bai.exists(): continue
+#         cmd = "samtools index {bam}".format(bam=bam.as_posix())
+#         job = submit(cmd)
 
 
 @task()
@@ -101,9 +117,52 @@ def removedups():
         bam = results / sample / "{sample}.bam".format(sample=sample)
         rmdup = results / sample / "{sample}.rmd.bam".format(sample=sample)
         if rmdup.exists(): continue
-        cmd = "samtools rmdup -s {bam} {rmdup}".format(bam=bam.as_posix(),
-                                                        rmdup=rmdup.as_posix())
-        submit(cmd)
+        samtools_rmdup = "samtools rmdup -s {bam} {rmdup}".format(
+                                            bam=bam.as_posix(),
+                                            rmdup=rmdup.as_posix())
+        samtools_index = "samtools index {rmdup}".format(rmdup=rmdup.as_posix())
+
+        job = submit(samtools_rmdup).then(samtools_index)
+
+
+@task()
+def bam2bw():
+    """
+    convert all bams to stranded bedgraphs
+    convert those bedgraphs to bigwigs
+
+    from /path/to/something.bam to:
+            /path/to/something_{pos,neg}.bedgraph.gz
+            /path/to/something_{pos,neg}.bw
+    """
+    submit = bsub("bam2bw", P=config['project_id'], verbose=True)
+    symbols, strands = ["+", "-"], ["pos", "neg"]
+    for bam in results.glob('*/*.bam'):
+        base = bam.parent / bam.stem
+
+        p_bedgraph = Path("{base}_pos.bedgraph.gz".format(**locals()))
+        n_bedgraph = Path("{base}_neg.bedgraph.gz".format(**locals()))
+        p_bigwig = Path("{base}_pos.bw".format(**locals()))
+        n_bigwig = Path("{base}_neg.bw".format(**locals()))
+
+        # don't run unnecessarily
+        if p_bedgraph.exists() and n_bedgraph.exists() and \
+                p_bigwig.exists() and n_bigwig.exists(): continue
+
+        # running the conversions
+        for symbol, strand in zip(symbols, strands):
+            bedgraph = "{base}_{strand}.bedgraph".format(**locals())
+            bigwig = "{base}_{strand}.bw".format(**locals())
+
+            makebg = ("genomeCoverageBed -strand {symbol} -bg -ibam {bam} "
+                        "| bedtools sort -i - > {bedgraph}").format(**locals())
+            makebw = ("bedGraphToBigWig {bedgraph} {chrom_sizes} "
+                        "{bigwig}").format(bedgraph=bedgraph,
+                                            chrom_sizes=chrom_sizes,
+                                            bigwig=bigwig)
+            gzipbg = "gzip -f {bedgraph}".format(**locals())
+
+            job = submit(makebg).then(makebw).then(gzipbg)
 
 
 @task()
@@ -126,16 +185,16 @@ def genomedata():
     if the archive exists and there are tracks in there, need to add tracks
     one at a time!
     """
-    # index all bams >> sample.bam.bai
-    jobs = []
-    submit = bsub("indexing", P=config['project_id'], verbose=True)
-    for bam in results.glob(*.bam):
-        bai = Path("{bam}.bai".format(bam=bam.as_posix()))
-        if bai.exists(): continue
-        cmd = "samtools index {bam}"
-        job = submit(cmd)
-        jobs.append(job.job_id)
-
-
-
     pass
+    genomedata = Path(config['genomedata'])
+    if genomedata.exists():
+        # load individual tracks into existing archive
+
+        # get list of existing tracks
+
+        # get list of bedgraphs to add to archive
+
+        # add those tracks that
+
+    else:
+        # use bam2gd.py
