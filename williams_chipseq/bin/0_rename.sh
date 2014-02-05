@@ -33,7 +33,7 @@ mv $raw/2_GTGTTA_L008_R1_001.fastq.gz $data/3B5_hela_1.fastq.gz
 mv $raw/3_GGATGT_L001_R1_001.fastq.gz $data/SC184_hela_1.fastq.gz
 mv $raw/4_CCTTCA_L001_R1_001.fastq.gz $data/polII_hela_2.fastq.gz
 mv $raw/5_TGTGAA_L008_R1_001.fastq.gz $data/3B5_hela_2.fastq.gz
-mv $raw/6_TTCGCT_L001_R1_001.fastq.gz $data/SC184_hela2.fastq.gz
+mv $raw/6_TTCGCT_L001_R1_001.fastq.gz $data/SC184_hela_2.fastq.gz
 mv $raw/7_GGACCC_L001_R1_001.fastq.gz $data/polII_hela_3.fastq.gz
 mv $raw/8_ACAAAC_L008_R1_001.fastq.gz $data/3B5_hela_3.fastq.gz
 mv $raw/9_ACACGA_L001_R1_001.fastq.gz $data/SC184_hela_3.fastq.gz
