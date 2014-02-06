@@ -3,15 +3,18 @@
 """
 """
 
-from bsub import bsub
-from invoke import task
 from pathlib import Path
+
+from bsub import bsub
+from glob import glob
 from string import Template
 from yaml import dump, load
+from commandr import command, Run
+from os.path import exists, isfile, isdir, splitext
 
-config_path = Path('/vol1/home/brownj/projects/hits-clip/bin/config.yaml')
-assert config_path.exists(), "config file not found"
-config = load(open(config_path.as_posix()))
+config_path = '/vol1/home/brownj/projects/hits-clip/bin/config.yaml'
+assert isfile(config_path), "config file not found"
+config = load(open(config_path))
 
 fastqs = Path(config['fastqs'])
 assert fastqs.is_dir()
@@ -31,7 +34,7 @@ NOVOALIGN = Template(("novoalign -d $index -f $fastq -a -o SAM -r A 20 -e 100 -c
                         "| samtools sort -o - $sample.temp -m 8G "
                         "> $bam"))
 
-@task()
+@command('trimsequence')
 def trim_sequences():
     """
     trim reads by design using script that checks for sequence.
@@ -54,7 +57,7 @@ def trim_sequences():
         submit(cmd)
 
 
-@task()
+@command('align')
 def align():
     """
     align the reads using Novoalign.
@@ -104,7 +107,7 @@ def align():
 #         job = submit(cmd)
 
 
-@task()
+@command('removedups')
 def removedups():
     """
     uses samtools rmdup to quickly eliminate most PCR artifacts.
@@ -125,7 +128,7 @@ def removedups():
         job = submit(samtools_rmdup).then(samtools_index)
 
 
-@task()
+@command('bam2bw')
 def bam2bw():
     """
     convert all bams to stranded bedgraphs
@@ -165,7 +168,7 @@ def bam2bw():
             job = submit(makebg).then(makebw).then(gzipbg)
 
 
-@task()
+@command('genomedata')
 def genomedata():
     """
     bams=$RESULTS/*/*bam
@@ -198,3 +201,7 @@ def genomedata():
 
     else:
         # use bam2gd.py
+
+
+if __name__ == '__main__':
+    Run()
