@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-#BSUB -J hub[1-20]
-#BSUB -e hub.%J.%I.err
-#BSUB -o hub.%J.%I.out
+#BSUB -J hubprep[1-20]
+#BSUB -e hubprep.%J.%I.err
+#BSUB -o hubprep.%J.%I.out
 #BSUB -q normal
 #BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
 #BSUB -n 1
@@ -20,10 +20,10 @@ normalize=1.5e7
 
 
 # create the bigwigs
-posbg=$RESULTS/$sample/${sample}_pos.bedgraph
-negbg=$RESULTS/$sample/${sample}_neg.bedgraph
-posbw=$RESULTS/$sample/${sample}_pos.bw
-negbw=$RESULTS/$sample/${sample}_neg.bw
+posbg=$tagdir/${sample}_pos.bedgraph
+negbg=$tagdir/${sample}_neg.bedgraph
+posbw=$tagdir/${sample}_pos.bw
+negbw=$tagdir/${sample}_neg.bw
 
 if [[ ! -f $posbg ]]; then
     makeUCSCfile $tagdir -strand + -norm $normalize > $posbg
@@ -34,4 +34,12 @@ fi
 
 
 # create bigbeds of the peaks
-awk -t '$1!~/^#/{print $2,$3,$4,$1,$6,$5}' ../common/3B5_hela_1/peaks.txt | bedtools sort -i - | head
+peaks=$tagdir/peaks.txt
+peakbed=$tagdir/${sample}_peaks.bed
+peakbigbed=$tagdir/${sample}_peaks.bb
+
+if [[ ! -f $peakbigbed ]]; then
+    awk -t '$1!~/^#/{print $2,$3,$4,$1,"1",$5}' $peaks | bedtools sort -i - > $peakbed
+    bedToBigBed -type=bed6 $peakbed $SIZES $peakbigbed
+    gzip -f $peakbed
+fi

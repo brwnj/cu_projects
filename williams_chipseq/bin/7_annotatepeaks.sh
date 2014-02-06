@@ -22,8 +22,12 @@ motifs=$RESULTS/$sample/known_motifs.txt
 annotatedpeaks=$RESULTS/$sample/annotated_peaks.txt
 replicate=${sample%??}
 
+if [[ ! -f $motifsresultfile ]]; then
+    exit
+fi
+
 if [[ ! -f $motifs ]]; then
-    awk -t 'NR>1{print \$2}' $motifsresultfile > $motifs
+    awk -t 'NR>1{print $2}' $motifsresultfile > $motifs
 fi
 
 # for each individual sample, use its peaks file, but always compare it to the

@@ -25,7 +25,13 @@ SC184_mitotic_hela_3
 )
 
 PI=williams_chipseq
+GENOME=hg19
 DATA=$HOME/projects/williams_chipseq/data/common
 RESULTS=$HOME/projects/williams_chipseq/results/common
 NOVOIDX=$HOME/ref/hg19/hg19.9606.novoidx
 SIZES=$HOME/ref/hg19/hg19.sizes
+HUB=$RESULTS/hub
+
+if [[ ! -d $HUB ]]; then
+    mkdir -p $HUB
+fi
