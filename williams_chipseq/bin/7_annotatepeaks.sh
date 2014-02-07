@@ -17,18 +17,12 @@ if [[ $sample == *input* ]]; then
 fi
 
 peaks=$RESULTS/$sample/peaks.txt
-motifsresultfile=$RESULTS/$sample/knownResults.txt
-motifs=$RESULTS/$sample/known_motifs.txt
+motif_files=$RESULTS/$sample/knownResults/*.motif
+motifs=$RESULTS/$sample/known_motifs.motif
 annotatedpeaks=$RESULTS/$sample/annotated_peaks.txt
 replicate=${sample%??}
 
-if [[ ! -f $motifsresultfile ]]; then
-    exit
-fi
-
-if [[ ! -f $motifs ]]; then
-    awk -t 'NR>1{print $2}' $motifsresultfile > $motifs
-fi
+cat $motif_files > $motifs
 
 # for each individual sample, use its peaks file, but always compare it to the
 # other 2 reps
@@ -37,3 +31,9 @@ rep2=$RESULTS/${replicate}_2
 rep3=$RESULTS/${replicate}_3
 
 annotatePeaks.pl $peaks hg19 -d $rep1 $rep2 $rep3 -m $motifs > $annotatedpeaks
+
+rm -r */stats
+rm */*.bam
+rm */*.bedgraph
+rm */*.bw
+rm */*.bb */*.tsv */differentially* */*.bed.gz
