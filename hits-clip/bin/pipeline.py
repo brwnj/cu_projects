@@ -10,7 +10,7 @@ from glob import glob
 from string import Template
 from yaml import dump, load
 from commandr import command, Run
-from os.path import exists, isfile, isdir, splitext
+from os.path import basename, exists, isdir, isfile, splitext
 
 config_path = '/vol1/home/brownj/projects/hits-clip/bin/config.yaml'
 assert isfile(config_path), "config file not found"
@@ -18,11 +18,11 @@ config = load(open(config_path))
 
 fastqs = Path(config['fastqs'])
 assert fastqs.is_dir()
-results = Path(config['results'])
-if not results.exists():
-    results.mkdir(parents=True)
-chrom_sizes = Path(config['chrom_sizes'])
-assert chrom_sizes.exists()
+results = config['results']
+assert exists(results)
+chrom_sizes = config['chrom_sizes']
+assert isfile(chrom_sizes)
+project_id = config['project_id']
 
 TRIM = Template(("python {script} --reverse-complement -a {adapter} "
                     "$untrimmed | gzip -c > $trimmed").format(\
@@ -42,7 +42,7 @@ def trim_sequences():
     writes new fastq will same name as previous
     renames untrimmed fastq $sample.untrimmed.fastq.gz
     """
-    submit = bsub("trim", P=config['project_id'], verbose=True)
+    submit = bsub("trim", P=project_id, verbose=True)
     for sample in config['trimmed_samples']:
         # name of the original file and the eventual result
         fastq = fastqs / "{sample}.fastq.gz".format(sample=sample)
@@ -70,7 +70,7 @@ def align():
     novoidx = Path(config['align']['index'])
     assert novoidx.exists(), "index not found"
 
-    submit = bsub("align", P=config['project_id'], n=cpus, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)
+    submit = bsub("align", P=project_id, n=cpus, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)
 
     for sample in config['samples']:
         fastq = fastqs / '{sample}.fastq.gz'.format(sample=sample)
@@ -114,7 +114,7 @@ def removedups():
 
     writes new $sample.rmd.bam into $results/$sample/$sample.rmdup.bam
     """
-    submit = bsub("removedups", P=config['project_id'], verbose=True)
+    submit = bsub("removedups", P=project_id, verbose=True)
 
     for sample in config['samples']:
         bam = results / sample / "{sample}.bam".format(sample=sample)
@@ -138,7 +138,7 @@ def bam2bw():
             /path/to/something_{pos,neg}.bedgraph.gz
             /path/to/something_{pos,neg}.bw
     """
-    submit = bsub("bam2bw", P=config['project_id'], verbose=True)
+    submit = bsub("bam2bw", P=project_id, verbose=True)
     symbols, strands = ["+", "-"], ["pos", "neg"]
     for bam in results.glob('*/*.bam'):
         base = bam.parent / bam.stem
@@ -171,36 +171,49 @@ def bam2bw():
 @command('genomedata')
 def genomedata():
     """
-    bams=$RESULTS/*/*bam
-    for file in $bams; do
-        if [[ ! -f $file.bai ]]; then
-            samtools index $file
-            bsub -J indexbam -o $file.out -e $file.err -P $PI -K "samtools index $file" &
-        fi
-    done
-    wait
-
-    if [[ ! -d $GENOMEDATA ]]; then
-        # no need to wait for this to finish
-        bam2gd.py $SIZES $FASTAS $bams -o $GENOMEDATA -p pillai_kabos_hitsclip &
-    fi
-
-    if the archive exists and there are tracks in there, need to add tracks
-    one at a time!
+    creates genomedata archive. if the archive already exists, adds tracks
+    until all project bedgraphs have been added.
     """
-    pass
-    genomedata = Path(config['genomedata'])
-    if genomedata.exists():
-        # load individual tracks into existing archive
+    from genomedata import Genome
 
-        # get list of existing tracks
+    genomedata_path = config['genomedata']
 
-        # get list of bedgraphs to add to archive
+    if isdir(genomedata_path):
+        # get current track list
+        genome = Genome(genomedata_path)
+        existing_tracks = genome.tracknames_continuous
+        genome.close()
 
-        # add those tracks that
+        # iterate over existing bedgraphs
+        to_add = {}
+        for bg in glob(results + "/*/*.bedgraph.gz"):
+            trackname, ext = basename(bg).rsplit(".bedgraph.gz", 1)
+            if trackname in existing_tracks: continue
+            to_add[trackname] = bg
+
+        assert len(to_add) > 0, "no new data to load"
+
+        # open the genomedata archive
+        submit_open = bsub("open_data", P=project_id)
+        openarchive = "genomedata-open-data {genomedata_path} {tracks}".format(
+                            genomedata_path=genomedata_path,
+                            tracks=" ".join(to_add.keys()))
+        job = submit_open(openarchive)
+
+        # each job is dependent on the previous to finish
+        # load each of the tracks into the archive
+        for track, bedgraph in to_add.iteritems():
+            submit_load = bsub("load_data", P=project_id, w=str(job.job_id))
+            loaddata = "zcat {bedgraph} | genomedata-load-data {genomedata_path} {track}".format(**locals())
+            job = submit_load(loaddata)
+
+        submit_close = bsub("close_data", P=project_id, w=str(job.job_id))
+        closearchive = "genomedata-close-data {genomedata_path}".format(**locals())
+        submit_close(closearchive)
 
     else:
-        # use bam2gd.py
+        # create entire archive
+        pass
 
 
 if __name__ == '__main__':

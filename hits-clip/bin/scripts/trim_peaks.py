@@ -107,9 +107,9 @@ if __name__ == "__main__":
     p.add_argument('peaks', help='sorted peaks as bed')
     p.add_argument('genomedata', help="genomedata archive")
     p.add_argument("-t", "--trackname", action="append", required=True,
-                    help=("track names for samples comprising the replicates"
-                            "in the peaks bed"))
-    p.add_argument("-w", "--width", default=50, type=int,
+                    help=("track name for samples comprising the replicates "
+                            "in the peaks bed. can be specified multiple times."))
+    p.add_argument("-w", "--width", default=60, type=int,
                     help="full peak width")
     p.add_argument("-v", "--verbose", action='store_true',
                     help="maximum verbosity")
