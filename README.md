@@ -20,40 +20,7 @@
 
 #HITS-CLIP
 + new samples through pipeline
-+ liftover to hg19
 + ucsc hub
-
-$ python ../../bin/scripts/trim_adapter.py --reverse-complement -a CCGCTGGAAGTGACTGACAC MCF10A.untrimmed.fastq.gz | gzip -c > MCF10A.fastq.gz
-Total reads: 32976107
-Passing reads: 8056294
-Average passing read length: 26.184786578
-Failed reads due to length: 9701918
-Average failed read length: 1.78702066952
-Failed reads due to missing seed sequence: 15217895
-
-$ python ../../bin/scripts/trim_adapter.py --reverse-complement -a CCGCTGGAAGTGACTGACAC PK12-0.untrimmed.fastq.gz | gzip -c > PK12-0.fastq.gz
-Total reads: 44194116
-Passing reads: 13935940
-Average passing read length: 23.0765316871
-Failed reads due to length: 8077624
-Average failed read length: 0.911654714307
-Failed reads due to missing seed sequence: 22180552
-
-$ python ../../bin/scripts/trim_adapter.py --reverse-complement -a CCGCTGGAAGTGACTGACAC PK12-6.untrimmed.fastq.gz | gzip -c > PK12-6.fastq.gz
-Total reads: 28544477
-Passing reads: 8839771
-Average passing read length: 23.1146355488
-Failed reads due to length: 4303307
-Average failed read length: 1.0208658132
-Failed reads due to missing seed sequence: 15401399
-
-$ python ../../bin/scripts/trim_adapter.py --reverse-complement -a CCGCTGGAAGTGACTGACAC PK12-24.untrimmed.fastq.gz | gzip -c > PK12-24.fastq.gz
-Total reads: 39612559
-Passing reads: 10884219
-Average passing read length: 23.3281243238
-Failed reads due to length: 5658198
-Average failed read length: 1.0089576222
-Failed reads due to missing seed sequence: 23070142
 
 #Leung
 + call variants on everything
