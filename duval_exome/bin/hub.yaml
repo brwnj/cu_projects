@@ -14,7 +14,7 @@ composite_tracks:
         type: bam
         shortLabel: Alignments
         longLabel: Unprocessed canine exome alignments
-        files: [/Users/brownj/projects/duval_exome/data/20140127/1025.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/113.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/166408.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/172160.realign.bam]
+        search_string: *.bam
         track_settings:
             bamColorMode: strand
             showNames: off
@@ -22,15 +22,13 @@ composite_tracks:
 
     track_2:
         name: Coverage
-        stranded: False     # look for 'pos'/'neg' in file name?
+        stranded: True
         type: bigWig
         shortLabel: Coverage
         longLabel: Read density
         maxHeightPixels: 50:20:15
         configurable: on
         autoScale: on
-        # if not bigWig, looks for stranded bigWigs
-        files: [/Users/brownj/projects/duval_exome/data/20140127/1025.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/113.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/166408.realign.bam, /Users/brownj/projects/duval_exome/data/20140127/172160.realign.bam]
 
     track_3:
         name: Capture
@@ -38,3 +36,16 @@ composite_tracks:
         shortLabel: Exome Capture
         longLabel: SureSelect intervals
         files: [/Users/brownj/projects/duval_exome/data/20140127/canFam3_SureDesign.bed.gz]
+
+sample_1:
+    alignment: /Users/brownj/projects/duval_exome/data/20140127/1025.bam
+    coverage: [/Users/brownj/projects/duval_exome/data/20140127/1025_pos.bw, /Users/brownj/projects/duval_exome/data/20140127/1025_neg.bw]
+    color: 122,36,36
+
+track_colors: {1025:"122,36,36", }
+
+sample_metadata:
+    1025:
+        color: 122,36,36
+        group: normal
+

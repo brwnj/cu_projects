@@ -13,3 +13,5 @@ BIN=$HOME/projects/duval_exome/bin
 ANNOTATION=$HOME/ref/canFam3/canFam3.descriptions.gz
 TARGETS=$HOME/ref/canFam3/canFam3.SureDesign.bed.gz
 NORMALVCF=$RESULTS/normal.vcf
+HUB=$RESULTS/hub
+REFERENCE=$HOME/ref/canFam3/canFam3.sizes
