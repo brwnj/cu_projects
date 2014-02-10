@@ -31,9 +31,3 @@ rep2=$RESULTS/${replicate}_2
 rep3=$RESULTS/${replicate}_3
 
 annotatePeaks.pl $peaks hg19 -d $rep1 $rep2 $rep3 -m $motifs > $annotatedpeaks
-
-rm -r */stats
-rm */*.bam
-rm */*.bedgraph
-rm */*.bw
-rm */*.bb */*.tsv */differentially* */*.bed.gz
