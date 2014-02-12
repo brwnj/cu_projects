@@ -14,4 +14,4 @@ ANNOTATION=$HOME/ref/canFam3/canFam3.descriptions.gz
 TARGETS=$HOME/ref/canFam3/canFam3.SureDesign.bed.gz
 NORMALVCF=$RESULTS/normal.vcf
 HUB=$RESULTS/hub
-REFERENCE=$HOME/ref/canFam3/canFam3.sizes
+SIZES=$HOME/ref/canFam3/canFam3.sizes

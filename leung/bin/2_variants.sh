@@ -10,17 +10,15 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/leung/bin/config.sh
 
-SAMPLES=(143_1_20h 143_1HSV1_20h)
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
-java='java -Xmx16g -jar'
 base_name=$RESULTS/$sample/$sample
 bam=$base_name.bam
 nonbam=$base_name.non.bam
 rmdupbam=$base_name.rmdup.bam
 vcf=$base_name.vcf
 
-if [ -f $nonbam ] && [ ! -f $nodups ]; then
+if [ -f $nonbam ] && [ ! -f $rmdupbam ]; then
     samtools rmdup $nonbam $rmdupbam
     samtools index $rmdupbam
 fi

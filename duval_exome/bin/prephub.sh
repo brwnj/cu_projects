@@ -1,15 +1,12 @@
 #!/usr/bin/env bash
-#BSUB -J [1-2]
-#BSUB -e .%J.%I.err
-#BSUB -o .%J.%I.out
+#BSUB -J prephub[1-16]
+#BSUB -e prephub.%J.%I.err
+#BSUB -o prephub.%J.%I.out
 #BSUB -q normal
 #BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P duval_exome
 
-<<DOC
-
-DOC
 
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/duval_exome/bin/config.sh
