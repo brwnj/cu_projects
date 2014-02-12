@@ -6,6 +6,24 @@
 + compare within a patient or across all depending on time to process
 + only compare CDR3 within length +- 2
 
++ overlaps between clones
++ overlaps of CDR3 sequences of all vs all
+
++ stats for v, d, and j families so they know the distribution of the composition
++ this has to do with vh families and what not
++ tables with dists, they'll run any stats
++ individual sequences that are duplicated many times (would be across )
+
++ same v and j region, unlikely to have different CDR3 sequence
++ need to have another column in the metadata counting those unique sequences in this manner
++ don't care about the actual CDR3 sequence at this point
++ need population dist for these sequences as well
+
++ MS and NMO see higher perc. within vh2 and vh4
+
++ overlapping > binning > alignments
+
+
 #Cohrs
 + HOMER pipeline with design
 
@@ -45,7 +63,14 @@
 + map back to the mRNA enriched regions to come up with the linkages and miRNA quantification
 
 #Williams;chipseq
-+ do things
++ peaks that don't change between normal and mitotic
++ differential peaks of mitotics
++ take ones that are up in mitotic
++ subtract differentials from everything else
++ ratio of peak size between conditions; conditions diff bound would be significant;
+
++ interested in peaks that remain the same between mitotic and non-mitotic conditions
++ interested in peaks that are differentially bound between conditions
 
 #Tesla
 + set up experiment to test execution time to cpus used
