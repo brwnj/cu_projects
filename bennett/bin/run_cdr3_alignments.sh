@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J cdr3_local_alignment[1-3]
+#BSUB -J cdr3_local_alignment[1-4]
 #BSUB -e cdr3_local_alignment.%J.%I.err
 #BSUB -o cdr3_local_alignment.%J.%I.out
 #BSUB -q normal
@@ -10,7 +10,7 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/bennett/bin/config.sh
 
-mismatches=(".85" ".75" ".65")
+mismatches=(".85" ".75" ".65" ".50")
 mismatch=${mismatches[$(($LSB_JOBINDEX - 1))]}
 
 for l in 2 3 4 5; do
