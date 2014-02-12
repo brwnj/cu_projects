@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J variants[1-2]
+#BSUB -J "variants[1-24]%8"
 #BSUB -e variants.%J.%I.err
 #BSUB -o variants.%J.%I.out
 #BSUB -q normal
@@ -16,20 +16,15 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 java='java -Xmx16g -jar'
 base_name=$RESULTS/$sample/$sample
 bam=$base_name.bam
-nodups=$base_name.nodups.bam
-duplicatemetrics=$base_name.dup_metrics.txt
+nonbam=$base_name.non.bam
+rmdupbam=$base_name.rmdup.bam
 vcf=$base_name.vcf
 
-if [[ -f $vcf ]]; then
-    echo "processing complete for $sample"
-    exit 0
+if [ -f $nonbam ] && [ ! -f $nodups ]; then
+    samtools rmdup $nonbam $rmdupbam
+    samtools index $rmdupbam
 fi
 
-if [ -f $bam ] && [ ! -f $nodups ]; then
-    samtools rmdup $bam $nodups
-    samtools index $nodups
-fi
-
-if [ -f $nodups ] && [ ! -f $vcf ]; then
-    freebayes -b $nodups -v $vcf -f $REFERENCE -0
+if [ -f $rmdupbam ] && [ ! -f $vcf ]; then
+    freebayes -b $rmdupbam -v $vcf -f $REFERENCE -0
 fi

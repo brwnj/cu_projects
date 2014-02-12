@@ -19,4 +19,6 @@ results=$RESULTS/$sample
 orig=$results/$sample.bam
 new=$results/$sample.non.bam
 
-samtools view -h $orig | awk '$6!~/N/' | samtools view -Sb - > $new
+if [[ ! -f $new ]]; then
+    samtools view -h $orig | awk '$6!~/N/' | samtools view -Sb - > $new
+fi
