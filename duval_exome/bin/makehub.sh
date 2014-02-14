@@ -51,9 +51,11 @@ coverage_track
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
     color=${HUBCOLORS[$sample]}
-    cp $RESULTS/$sample/*.bw $HUB/$genome
     posbw=${sample}_pos.bw
     negbw=${sample}_neg.bw
+    if [[ ! -f $HUB/$genome/$posbw ]]; then
+        cp $RESULTS/$sample/*.bw $HUB/$genome
+    fi
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
     bigDataUrl $posbw
@@ -86,8 +88,10 @@ alignments_track
 
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
-    cp $RESULTS/$sample/$sample.bam* $HUB/$genome
     bam=$sample.bam
+    if [[ ! -f $HUB/$genome/$bam ]]; then
+        cp $RESULTS/$sample/$sample.bam* $HUB/$genome
+    fi
 
     cat <<alignments_track >>$trackdb
     track ${bam/.bw}
@@ -114,8 +118,10 @@ variants_track
 
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
-    cp $RESULTS/$sample/$sample.vcf.gz* $HUB/$genome
     vcf=$sample.vcf.gz
+    if [[ ! -f $HUB/$genome/$vcf ]]; then
+        cp $RESULTS/$sample/$sample.vcf.gz* $HUB/$genome
+    fi
 
     cat <<variants_track >>$trackdb
     track ${vcf/.vcf.gz}
@@ -134,20 +140,19 @@ track duval_misc
 compositeTrack on
 shortLabel Misc
 longLabel Misc
-type bigBed 3 .
+type bigBed 3
 
 misc_track
 
 cp $HOME/ref/canFam3/canFam3.SureDesign.bb $HUB/$genome
 
 cat <<misc_track >>$trackdb
-track canFam3.SureDesign
-bigDataUrl canFam3.SureDesign.bb
-shortLabel canFam3 SureDesign
-longLabel canFam3 SureDesign
-type bigBed 6 .
-color 31,120,180
-thickDrawItem on
-parent duval_variants
+    track SureDesign
+    bigDataUrl canFam3.SureDesign.bb
+    shortLabel Capture regions
+    longLabel Capture regions
+    type bigBed 3
+    color 31,120,180
+    parent duval_misc
 
 misc_track

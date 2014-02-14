@@ -31,7 +31,6 @@ echo "cat $reads/Bililey_CGATGT_L002_R1_001.fastq.gz $reads/Bililey_CGATGT_L003_
 echo "cat $reads/Bililey_CGATGT_L002_R2_001.fastq.gz $reads/Bililey_CGATGT_L003_R2_001.fastq.gz > $results/Bililey_R2.fastq.gz" | bsez concat -P duval
 echo "cat $reads/KTCC_ATCACG_L002_R1_001.fastq.gz $reads/KTCC_ATCACG_L003_R1_001.fastq.gz > $results/KTCC_R1.fastq.gz" | bsez concat -P duval
 echo "cat $reads/KTCC_ATCACG_L002_R2_001.fastq.gz $reads/KTCC_ATCACG_L003_R2_001.fastq.gz > $results/KTCC_R2.fastq.gz" | bsez concat -P duval
-
 echo "zcat $reads/730_GCCAAT_L002_R1_001.fastq.gz $reads/730_GCCAAT_L003_R1_001.fastq.gz | gzip -c > $results/730_R1.fastq.gz" | bsez concat -P duval
 echo "zcat $reads/730_GCCAAT_L002_R2_001.fastq.gz $reads/730_GCCAAT_L003_R2_001.fastq.gz | gzip -c > $results/730_R2.fastq.gz" | bsez concat -P duval
 echo "zcat $reads/735_ACAGTG_L002_R1_001.fastq.gz $reads/735_ACAGTG_L003_R1_001.fastq.gz | gzip -c > $results/735_R1.fastq.gz" | bsez concat -P duval

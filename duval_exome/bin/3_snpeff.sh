@@ -14,7 +14,6 @@ sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
 
 vcf=$RESULTS/$sample/$sample.vcf
 snpeff=$RESULTS/$sample/$sample.snpeff.txt.gz
-# annotated=$RESULTS/$sample/$sample.annotated_snps.txt.gz
 
 if [[ ! -f $snpeff ]]; then
     java -jar $SNPEFF eff \
@@ -31,5 +30,4 @@ if [[ ! -f $snpeff ]]; then
         -o txt \
         canFam3 $vcf \
         | gzip -c > $snpeff
-    # python $BIN/annotate.py $snpeff $ANNOTATION | gzip -c > $annotated
 fi
