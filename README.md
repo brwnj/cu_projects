@@ -23,6 +23,9 @@
 
 + overlapping > binning > alignments
 
++ overlaps between the csf and blood
++ tree needs to be colored in order to identify the transition; to maybe id the origin of the sequence
+
 
 #Cohrs
 + HOMER pipeline with design
@@ -39,6 +42,7 @@
 #HITS-CLIP
 + new samples through pipeline
 + ucsc hub
++ 6 hour, remap using iterative trimming; they'll need tracks to see whether ER reads come back
 
 #Leung
 + call variants on everything
@@ -55,6 +59,15 @@
         + align to mouse and see what maps for each length
         + are there gains in using longer length reads
 
+
+# Ribosome stuffs
+
++ read trimming, sequence content
++ linker sequence
++ 27-33
+
++ tables, genomedata, rpy2
++ trim, align
 
 #Nicoli
 + liftover data to hg19
