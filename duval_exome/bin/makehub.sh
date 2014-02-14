@@ -40,8 +40,8 @@ trackdb=$HUB/$genome/trackDb.txt
 cat <<coverage_track >$trackdb
 track duval_coverage
 compositeTrack on
-shortLabel Duval coverage
-longLabel Duval coverage
+shortLabel Coverage
+longLabel Coverage
 maxHeightPixels 50:20:15
 type bigWig
 configurable on
@@ -50,10 +50,10 @@ autoScale on
 coverage_track
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
+    color=${HUBCOLORS[$sample]}
     cp $RESULTS/$sample/*.bw $HUB/$genome
     posbw=${sample}_pos.bw
     negbw=${sample}_neg.bw
-    # color=$(python -c 'import colorbrewer,random;print ",".join(map(str, colorbrewer.Paired[10][random.randint(0,10)]))')
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
     bigDataUrl $posbw
@@ -61,7 +61,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     longLabel $sample coverage positive (+) strand
     type bigWig
     parent duval_coverage
-    color
+    color $color
 
     track ${negbw/.bw}
     bigDataUrl $negbw
@@ -69,42 +69,85 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     longLabel $sample coverage negative (-) strand
     type bigWig
     parent duval_coverage
-    color
+    color $color
 
 coverage_track
 done
 
-# output for peaks
-cat <<peak_track >>$trackdb
-track nicoli_peaks
+# output for alignments
+cat <<alignments_track >>$trackdb
+track duval_alignments
 compositeTrack on
-configurable on
-shortLabel Nicoli peaks
-longLabel Nicoli peaks (q < 0.001)
-type bed 6 .
+shortLabel Alignments
+longLabel Alignments
+type bam
 
-peak_track
-for peaks in $RESULTS/*/*peaks.qv.passed_filter.bed.gz; do
-    bb=${peaks/.bed.gz/.bb}
-    if [[ ! -f $bb ]]; then
-        bed2bb.py --type bed6+1 $SIZES $peaks
-    fi
-    # check again to make sure previous script didn't fail
-    if [[ ! -f $bb ]]; then
-        echo "conversion to bb failed on file: $peaks"
-        exit 1
-    fi
-    cp $bb $HUB/$genome
-    bb=$(basename $bb)
-    cat <<peak_track >>$trackdb
-    track ${bb/.bb}
-    parent nicoli_peaks
-    shortLabel ${bb/.*} peaks
-    longLabel ${bb/.*} peaks
-    bigDataUrl $bb
-    color 31,120,180
-    thickDrawItem on
-    type bigBed 6 .
+alignments_track
 
-peak_track
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    cp $RESULTS/$sample/$sample.bam* $HUB/$genome
+    bam=$sample.bam
+
+    cat <<alignments_track >>$trackdb
+    track ${bam/.bw}
+    bigDataUrl $bam
+    shortLabel $sample alignments
+    longLabel $sample alignments
+    type bam
+    showNames off
+    bamColorMode strand
+    parent duval_alignments
+
+alignments_track
 done
+
+# output for variants
+cat <<variants_track >>$trackdb
+track duval_variants
+compositeTrack on
+shortLabel Variants
+longLabel Variants
+type vcfTabix
+
+variants_track
+
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    cp $RESULTS/$sample/$sample.vcf.gz* $HUB/$genome
+    vcf=$sample.vcf.gz
+
+    cat <<variants_track >>$trackdb
+    track ${vcf/.vcf.gz}
+    bigDataUrl $vcf
+    shortLabel $sample variants
+    longLabel $sample variants
+    type vcfTabix
+    parent duval_variants
+
+variants_track
+done
+
+# exome capture regions
+cat <<misc_track >>$trackdb
+track duval_misc
+compositeTrack on
+shortLabel Misc
+longLabel Misc
+type bigBed 3 .
+
+misc_track
+
+cp $HOME/ref/canFam3/canFam3.SureDesign.bb $HUB/$genome
+
+cat <<misc_track >>$trackdb
+track canFam3.SureDesign
+bigDataUrl canFam3.SureDesign.bb
+shortLabel canFam3 SureDesign
+longLabel canFam3 SureDesign
+type bigBed 6 .
+color 31,120,180
+thickDrawItem on
+parent duval_variants
+
+misc_track

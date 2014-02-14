@@ -17,7 +17,7 @@ results=$RESULTS/$sample
 bam=$results/$sample.bam
 bamindex=$results/$sample.bam.bai
 vcf=$results/$sample.vcf
-vcfindex=$results/$sample.vcf.idx
+vcfindex=$results/$sample.vcf.gz.tbi
 bwpos=$results/${sample}_pos.bw
 
 # index the bams
@@ -32,5 +32,10 @@ fi
 
 # index the vcfs
 if [[ ! -f $vcfindex ]]; then
-    ~/opt/IGVTools/igvtools index $vcf
+    if [[ -f $vcf.gz ]]; then
+        tabix -p vcf $vcf.gz
+    else
+        bgzip $vcf
+        tabix -p vcf $vcf
+    fi
 fi
