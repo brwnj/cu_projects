@@ -64,6 +64,8 @@ for index, row in meta.iterrows():
         # gao lab
         for fastq in run_fastqs:
             base = os.path.basename(fastq)
+            fastq_barcode = base.split("_")[1]
+            if not fastq_barcode == barcode: continue
             if not base.endswith(".fastq.gz"): continue
             if not os.path.exists(index_read) and "R2" in base:
                 copyfile(fastq, index_read)
