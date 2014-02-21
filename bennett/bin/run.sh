@@ -71,5 +71,5 @@ fi
 
 # join r1 and r2 based on local alignment of the overlap
 if [[ ! -f $joined ]]; then
-    echo "python $bin/join_reads.py -t 8 $r1_trimadapter $r2_trimadapter | gzip -c > $joined" | bsez join_reads -P $PI -n 8 -R span[hosts=1]
+    echo "python $bin/join_reads.py -t 8 $r1_trimadapter $r2_trimadapter | gzip -c > $joined" | bsez -J join_reads -P $PI -n 8 -R span[hosts=1]
 fi
