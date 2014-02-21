@@ -44,8 +44,15 @@
 + ucsc hub
 + 6 hour, remap using iterative trimming; they'll need tracks to see whether ER reads come back
 
++ read the bam, if a read has id, pull position and strand
++ bed file of position and strand
++ pull fasta for those regions
++ find alternate sequence among those fasta sequences, saving read names with hits
++ read bam again, not printing where read name in hits
++ would be ideal to know how many were filtered in this step
+
 #Leung
-+ call variants on everything
++ annotate variants with snpsift
 
 # Poly(A)
 
@@ -90,16 +97,3 @@
 + test common aligners gsnap, novoalign, etc using 1,2,4,6,8,12 cpus
 + plot results
 + gsnap also has -B and could test 0,1,2,3,4,5
-
-#Projects
-+ williams chipseq
-+ cohrs chipseq
-+ duval canine exome
-+ kabos polya
-+ kabos hitsclip
-+ kabos ribosome profiling
-+ kabos lincRNA expression profiling
-+ bennett ig repertoire in neuromyelitis optica (NMO)
-+ bennett ig repertoire in multiple sclerosis (MS)
-+ nicoli miRNA quantification and networks of interactions
-
