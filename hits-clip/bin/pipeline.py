@@ -91,7 +91,7 @@ def align():
                                     sample=sample,
                                     bam=bam)
         samtools_index = "samtools index {bam}".format(**locals())
-        job = submit(align).then(samtools_index)
+        job = submit(align).then(samtools_index, n=1, R="select[mem>4] rusage[mem=4]")
 
 
 # @task()
