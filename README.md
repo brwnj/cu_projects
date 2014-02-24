@@ -31,13 +31,10 @@
 + HOMER pipeline with design
 
 #Duval
-+ UCSC session with alignments loaded
-+ ingenuity for ensembl gene name to gene symbol along with any additional details
 + coverage measures for each sample across capture intervals
 + along with coverage, count the number of (not synonymous) variants
 + set up the script to filter variant count based on coverage of individual mutations
 + homozygousity rate over mutation rate
-+ LD block to identify regions of mass deletions
 
 #HITS-CLIP
 + new samples through pipeline
@@ -56,31 +53,15 @@
 
 # Poly(A)
 
-### Mouse
-+ map to mouse, then to human for peter's previous samples (samples with an 'a')
-+ 86-...
-+ map to human, map to mouse, what's the overlap
-    + map some human to mouse and see how many map (percentage wise)
-    + possible to mask human genome from mouse genome based on a certain length
-    + testing mouse -- for each polya grab 25, 50, 75, 100 from the site
-        + align to mouse and see what maps for each length
-        + are there gains in using longer length reads
-
-
 # Ribosome stuffs
-
 + read trimming, sequence content
 + linker sequence
-+ 27-33
-
-+ tables, genomedata, rpy2
++ 27-33bp
 + trim, align
 
 #Nicoli
-+ liftover data to hg19
-+ continue pipeline
-+ take seed sequences from miRBase
-+ map back to the mRNA enriched regions to come up with the linkages and miRNA quantification
++ annotations for genes sent in email
++ cytoscape networks
 
 #Williams;chipseq
 + peaks that don't change between normal and mitotic
