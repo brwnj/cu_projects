@@ -34,3 +34,7 @@ SPLICESITES=~analysiscore/genomes/GMAPDB/hg19_semiTotal/hg19_semiTotal.maps/hg19
 GMAPDB=~analysiscore/genomes/GMAPDB/hg19_semiTotal
 REFERENCE=$HOME/ref/hg19/hg19.fa
 PICARD=$HOME/opt/picard
+SNPEFF=$HOME/opt/snpeff/snpEff.jar
+SNPSIFT=$HOME/opt/snpeff/SnpSift.jar
+SNPEFFCONFIG=$HOME/opt/snpeff/snpEff.config
+HUB=$RESULTS/hub
