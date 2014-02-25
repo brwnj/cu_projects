@@ -39,14 +39,6 @@
 #HITS-CLIP
 + new samples through pipeline
 + ucsc hub
-+ 6 hour, remap using iterative trimming; they'll need tracks to see whether ER reads come back
-
-+ read the bam, if a read has id, pull position and strand
-+ bed file of position and strand
-+ pull fasta for those regions
-+ find alternate sequence among those fasta sequences, saving read names with hits
-+ read bam again, not printing where read name in hits
-+ would be ideal to know how many were filtered in this step
 
 #Leung
 + annotate variants with snpsift
