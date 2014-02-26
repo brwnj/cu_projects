@@ -38,7 +38,6 @@ peaks
 <<merge_peaks
 mergePeaks -prefix merge 3B5_hela/peaks.txt SC184_hela/peaks.txt
 mergePeaks -prefix merge 3B5_mitotic_hela/peaks.txt SC184_mitotic_hela/peaks.txt
-mergePeaks -prefix merge 3B5_hela/peaks.txt 3B/peaks.txt
 mergePeaks -prefix merge 3B5_hela/peaks.txt 3B5_mitotic_hela/peaks.txt
 mergePeaks -prefix merge SC184_hela/peaks.txt SC184_mitotic_hela/peaks.txt
 merge_peaks
@@ -46,13 +45,22 @@ merge_peaks
 # differentially bound
 <<diffbound
 echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt 3B5_hela SC184_hela -F 0.001 -P 0.0001 > 3B5_hela__SC184_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
-echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt 3B5_hela SC184_hela -F 0.001 -P 0.0001 -same > 3B5_hela__SC184_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
 echo "getDifferentialPeaks merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt 3B5_mitotic_hela SC184_mitotic_hela -F 0.001 -P 0.0001 > 3B5_mitotic_hela__SC184_mitotic_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
-echo "getDifferentialPeaks merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt 3B5_mitotic_hela SC184_mitotic_hela -F 0.001 -P 0.0001 -same > 3B5_mitotic_hela__SC184_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
 echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt 3B5_hela 3B5_mitotic_hela -F 0.001 -P 0.0001 > 3B5_hela__3B5_mitotic_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
-echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt 3B5_hela 3B5_mitotic_hela -F 0.001 -P 0.0001 -same > 3B5_hela__3B5_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
 echo "getDifferentialPeaks merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_hela SC184_mitotic_hela -F 0.001 -P 0.0001 > SC184_hela__SC184_mitotic_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
-echo "getDifferentialPeaks merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_hela SC184_mitotic_hela -F 0.001 -P 0.0001 -same > SC184_hela__SC184_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt 3B5_hela SC184_hela -F 2 -P 0.0001 -same > 3B5_hela__SC184_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt 3B5_mitotic_hela SC184_mitotic_hela -F 2 -P 0.0001 -same > 3B5_mitotic_hela__SC184_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt 3B5_hela 3B5_mitotic_hela -F 2 -P 0.0001 -same > 3B5_hela__3B5_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_hela SC184_mitotic_hela -F 2 -P 0.0001 -same > SC184_hela__SC184_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt SC184_hela 3B5_hela -F 0.001 -P 0.0001 > SC184_hela__3B5_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_mitotic_hela 3B5_mitotic_hela -F 0.001 -P 0.0001 > SC184_mitotic_hela__3B5_mitotic_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt 3B5_mitotic_hela 3B5_hela -F 0.001 -P 0.0001 > 3B5_mitotic_hela__3B5_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_mitotic_hela SC184_hela -F 0.001 -P 0.0001 > SC184_mitotic_hela__SC184_hela_diff.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt SC184_hela 3B5_hela -F 2 -P 0.0001 -same > SC184_hela__3B5_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_mitotic_hela 3B5_mitotic_hela -F 2 -P 0.0001 -same > SC184_mitotic_hela__3B5_mitotic_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt 3B5_mitotic_hela 3B5_hela -F 2 -P 0.0001 -same > 3B5_mitotic_hela__3B5_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
+echo "getDifferentialPeaks merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt SC184_mitotic_hela SC184_hela -F 2 -P 0.0001 -same > SC184_mitotic_hela__SC184_hela_same.txt" | bsez -J diffboundpeaks -P williams_chipseq
 diffbound
 
 # annotate diff bound peaks
@@ -65,6 +73,15 @@ echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_hela 3B5_
 echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_hela__SC184_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_hela__SC184_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+
+echo "annotatePeaks.pl SC184_hela__3B5_hela_diff.txt hg19 -d 3B5_hela SC184_hela > SC184_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_hela__3B5_hela_same.txt hg19 -d 3B5_hela SC184_hela > SC184_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > SC184_mitotic_hela__3B5_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > SC184_mitotic_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_diff.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_mitotic_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_mitotic_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_mitotic_hela__SC184_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_mitotic_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 annotate
 
 <<unique_peaks
