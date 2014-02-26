@@ -1,18 +1,8 @@
 # Bennett
-+ viewing in a tree may be helpful for manual picking
-+ 93 plasmablast, align to 9-3 A and B populations
-
-+ proteimoics sheet, align to whole IMGT resultant seq with fewer mismatches, write table
-+ compare within a patient or across all depending on time to process
-+ only compare CDR3 within length +- 2
-
-+ overlaps between clones
-+ overlaps of CDR3 sequences of all vs all
-
 + stats for v, d, and j families so they know the distribution of the composition
 + this has to do with vh families and what not
 + tables with dists, they'll run any stats
-+ individual sequences that are duplicated many times (would be across )
++ individual sequences that are duplicated many times (would be across)
 
 + same v and j region, unlikely to have different CDR3 sequence
 + need to have another column in the metadata counting those unique sequences in this manner
