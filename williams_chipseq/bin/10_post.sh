@@ -65,23 +65,23 @@ diffbound
 
 # annotate diff bound peaks
 <<annotate
-echo "annotatePeaks.pl 3B5_hela__SC184_hela_diff.txt hg19 -d 3B5_hela SC184_hela > 3B5_hela__SC184_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_hela__SC184_hela_same.txt hg19 -d 3B5_hela SC184_hela > 3B5_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_mitotic_hela__SC184_mitotic_hela_diff.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > 3B5_mitotic_hela__SC184_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_mitotic_hela__SC184_mitotic_hela_same.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > 3B5_mitotic_hela__SC184_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_hela__3B5_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_hela__SC184_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_hela__SC184_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_hela__SC184_hela_diff.txt hg19 -d 3B5_hela SC184_hela -CpG > 3B5_hela__SC184_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_hela__SC184_hela_same.txt hg19 -d 3B5_hela SC184_hela -CpG > 3B5_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__SC184_mitotic_hela_diff.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela -CpG > 3B5_mitotic_hela__SC184_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__SC184_mitotic_hela_same.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela -CpG > 3B5_mitotic_hela__SC184_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_hela 3B5_mitotic_hela -CpG > 3B5_hela__3B5_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela -CpG > 3B5_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela -CpG > SC184_hela__SC184_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_hela__SC184_mitotic_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela -CpG > SC184_hela__SC184_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 
-echo "annotatePeaks.pl SC184_hela__3B5_hela_diff.txt hg19 -d 3B5_hela SC184_hela > SC184_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_hela__3B5_hela_same.txt hg19 -d 3B5_hela SC184_hela > SC184_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > SC184_mitotic_hela__3B5_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela > SC184_mitotic_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_diff.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_mitotic_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela > 3B5_mitotic_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_mitotic_hela__SC184_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
-echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela > SC184_mitotic_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_hela__3B5_hela_diff.txt hg19 -d 3B5_hela SC184_hela -CpG > SC184_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_hela__3B5_hela_same.txt hg19 -d 3B5_hela SC184_hela -CpG > SC184_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_diff.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela -CpG > SC184_mitotic_hela__3B5_mitotic_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__3B5_mitotic_hela_same.txt hg19 -d 3B5_mitotic_hela SC184_mitotic_hela -CpG > SC184_mitotic_hela__3B5_mitotic_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_diff.txt hg19 -d 3B5_hela 3B5_mitotic_hela -CpG > 3B5_mitotic_hela__3B5_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl 3B5_mitotic_hela__3B5_hela_same.txt hg19 -d 3B5_hela 3B5_mitotic_hela -CpG > 3B5_mitotic_hela__3B5_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_diff.txt hg19 -d SC184_hela SC184_mitotic_hela -CpG > SC184_mitotic_hela__SC184_hela_diff_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
+echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela -CpG > SC184_mitotic_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 annotate
 
 <<unique_peaks
