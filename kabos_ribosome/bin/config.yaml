@@ -1,0 +1,13 @@
+samples: []
+adapter_sequence: CCGCTGGAAGTGACTGACAC
+trim_script: /vol1/home/brownj/projects/hits-clip/bin/scripts/trim_adapter.py
+project_id: ribosome_profiling
+fastqs: /vol1/home/brownj/projects/kabos_ribosome/data/common
+results: /vol1/home/brownj/projects/kabos_ribosome/results/common
+chrom_sizes: /vol1/home/brownj/ref/hg19/hg19.sizes
+trim:
+    adapter: ACACTTTT
+    minlength: 16
+align:
+    index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
+    cpus: 10
