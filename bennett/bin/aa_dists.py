@@ -37,15 +37,15 @@ def rm(file):
         _remove(f)
 
 
-def cluster_proteins(sequences, threshold, word_size):
+def cluster_proteins(sequences, sample, threshold, word_size):
     """
     sequences   pd.Series of AA sequences
 
     returns list of sequences.
     """
     # create fasta of sequences
-    input_fasta = open("cdhit_in.fasta", "wb")
-    output_fasta = "cdhit_out.fasta"
+    input_fasta = open("%s_cdhit_in.fasta" % sample, "wb")
+    output_fasta = "%s_cdhit_out.fasta" % sample
     # generate fasta of sequences
     for i, seq in enumerate(sequences):
         print >>input_fasta, ">seq_{id}\n{sequence}".format(id=i, sequence=seq)
@@ -82,77 +82,78 @@ def word_size(n):
 
 def main(imgt_aa, minimum, similarity):
     """
-    + same v and j region, unlikely to have different CDR3 sequence
-    + need to have another column in the metadata counting those unique sequences in this manner
-    + don't care about the actual CDR3 sequence at this point
-    + need population dist for these sequences as well
     """
+
     cluster_word_size = word_size(similarity)
 
-    imgt_aa = "/Users/brownj/projects/bennett/data/common/ON10_03B_memory/5_AA-sequences_ON10_03B_memory_170114.txt"
-    minimum = 6
-    similarity = 0.8
+    print >>sys.stderr, ">>>", imgt_aa
 
-
-    sample = imgt_aa.split("sequences_")[1].rsplit("_", 1)[0]
-    print >>sys.stderr, "processing", sample
-    # outfile = open(sample + "_aligned.txt", 'w')
+    filename, ext = os.path.splitext(imgt_aa)
 
     # import into a table; rename cols
-    df = pd.read_table(imgt_aa, index_col=0, header=0, usecols=[0,2,3,4,14],
-                        names=["seq_num", "functionality", "v_gene", "j_gene", "imgt_cdr3"])
+    df = pd.read_table(imgt_aa, header=0, usecols=[0,2,3,4,6,14],
+                        compression="gzip" if ext == ".gz" else None,
+                        names=["seq_num", "functionality", "v_gene", "j_gene", "vdj_seq", "imgt_cdr3"])
 
     # drop unproductive translations
     df = df[df.functionality == "productive"]
     # only take one translated germline
     df['v_gene'] = df['v_gene'].apply(lambda x: pd.Series(x.split(" ", 2)[1].split("*")[0]))
-    df['j_gene'] = df['j_gene'].apply(lambda x: pd.Series(x.split(" ", 2)[1].split("*")[0].strip("IGH")))
+    df['j_gene'] = df['j_gene'].apply(lambda x: pd.Series(x.split(" ", 2)[1].split("*")[0]))
     # vh leader
-    df['vleader'] = df['v_gene'].apply(lambda x: pd.Series(x.strip("IGH").split("-")[0]))
+    df['vleader'] = df['v_gene'].apply(lambda x: pd.Series(x.split("-")[0]))
     # vh exon
-    df['vexon'] = df['v_gene'].apply(lambda x: pd.Series(x.split("-")[-1]))
+    # df['vexon'] = df['v_gene'].apply(lambda x: pd.Series(x.split("-")[-1]))
     # length of cdr3 sequence to group by
     df['cdr3_length'] = df.imgt_cdr3.apply(len)
-
-    # meeting notes
-    # similarity should be very high, like .9
-    # then put into groups for quantification
-    # output the table of of cdr3 and v_gene name and j_gene name
 
     # find unique CDR3 sequences
     unique_seqs = set()
     for l, grouped_df in df.groupby('cdr3_length'):
         if l < minimum: continue
 
-        clustered = cluster_proteins(grouped_df['imgt_cdr3'], similarity, cluster_word_size)
+        clustered = cluster_proteins(grouped_df['imgt_cdr3'], imgt_aa, similarity, cluster_word_size)
 
         for seq in clustered:
             unique_seqs.add(seq)
 
+    indexes = set()
     # filter table using unique sequences
     for seq, grouped_df in df.groupby('imgt_cdr3'):
         if not seq in unique_seqs: continue
-        # find most abundant v:j in grouped_df
 
-        # grouped_df is full of the same CDR3 sequence
-        # within grouped_df find most abundant entry
+        try:
+            # most abundant V
+            v = grouped_df.v_gene.value_counts().index[0]
+            # most abundant J within those Vs
+            j = grouped_df[grouped_df['v_gene'].isin([v])].j_gene.value_counts().index[0]
+            # most abundant VDJ within the V and J group
+            vdj = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j])].vdj_seq.value_counts().index[0]
+        except IndexError:
+            # NaN in either V, J, or VDJ
+            continue
 
-# for s,t in df.groupby('imgt_cdr3'):
-#     print s
-#     v = t.v_gene.value_counts().index[0]
-#     j = t.j_gene.value_counts().index[0]
-#     idx = t[t['v_gene'].isin([v])].index[0]
-#     print t.ix[idx]
-#     assert t.ix[idx].j_gene == j
-#     break
+        # index of row matching V, J, VDJ
+        idx = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j]) & grouped_df['vdj_seq'].isin([vdj])].index[0]
+        indexes.add(idx)
 
-        # most abundant v-gene; want whole entry
-        v = grouped_df.v_gene.value_counts().index[0]
-        j = grouped_df.j_gene.value_counts().index[0]
+    # no longer true because we didn't remove missing data before
+    # finding unique seqs
+    # assert len(unique_seqs) == len(indexes)
 
+    # print table
+    sorted_idx = sorted(indexes)
+    ss = df.ix[sorted_idx]
+    ss.to_csv(sys.stdout, sep="\t", cols=['vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3'])
 
-    df = pd.DataFrame(counts)
-    df.to_pickle("something")
+    # print composition to stderr
+    t = float(len(ss))
+    counts = ss.vleader.value_counts()
+    for k, v in counts.iteritems():
+        perc = (v / t) * 100
+        fields = [k, str(v), str(perc)]
+        print >>sys.stderr, "\t".join(fields)
+    print >>sys.stderr, "Total: %d" % t
 
 
 if __name__ == '__main__':
@@ -161,7 +162,7 @@ if __name__ == '__main__':
     p.add_argument('-m', '--minimum', default=6, type=int, help="minimum allowable length for a productive CDR3")
     p.add_argument('-s', '--similarity', default=0.80, type=float,
         help="similarity score used to group similar CDR3 sequences: 1 \
-                (sequences must be identical) to 0 (just group everything \
+                (sequences must be identical) to 0.4 (group almost everything \
                 with the same V and J)")
     args = vars(p.parse_args())
     main(**args)
