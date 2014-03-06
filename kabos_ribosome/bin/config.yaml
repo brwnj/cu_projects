@@ -1,13 +1,17 @@
-samples: []
-adapter_sequence: CCGCTGGAAGTGACTGACAC
-trim_script: /vol1/home/brownj/projects/hits-clip/bin/scripts/trim_adapter.py
 project_id: ribosome_profiling
-fastqs: /vol1/home/brownj/projects/kabos_ribosome/data/common
 results: /vol1/home/brownj/projects/kabos_ribosome/results/common
-chrom_sizes: /vol1/home/brownj/ref/hg19/hg19.sizes
-trim:
-    adapter: ACACTTTT
-    minlength: 16
-align:
-    index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
-    cpus: 10
+samples:
+    MCF7-0: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-0.fastq.gz
+    MCF7-6: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-6.fastq.gz
+    PK12-0: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-0.fastq.gz
+    PK12-6: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-6.fastq.gz
+pipeline:
+    trim:
+        adapter: AGATCGGAAGAG
+        minlength: 25
+    filter:
+        index: /vol1/home/brownj/ref/hg19/rRNA.ebwt...
+        fast_local: True
+    align:
+        index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
+        cpus: 10
