@@ -21,10 +21,13 @@
 + HOMER pipeline with design
 
 #Duval
-+ coverage measures for each sample across capture intervals
-+ along with coverage, count the number of (not synonymous) variants
-+ set up the script to filter variant count based on coverage of individual mutations
-+ homozygousity rate over mutation rate
++ genes with most mutations across samples
++ non-normal, non-synonymous mutation frequency
++ something like:
+    s1  s2  s3  total
+g1  1   1   0   2
+g2  0   0   1   1
+g3  1   1   1   3
 
 #HITS-CLIP
 + new samples through pipeline
