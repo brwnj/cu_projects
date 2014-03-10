@@ -1,17 +1,50 @@
 project_id: ribosome_profiling
 results: /vol1/home/brownj/projects/kabos_ribosome/results/common
+# sample: starting file; gets updated to current file
 samples:
-    MCF7-0: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-0.fastq.gz
-    MCF7-6: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-6.fastq.gz
-    PK12-0: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-0.fastq.gz
-    PK12-6: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-6.fastq.gz
+    MCF7-0:
+        # could define R1 and R2 or comma separate 2 fastqs
+        fastq: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-0.fastq.gz
+        trackcolor: 0,88,36
+        group: MCF7
+    MCF7-6:
+        fastq: /vol1/home/brownj/projects/kabos_ribosome/data/common/MCF7-6.fastq.gz
+        trackcolor: 65,174,118
+        group: MCF7
+    PK12-0:
+        fastq: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-0.fastq.gz
+        trackcolor: 145,0,63
+        group: PK12
+    PK12-6:
+        fastq: /vol1/home/brownj/projects/kabos_ribosome/data/common/PK12-6.fastq.gz
+        trackcolor: 231,41,138
+        group: PK12
+# positional args are defined as numbers
+# fastqs and other runtime derived options should not be added here
 pipeline:
+    # trim options are specific for this function
     trim:
         adapter: AGATCGGAAGAG
         minlength: 25
     filter:
-        index: /vol1/home/brownj/ref/hg19/rRNA.ebwt...
-        fast_local: True
-    align:
-        index: /vol1/home/brownj/ref/hg19/hg19.9606.novoidx
-        cpus: 10
+        1: /vol1/home/brownj/ref/hg19/rRNA
+        seedlen: 23
+        p: 10
+        # BSUB parameters
+        bsub:
+            R: select[mem>16] rusage[mem=16] span[hosts=1]
+            n: 10
+    tophat:
+        opt1:
+        opt2:
+        bsub:
+            R: select[mem>16] rusage[mem=16] span[hosts=1]
+            n: 10
+    # parameters that are ints have to be in quotes
+    coverage:
+        strand: [+, -]
+        '5': True
+hub:
+    genome: hg19
+    email: brwnjm@gmail.com
+    label: Ribosome Profiling

@@ -3,235 +3,331 @@
 """
 """
 
+import os
 import yaml
+import errno
+import logging
 import os.path as op
 from bsub import bsub
-from glob import glob
-from string import Template
-from collections import OrderedDict, defaultdict
+from collections import OrderedDict
 from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 
-def dict_representer(dumper, data):
-    return dumper.represent_mapping(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.iteritems())
+class Sample(object):
+    def __init__(self, name, filename, trackcolor="8,69,148", job_id=None,
+                    resultpath="results", group=None, **kwargs):
+        self.name = name
+        self.filename = filename
+        self.trackcolor = trackcolor
+        self.job_id = job_id
+        self.resultpath = resultpath
+        self.group = group
+        self.files = {'fastq': filename}
 
+    def __str__(self):
+        return self.name
 
-def dict_constructor(loader, node):
-    return OrderedDict(loader.construct_pairs(node))
+    def __repr__(self):
+        return "Sample(%s)" % self.name
+
+    @property
+    def filepath(self):
+        """
+        filename minus the file extension
+        """
+        fp, ext = op.splitext(self.filename)
+        if ext == ".gz":
+            fp, ext = op.splitext(fp)
+        return fp
+
+    @property
+    def compressed(self):
+        return self.filename.endswith(".gz")
+
+    @classmethod
+    def newfile(self, k, f):
+        """
+        Updating filename to the file that needs to be processed next and also
+        saving the path in self.files.
+        """
+        self.files[k] = f
+        self.filename = f
 
 
 def load_config(config_file):
     assert op.isfile(config_file), "config file not found"
 
-    yaml.add_representer(OrderedDict, dict_representer)
-    yaml.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, dict_constructor)
+    def _dict_representer(dumper, data):
+        return dumper.represent_mapping(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.iteritems())
+
+    def _dict_constructor(loader, node):
+        return OrderedDict(loader.construct_pairs(node))
+
+    yaml.add_representer(OrderedDict, _dict_representer)
+    yaml.add_constructor(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, _dict_constructor)
 
     with open(config_file) as cf:
         config = yaml.load(cf)
-    config['running_jobs'] = defaultdict(list)
     return config
 
 
-def trim_sequences(config, log):
+def mkdir_p(path):
+    try:
+        os.makedirs(path)
+    except OSError as exc:
+        if exc.errno == errno.EEXIST and os.path.isdir(path):
+            pass
+        else: raise
+
+
+def build_bsub(config, algorithm, **kwargs):
     """
-    trim reads using fastx toolkit.
-
-
-    config - configuration dictionary
-    log - open file handle for verbosity
+    >>> from bsub import bsub
+    >>> config = {'pipeline': {'filter': {1: 'idx', 'bsub': {'P': 'test', 'R': 'span[hosts=1]', 'n': 10}, 'p': 10}}, 'project_id': 'test'}
+    >>> b = build_bsub(config, "filter")
+    >>> print b.command
+    bsub -e filter.%J.err -J filter -o filter.%J.out -n 10 -P test -R "span[hosts=1]"
+    >>> b = build_bsub(config, "filter", **{'w':10010})
+    bsub -e filter.%J.err -J filter -o filter.%J.out -n 10 -P test -R "span[hosts=1]" -w "done(10010)"
     """
-    trim_cmd = Template(("zcat $fastq | "
-                        "fastx_clipper -a $adapter -l $minlength -c -n -v -Q33 | "
-                        "fastx_trimmer -Q33 -f 2 | "
-                        "gzip -c > $trimmed"))
+    try:
+        pid = config['project_id']
+    except KeyError:
+        # this is required
+        logging.critical("Define a Project ID (project_id) in the config")
+        sys.exit(1)
 
-    # this is added to fastq file name
-    pattern = "_trimmed"
-    adapter = config['pipeline']['trim']['adapter']
-    minlength = config['pipeline']['trim']['minlength']
+    try:
+        # args as defined in config:pipeline:algorithm:bsub
+        config_kwargs = config['pipeline'][algorithm]['bsub']
+        # overwrite existing with new
+        config_kwargs.update(kwargs)
+    except KeyError:
+        # LSF reservations not defined in config
+        if not kwargs:
+            return bsub(step, P=pid, verbose=True)
+        config_kwargs = kwargs
 
-    submit = bsub("trim", P=config['project_id'], verbose=True)
+    # fix wait syntax
+    if 'w' in config_kwargs.keys():
+        config_kwargs['w'] = '"done({i})"'.format(i=config_kwargs['w'])
+    if not 'P' in config_kwargs.keys():
+        config_kwargs['P'] = pid
 
-    for sample, fastq in config['samples'].iteritems():
-        assert op.exists(fastq)
+    # args to strings
+    for k, v in config_kwargs.items():
+        if isinstance(v, int):
+            config_kwargs[k] = str(v)
 
-        file_path, ext = op.splitext(fastq)
-        if ext == ".gz":
-            file_path, ext = op.splitext(file_path)
+    return bsub(algorithm, verbose=True, **config_kwargs)
 
-        # trimmed file; single-end specific
-        result_file = "%s%s.fastq.gz" % (file_path, pattern)
 
-        if op.exists(result_file):
-            # update the fastq path
-            config['samples'][sample] = result_file
-            print >>log, ">> trimming already complete for", sample
-            continue
+def options_to_string(d):
+    """
+    >>> d = {1:'bowtie_idx', 'm': 1, 'quiet': True}
+    >>> options_to_string(d)
+    ' -m 1 --quiet bowtie_idx'
+    """
+    s = ""
+    p = []
+    for k, v in d.items():
+        # handle positional args
+        if isinstance(k, int):
+            p.insert(k, v)
+        elif k != "bsub":
+            s += (" --" if len(k) > 1 else " -") + k + \
+                        ("" if v is True else (" " + str(v)))
+    s += " " + " ".join(p)
+    return s
 
-        # trim
-        cmd = trim_cmd.substitute(fastq=fastq,
-                                  adapter=adapter,
-                                  minlength=minlength,
-                                  trimmed=result_file)
-        # submit the job
+
+def submit(cmd, sample, config, algorithm, result_file):
+    """
+    Check if result_file exists or submit job. Updates sample.filename and
+    sample.files[algorithm] = result_file
+
+    cmd - string to be executed
+    sample - sample object
+    config - config dictionary
+    algorithm - the current step in the pipeline
+    result_file - file being generated by algorithm
+    """
+    if op.exists(result_file):
+        sample.newfile(algorithm, result_file)
+        logging.info("%s complete for %s", algorithm, sample)
+    else:
+        kwargs = {'w': sample.job_id} if sample.job_id else {}
+        submit = build_bsub(config, algorithm, **kwargs)
         job = submit(cmd)
-        # update config with job ids to wait on
-        config['running_jobs'][sample].append(job.job_id)
-        # update fastq path in config
-        config['samples'][sample] = result_file
-        print >>log, ">> trimming started for", sample
-
-   return config
+        sample.job_id = int(job)
+        sample.newfile(algorithm, result_file)
+        logging.info("%s started for %s", algorithm, sample)
 
 
-def filter_sequences(config, log):
+def trim_sequences(samples, config, pattern="_trimmed"):
     """
-    Map against rRNA database using bowtie.
+    Trim reads using fastx toolkit. Updates current fastq path for each sample.
 
+    samples - list of sample objects
     config - configuration dictionary
-    log - open file handle for verbosity
+    pattern - string appended to resultant fastq
     """
+    algorithm = "trim"
+    adapter = config['pipeline'][algorithm]['adapter']
+    minlength = config['pipeline'][algorithm]['minlength']
 
-    trim_cmd = Template(("zcat $fastq | fastx_clipper -a $adapter -l $minlength "
-                        "-c -n -v -Q33 | fastx_trimmer -Q33 -f 2 "
-                        "| gzip -c > $trimmed"))
+    for sample in samples:
 
-    # this is added to fastq file name
-    pattern = "_trimmed"
-    adapter = config['pipeline']['trim']['adapter']
-    minlength = config['pipeline']['trim']['minlength']
+        result_file = "%s%s.fastq.gz" % (sample.filepath, pattern)
 
-    submit = bsub("trim", P=config['project_id'], verbose=True)
+        cmd = ("{cat} {fastq} "
+                "| fastx_clipper -a {adapter} -l {minlength} -c -n -v -Q33 "
+                "| fastx_trimmer -Q33 -f 2 "
+                "| gzip -c > {result}").format(cat="zcat" if sample.compressed else "cat",
+                                                fastq=sample.filename,
+                                                adapter=adapter,
+                                                minlength=minlength,
+                                                result=result_file)
 
-    for sample, fastq in config['samples'].iteritems():
-        assert op.exists(fastq)
-
-        file_path, ext = op.splitext(fastq)
-        if ext == ".gz":
-            file_path, ext = op.splitext(file_path)
-
-        # trimmed file; single-end specific
-        result_file = "%s%s.fastq.gz" % (file_path, pattern)
-        if op.exists(result_file):
-            # update the fastq path
-            config['samples'][sample] = result_file
-            print >>summary, ">> trimming already complete for", sample
-            continue
-
-        # trim
-        cmd = trim_cmd.substitute(fastq=fastq,
-                                  adapter=adapter,
-                                  minlength=minlength,
-                                  trimmed=result_file)
-        # submit the job
-        job = submit(cmd)
-        # update config with job ids to wait on
-        config['running_jobs'][sample].append(job.job_id)
-        # update fastq path in config
-        config['samples'][sample] = result_file
-        print >>summary, ">> trimming started for", sample
-
-    # print more message to log
-    print >>summary, "After Trimming:"
-    yaml.dump(config, summary, default_flow_style=False)
-    summary.close()
-#    return config
+        submit(cmd, sample, config, algorithm, result_file)
 
 
-# @command('align')
-# def align():
-#     """
-#     align the reads using Novoalign.
-#
-#     writes $sample.bam to $results/$sample/$sample.bam
-#     also writes an alignment summary in the same dir as
-#     $sample.alignment_stats.txt
-#     """
-#     cpus = str(config['align']['cpus'])
-#     novoidx = Path(config['align']['index'])
-#     assert novoidx.exists(), "index not found"
-#
-#     submit = bsub("align", P=project_id, n=cpus, R="select[mem>16] rusage[mem=16] span[hosts=1]", verbose=True)
-#
-#     for sample in config['samples']:
-#         fastq = fastqs / '{sample}.fastq.gz'.format(sample=sample)
-#
-#         # check results dir
-#         sample_results = results / sample
-#         if not sample_results.exists():
-#             sample_results.mkdir()
-#
-#         bam = results / sample / '{sample}.bam'.format(sample=sample)
-#         if bam.exists(): continue
-#
-#         alignment_summary = results / sample / '{sample}.alignment_stats.txt'.format(sample=sample)
-#         align = NOVOALIGN.substitute(index=novoidx.as_posix(),
-#                                     fastq=fastq.as_posix(),
-#                                     cpus=cpus,
-#                                     summary=alignment_summary,
-#                                     sample=sample,
-#                                     bam=bam)
-#         samtools_index = "samtools index {bam}".format(**locals())
-#         job = submit(align).then(samtools_index, n=1, R="select[mem>4] rusage[mem=4]")
+def filter_sequences(samples, config, pattern="_filtered"):
+    """
+    Map against rRNA database using bowtie. Updates current fastq path for each
+    sample.
+
+    samples - list of sample objects
+    config - configuration dictionary
+    pattern - string appended to resultant fastq
+    """
+    algorithm = "filter"
+    opts = options_to_string(config['pipeline'][algorithm])
+
+    for sample in samples:
+        result_file = "%s%s.fastq.gz" % (sample.filepath, pattern)
+        # collecting stderr
+        stats_file = "%s/%s_stats.txt" % (sample.resultpath, algorithm)
+        sample.files['%s_stats' % algorithm] = stats_file
+
+        cmd = ("{cat} {fastq} "
+                "| bowtie --un {result} {opts} - "
+                "> /dev/null "
+                "2> {stats}").format(cat="zcat" if sample.compressed else "cat",
+                                     fastq=sample.filename,
+                                     result=result_file,
+                                     opts=opts,
+                                     stats=stats_file)
+
+        submit(cmd, sample, config, algorithm, result_file)
 
 
-# @command('bam2bw')
-# def bam2bw():
-#     """
-#     convert all bams to stranded bedgraphs
-#     convert those bedgraphs to bigwigs
-#
-#     from /path/to/something.bam to:
-#             /path/to/something_{pos,neg}.bedgraph.gz
-#             /path/to/something_{pos,neg}.bw
-#     """
-#     submit = bsub("bam2bw", P=project_id, verbose=True)
-#     symbols, strands = ["+", "-"], ["pos", "neg"]
-#     for bam in results.glob('*/*.bam'):
-#         base = bam.parent / bam.stem
-#
-#         p_bedgraph = Path("{base}_pos.bedgraph.gz".format(**locals()))
-#         n_bedgraph = Path("{base}_neg.bedgraph.gz".format(**locals()))
-#         p_bigwig = Path("{base}_pos.bw".format(**locals()))
-#         n_bigwig = Path("{base}_neg.bw".format(**locals()))
-#
-#         # don't run unnecessarily
-#         if p_bedgraph.exists() and n_bedgraph.exists() and \
-#                 p_bigwig.exists() and n_bigwig.exists(): continue
-#
-#         # running the conversions
-#         for symbol, strand in zip(symbols, strands):
-#             bedgraph = "{base}_{strand}.bedgraph".format(**locals())
-#             bigwig = "{base}_{strand}.bw".format(**locals())
-#
-#             makebg = ("genomeCoverageBed -strand {symbol} -bg -ibam {bam} "
-#                         "| bedtools sort -i - > {bedgraph}").format(**locals())
-#             makebw = ("bedGraphToBigWig {bedgraph} {chrom_sizes} "
-#                         "{bigwig}").format(bedgraph=bedgraph,
-#                                             chrom_sizes=chrom_sizes,
-#                                             bigwig=bigwig)
-#             gzipbg = "gzip -f {bedgraph}".format(**locals())
-#
-#             job = submit(makebg).then(makebw).then(gzipbg)
+def tophat(samples, config, pattern=""):
+    """
+    Align reads using tophat.
+
+    samples - list of sample objects
+    config - configuration dictionary
+    pattern - string appended to resultant file
+    """
+    algorithm = "tophat"
+    opts = options_to_string(config['pipeline'][algorithm])
+    for sample in samples:
+        result_file = "%s/%s.bam" % (sample.resultpath, sample)
+        stats_file = "%s/%s_stats.txt" % (sample.resultpath, algorithm)
+        sample.files['%s_stats' % algorithm] = stats_file
+        # accepted_hits.bam
+        #samtools sort -@ {cores} -m 8G - {sample}
+        #samtools index bam
+        cmd = "tophat..."
+        submit(cmd, sample, config, algorithm, result_file)
+
+
+def bam2bw():
+    """
+    """
+    for sample in samples:
+        for bam in files:
+
+
+    symbols, strands = ["+", "-"], ["pos", "neg"]
+    for bam in results.glob('*/*.bam'):
+        base = bam.parent / bam.stem
+
+        p_bedgraph = Path("{base}_pos.bedgraph.gz".format(**locals()))
+        n_bedgraph = Path("{base}_neg.bedgraph.gz".format(**locals()))
+        p_bigwig = Path("{base}_pos.bw".format(**locals()))
+        n_bigwig = Path("{base}_neg.bw".format(**locals()))
+
+        # running the conversions
+        for symbol, strand in zip(symbols, strands):
+            bedgraph = "{base}_{strand}.bedgraph".format(**locals())
+            bigwig = "{base}_{strand}.bw".format(**locals())
+
+            makebg = ("genomeCoverageBed -strand {symbol} -bg -ibam {bam} "
+                        "| bedtools sort -i - > {bedgraph}").format(**locals())
+            makebw = ("bedGraphToBigWig {bedgraph} {chrom_sizes} "
+                        "{bigwig}").format(bedgraph=bedgraph,
+                                            chrom_sizes=chrom_sizes,
+                                            bigwig=bigwig)
+            gzipbg = "gzip -f {bedgraph}".format(**locals())
+
+            job = submit(makebg).then(makebw).then(gzipbg)
+
+
+def get_samples(config):
+    samples = []
+
+    for name, kwargs in config['samples'].items():
+        # all of the initial fastqs should exist
+        try:
+            filename = kwargs.pop('fastq')
+        except KeyError:
+            logging.critical("Exiting. 'fastq' must be defined for %s", name)
+            sys.exit(1)
+        if not op.exists(filename):
+            logging.critical("Path for %s isn't valid (%s).", name, filename)
+            sys.exit(1)
+
+        resultpath = "%s/%s" % (config['results'], name)
+        # should also be able to write here
+        try:
+            mkdir_p(resultpath)
+        except OSError:
+            logging.critical("Exiting. Can't create directory %s.", resultpath)
+            sys.exit(1)
+        kwargs['resultpath'] = resultpath
+
+        samples.append(Sample(name, filename, **kwargs))
+
+    return samples
 
 
 def main(config):
     config = load_config(config_file)
-    with open(config['results'] + "run_log.out", 'a') as log:
-        workflow = config['pipeline'].keys()
-        # trim
-        if "trim" in workflow:
-            config = trim_sequences(config, log)
-        # filter
-        if "filter" in workflow:
-            config = filter_sequences(config, log)
-        # map
-        # hub
-        yaml.dump(config, log, default_flow_style=False)
+    logging.basicConfig(filename=config['results'] + "/pipeline.log",
+                        format='%(levelname)s:%(message)s', level=logging.DEBUG)
+
+    workflow = config['pipeline'].keys()
+    samples = get_samples(config)
+
+    if "trim" in workflow:
+        trim_sequences(samples, config)
+
+    if "filter" in workflow:
+        filter_sequences(samples, config)
+    # map
+    if "tophat" in workflow:
+        tophat(samples, config)
+    # hub
+    # yaml.dump(config, default_flow_style=False)
 
 
 if __name__ == '__main__':
+    import doctest
+    doctest.testmod(optionflags=doctest.REPORT_ONLY_FIRST_FAILURE)
+
     p = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
-    p.add_argument('config', help="config file as yaml")
+    p.add_argument('config', help="Configuration file as yaml.")
     args = p.parse_args()
     main(args.config)

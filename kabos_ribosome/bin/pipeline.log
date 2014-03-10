@@ -1,0 +1,2 @@
+INFO:root:rRNA filtering started for MCF7-0
+CRITICAL:root:Exiting. 'fastq' must be defined for MCF7-0
