@@ -82,6 +82,8 @@ def word_size(n):
 
 def main(imgt_aa, minimum, similarity):
     """
+    In naive populations, we expect 40% V3, 20% V1 and V4, low percentages for
+    V2 and V5.
     """
 
     cluster_word_size = word_size(similarity)
@@ -91,25 +93,33 @@ def main(imgt_aa, minimum, similarity):
     filename, ext = os.path.splitext(imgt_aa)
 
     # import into a table; rename cols
-    df = pd.read_table(imgt_aa, header=0, usecols=[0,2,3,4,6,14],
+    col_idxs = [0,1,2,3,4,6,14]
+    col_names = ["seq_num", "seq_id", "functionality", "v_gene", "j_gene", "vdj_seq", "imgt_cdr3"]
+    df = pd.read_table(imgt_aa, header=0, usecols=col_idxs,
                         compression="gzip" if ext == ".gz" else None,
-                        names=["seq_num", "functionality", "v_gene", "j_gene", "vdj_seq", "imgt_cdr3"])
+                        names=col_names)
 
     # drop unproductive translations
     df = df[df.functionality == "productive"]
+    # drop missing
+    df.dropna(subset=['vdj_seq', 'v_gene', 'j_gene'], how='any', inplace=True)
     # only take one translated germline
-    df['v_gene'] = df['v_gene'].apply(lambda x: pd.Series(x.split(" ", 2)[1].split("*")[0]))
-    df['j_gene'] = df['j_gene'].apply(lambda x: pd.Series(x.split(" ", 2)[1].split("*")[0]))
-    # vh leader
-    df['vleader'] = df['v_gene'].apply(lambda x: pd.Series(x.split("-")[0]))
-    # vh exon
-    # df['vexon'] = df['v_gene'].apply(lambda x: pd.Series(x.split("-")[-1]))
+    df['v_gene'] = df['v_gene'].str.split().str[1].str.split("*").str[0]
+    df['j_gene'] = df['j_gene'].str.split().str[1].str.split("*").str[0]
+    df['vleader'] = df['v_gene'].str.split("-").str[0]
+    # works for 2 of 3
+    df['immunoglobulin'] = df['seq_id'].str.split(":C").str[1].str.split("2:").str[0]
+    # fix for the 3rd one
+    df['immunoglobulin'] = df['immunoglobulin'].str.split("2b:").str[0]
     # length of cdr3 sequence to group by
     df['cdr3_length'] = df.imgt_cdr3.apply(len)
+    # replace stars within VDJ sequence
+    df['vdj_seq'] = df['vdj_seq'].str.replace("*","")
 
     # find unique CDR3 sequences
     unique_seqs = set()
-    for l, grouped_df in df.groupby('cdr3_length'):
+    # added v and j gene to groupby may or may not increase len of unique seqs
+    for (l, vgene, jgene), grouped_df in df.groupby(['cdr3_length', 'v_gene', 'j_gene']):
         if l < minimum: continue
 
         clustered = cluster_proteins(grouped_df['imgt_cdr3'], imgt_aa, similarity, cluster_word_size)
@@ -119,32 +129,34 @@ def main(imgt_aa, minimum, similarity):
 
     indexes = set()
     # filter table using unique sequences
-    for seq, grouped_df in df.groupby('imgt_cdr3'):
-        if not seq in unique_seqs: continue
+    # TODO: will need plots and tables for that as well
+    for (cdr3, v_gene, j_gene), grouped_df in df.groupby(['imgt_cdr3', 'v_gene', 'j_gene']):
+        if not cdr3 in unique_seqs: continue
 
-        try:
-            # most abundant V
-            v = grouped_df.v_gene.value_counts().index[0]
-            # most abundant J within those Vs
-            j = grouped_df[grouped_df['v_gene'].isin([v])].j_gene.value_counts().index[0]
-            # most abundant VDJ within the V and J group
-            vdj = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j])].vdj_seq.value_counts().index[0]
-        except IndexError:
-            # NaN in either V, J, or VDJ
-            continue
+        # prior to adding v and j in the groupby
+
+        # most abundant V
+        # v = grouped_df.v_gene.value_counts().index[0]
+        # most abundant J within those Vs
+        # j = grouped_df[grouped_df['v_gene'].isin([v])].j_gene.value_counts().index[0]
+        # most abundant VDJ within the V and J group
+        # vdj = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j])].vdj_seq.value_counts().index[0]
 
         # index of row matching V, J, VDJ
-        idx = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j]) & grouped_df['vdj_seq'].isin([vdj])].index[0]
+        # idx = grouped_df[grouped_df['v_gene'].isin([v]) & grouped_df['j_gene'].isin([j]) & grouped_df['vdj_seq'].isin([vdj])].index[0]
+
+        # most abundant VDJ sequence
+        vdj = grouped_df.vdj_seq.value_counts().index[0]
+        idx = grouped_df[grouped_df['vdj_seq'].isin([vdj])].index[0]
+
         indexes.add(idx)
 
-    # no longer true because we didn't remove missing data before
-    # finding unique seqs
-    # assert len(unique_seqs) == len(indexes)
+    # indexes will likely be longer than unique_seqs due to grouping
 
     # print table
     sorted_idx = sorted(indexes)
     ss = df.ix[sorted_idx]
-    ss.to_csv(sys.stdout, sep="\t", cols=['vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3'])
+    ss.to_csv(sys.stdout, sep="\t", cols=['immunoglobulin', 'vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3'])
 
     # print composition to stderr
     t = float(len(ss))
