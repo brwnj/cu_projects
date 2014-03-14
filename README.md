@@ -32,6 +32,8 @@ g3  1   1   1   3
 #HITS-CLIP
 + new samples through pipeline
 + ucsc hub
++ 1-58
++ 1-50 + 1, 51, 52-57 +1, 58
 
 #Leung
 + annotate variants with snpsift
