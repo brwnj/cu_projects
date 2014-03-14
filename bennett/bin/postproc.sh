@@ -24,6 +24,6 @@ stats=$results/${sample}_dists.tsv
 plot=$results/${sample}_dist.pdf
 
 # distributions
-python $bin/aa_dists.py -m 6 -s .95 $imgt_aa 2> $stats > $dists_result
+python $bin/aa_dists.py -m 6 -s .70 $imgt_aa 2> $stats > $dists_result
 # plotting
 Rscript $bin/plot_dist.R $dists_result $sample $plot
