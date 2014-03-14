@@ -35,16 +35,22 @@ pipeline:
             R: select[mem>16] rusage[mem=16] span[hosts=1]
             n: 10
     tophat:
-        opt1:
-        opt2:
+        1: /vol1/home/brownj/ref/hg19/hg19
+        segment-mismatches: 1
+        no-novel-juncs: True
+        transcriptome-index: /vol1/home/brownj/ref/hg19/transcriptome/genes
+        T: True
         bsub:
             R: select[mem>16] rusage[mem=16] span[hosts=1]
             n: 10
-    # parameters that are ints have to be in quotes
-    coverage:
-        strand: [+, -]
-        '5': True
 hub:
     genome: hg19
     email: brwnjm@gmail.com
     label: Ribosome Profiling
+    # may need to pass pattern here because more than one version could exist
+    alignments:
+        coverage:
+            # parameters that are ints have to be in quotes
+            strand: [+, -]
+            '5': True
+    # regions:

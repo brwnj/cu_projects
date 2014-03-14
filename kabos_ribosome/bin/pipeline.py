@@ -4,6 +4,7 @@
 """
 
 import os
+import sys
 import yaml
 import errno
 import logging
@@ -15,7 +16,7 @@ from argparse import ArgumentParser, RawDescriptionHelpFormatter
 
 class Sample(object):
     def __init__(self, name, filename, trackcolor="8,69,148", job_id=None,
-                    resultpath="results", group=None, **kwargs):
+                    resultpath="results", group=None):
         self.name = name
         self.filename = filename
         self.trackcolor = trackcolor
@@ -44,7 +45,6 @@ class Sample(object):
     def compressed(self):
         return self.filename.endswith(".gz")
 
-    @classmethod
     def newfile(self, k, f):
         """
         Updating filename to the file that needs to be processed next and also
@@ -55,7 +55,9 @@ class Sample(object):
 
 
 def load_config(config_file):
-    assert op.isfile(config_file), "config file not found"
+    if not op.isfile(config_file):
+        logging.critical("Exiting: configuration file not found.")
+        sys.exit(1)
 
     def _dict_representer(dumper, data):
         return dumper.represent_mapping(yaml.resolver.BaseResolver.DEFAULT_MAPPING_TAG, data.iteritems())
@@ -69,6 +71,13 @@ def load_config(config_file):
     with open(config_file) as cf:
         config = yaml.load(cf)
     return config
+
+
+def start_logging(config):
+    import time
+    logging.basicConfig(filename=config['results'] + "/pipeline.log",
+                        format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    logging.info("Run: %s", time.strftime("%Y%m%d -- %H:%M:%S"))
 
 
 def mkdir_p(path):
@@ -85,9 +94,10 @@ def build_bsub(config, algorithm, **kwargs):
     >>> from bsub import bsub
     >>> config = {'pipeline': {'filter': {1: 'idx', 'bsub': {'P': 'test', 'R': 'span[hosts=1]', 'n': 10}, 'p': 10}}, 'project_id': 'test'}
     >>> b = build_bsub(config, "filter")
-    >>> print b.command
+    >>> print b.command.replace("logs/", "")
     bsub -e filter.%J.err -J filter -o filter.%J.out -n 10 -P test -R "span[hosts=1]"
     >>> b = build_bsub(config, "filter", **{'w':10010})
+    >>> print b.command.replace("logs/", "")
     bsub -e filter.%J.err -J filter -o filter.%J.out -n 10 -P test -R "span[hosts=1]" -w "done(10010)"
     """
     try:
@@ -105,12 +115,12 @@ def build_bsub(config, algorithm, **kwargs):
     except KeyError:
         # LSF reservations not defined in config
         if not kwargs:
-            return bsub(step, P=pid, verbose=True)
+            return bsub(algorithm, P=pid, verbose=True)
         config_kwargs = kwargs
 
     # fix wait syntax
     if 'w' in config_kwargs.keys():
-        config_kwargs['w'] = '"done({i})"'.format(i=config_kwargs['w'])
+        config_kwargs['w'] = '"exit({i},0)"'.format(i=config_kwargs['w'])
     if not 'P' in config_kwargs.keys():
         config_kwargs['P'] = pid
 
@@ -161,7 +171,7 @@ def submit(cmd, sample, config, algorithm, result_file):
         job = submit(cmd)
         sample.job_id = int(job)
         sample.newfile(algorithm, result_file)
-        logging.info("%s started for %s", algorithm, sample)
+        logging.info("%s queued for %s <%s>", algorithm, sample, sample.job_id)
 
 
 def trim_sequences(samples, config, pattern="_trimmed"):
@@ -177,16 +187,18 @@ def trim_sequences(samples, config, pattern="_trimmed"):
     minlength = config['pipeline'][algorithm]['minlength']
 
     for sample in samples:
-
         result_file = "%s%s.fastq.gz" % (sample.filepath, pattern)
+        stats_file = "%s/%s_stats.txt" % (sample.resultpath, algorithm)
+        sample.files['%s_stats' % algorithm] = stats_file
 
         cmd = ("{cat} {fastq} "
-                "| fastx_clipper -a {adapter} -l {minlength} -c -n -v -Q33 "
-                "| fastx_trimmer -Q33 -f 2 "
+                "| fastx_clipper -a {adapter} -l {minlength} -c -n -v -Q33 2>> {stats}"
+                "| fastx_trimmer -Q33 -f 2 2>> {stats}"
                 "| gzip -c > {result}").format(cat="zcat" if sample.compressed else "cat",
                                                 fastq=sample.filename,
                                                 adapter=adapter,
                                                 minlength=minlength,
+                                                stats=stats_file,
                                                 result=result_file)
 
         submit(cmd, sample, config, algorithm, result_file)
@@ -206,73 +218,87 @@ def filter_sequences(samples, config, pattern="_filtered"):
 
     for sample in samples:
         result_file = "%s%s.fastq.gz" % (sample.filepath, pattern)
-        # collecting stderr
+        temp_file = "%s_temp.fastq" % (sample.filepath)
         stats_file = "%s/%s_stats.txt" % (sample.resultpath, algorithm)
         sample.files['%s_stats' % algorithm] = stats_file
 
-        cmd = ("{cat} {fastq} "
+        filt = ("{cat} {fastq} "
                 "| bowtie --un {result} {opts} - "
                 "> /dev/null "
                 "2> {stats}").format(cat="zcat" if sample.compressed else "cat",
                                      fastq=sample.filename,
-                                     result=result_file,
+                                     result=temp_file,
                                      opts=opts,
                                      stats=stats_file)
+        gzip = "gzip {fastq}".format(fastq=temp_file)
+        rename = "mv {temp}.gz {result}".format(temp=temp_file,
+                                                result=result_file)
 
-        submit(cmd, sample, config, algorithm, result_file)
+        submit(filt, sample, config, algorithm, result_file)
+        submit(gzip, sample, config, "gzip", result_file)
+        submit(rename, sample, config, "rename", result_file)
 
 
-def tophat(samples, config, pattern=""):
+def tophat(samples, config, pattern="_tophat"):
     """
     Align reads using tophat.
 
     samples - list of sample objects
     config - configuration dictionary
-    pattern - string appended to resultant file
+    pattern - string appended to resultant bam
     """
     algorithm = "tophat"
     opts = options_to_string(config['pipeline'][algorithm])
     for sample in samples:
-        result_file = "%s/%s.bam" % (sample.resultpath, sample)
-        stats_file = "%s/%s_stats.txt" % (sample.resultpath, algorithm)
+        result_file = "%s/%s%s.bam" % (sample.resultpath, sample, pattern)
+        temp_file = "%s/accepted_hits.bam" % sample.resultpath
+        stats_file = "%s/align_summary.txt" % sample.resultpath
         sample.files['%s_stats' % algorithm] = stats_file
-        # accepted_hits.bam
-        #samtools sort -@ {cores} -m 8G - {sample}
-        #samtools index bam
-        cmd = "tophat..."
-        submit(cmd, sample, config, algorithm, result_file)
+
+        align = ("tophat {opts} --output-dir {out} "
+                    "{fastq}").format(opts=opts,
+                                      out=sample.resultpath,
+                                      fastq=sample.filename)
+        rename = "mv {temp_bam} {sample_bam}".format(temp_bam=temp_file,
+                                                     sample_bam=result_file)
+        index = "samtools index {bam}".format(bam=result_file)
+
+        # should return bsub object and use .then()
+        submit(align, sample, config, algorithm, result_file)
+        submit(rename, sample, config, "rename", result_file)
+        submit(index, sample, config, "index", result_file)
 
 
-def bam2bw():
-    """
-    """
-    for sample in samples:
-        for bam in files:
-
-
-    symbols, strands = ["+", "-"], ["pos", "neg"]
-    for bam in results.glob('*/*.bam'):
-        base = bam.parent / bam.stem
-
-        p_bedgraph = Path("{base}_pos.bedgraph.gz".format(**locals()))
-        n_bedgraph = Path("{base}_neg.bedgraph.gz".format(**locals()))
-        p_bigwig = Path("{base}_pos.bw".format(**locals()))
-        n_bigwig = Path("{base}_neg.bw".format(**locals()))
-
-        # running the conversions
-        for symbol, strand in zip(symbols, strands):
-            bedgraph = "{base}_{strand}.bedgraph".format(**locals())
-            bigwig = "{base}_{strand}.bw".format(**locals())
-
-            makebg = ("genomeCoverageBed -strand {symbol} -bg -ibam {bam} "
-                        "| bedtools sort -i - > {bedgraph}").format(**locals())
-            makebw = ("bedGraphToBigWig {bedgraph} {chrom_sizes} "
-                        "{bigwig}").format(bedgraph=bedgraph,
-                                            chrom_sizes=chrom_sizes,
-                                            bigwig=bigwig)
-            gzipbg = "gzip -f {bedgraph}".format(**locals())
-
-            job = submit(makebg).then(makebw).then(gzipbg)
+# def bam2bw():
+#     """
+#     """
+#     for sample in samples:
+#         for bam in files:
+#
+#
+#     symbols, strands = ["+", "-"], ["pos", "neg"]
+#     for bam in results.glob('*/*.bam'):
+#         base = bam.parent / bam.stem
+#
+#         p_bedgraph = Path("{base}_pos.bedgraph.gz".format(**locals()))
+#         n_bedgraph = Path("{base}_neg.bedgraph.gz".format(**locals()))
+#         p_bigwig = Path("{base}_pos.bw".format(**locals()))
+#         n_bigwig = Path("{base}_neg.bw".format(**locals()))
+#
+#         # running the conversions
+#         for symbol, strand in zip(symbols, strands):
+#             bedgraph = "{base}_{strand}.bedgraph".format(**locals())
+#             bigwig = "{base}_{strand}.bw".format(**locals())
+#
+#             makebg = ("genomeCoverageBed -strand {symbol} -bg -ibam {bam} "
+#                         "| bedtools sort -i - > {bedgraph}").format(**locals())
+#             makebw = ("bedGraphToBigWig {bedgraph} {chrom_sizes} "
+#                         "{bigwig}").format(bedgraph=bedgraph,
+#                                             chrom_sizes=chrom_sizes,
+#                                             bigwig=bigwig)
+#             gzipbg = "gzip -f {bedgraph}".format(**locals())
+#
+#             job = submit(makebg).then(makebw).then(gzipbg)
 
 
 def get_samples(config):
@@ -304,30 +330,31 @@ def get_samples(config):
 
 
 def main(config):
-    config = load_config(config_file)
-    logging.basicConfig(filename=config['results'] + "/pipeline.log",
-                        format='%(levelname)s:%(message)s', level=logging.DEBUG)
+    config = load_config(config)
+    start_logging(config)
 
     workflow = config['pipeline'].keys()
     samples = get_samples(config)
+
+    # could be generalized where config key is method name
 
     if "trim" in workflow:
         trim_sequences(samples, config)
 
     if "filter" in workflow:
         filter_sequences(samples, config)
-    # map
+
     if "tophat" in workflow:
         tophat(samples, config)
+
     # hub
     # yaml.dump(config, default_flow_style=False)
 
 
 if __name__ == '__main__':
     import doctest
-    doctest.testmod(optionflags=doctest.REPORT_ONLY_FIRST_FAILURE)
-
-    p = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
-    p.add_argument('config', help="Configuration file as yaml.")
-    args = p.parse_args()
-    main(args.config)
+    if doctest.testmod(optionflags=doctest.NORMALIZE_WHITESPACE).failed == 0:
+        p = ArgumentParser(description=__doc__, formatter_class=RawDescriptionHelpFormatter)
+        p.add_argument('config', help="Configuration file as yaml.")
+        args = p.parse_args()
+        main(args.config)
