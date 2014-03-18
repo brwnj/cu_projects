@@ -37,23 +37,6 @@ def rm(file):
         _remove(f)
 
 
-def readfq(fq):
-    with nopen(fq) as fh:
-        fqclean = (x.strip("\r\n") for x in fh if x.strip())
-        while True:
-            rd = [x for x in islice(fqclean, 4)]
-            if not rd: raise StopIteration
-            assert all(rd) and len(rd) == 4
-            yield rd[0][1:], rd[1], rd[3]
-
-
-def fq_to_dict(fq):
-    d = {}
-    for name, seq, qual in readfq(fq):
-        d[name] = seq
-    return d
-
-
 def cluster_proteins(sequences, sample, threshold, word_size):
     """
     sequences   pd.Series of AA sequences
@@ -97,7 +80,7 @@ def word_size(n):
     return ws
 
 
-def main(imgt_aa, joined_fastq, minimum, similarity):
+def main(imgt_aa, minimum, similarity):
     """
     In naive populations, we expect 40% V3, 20% V1 and V4, low percentages for
     V2 and V5.
@@ -108,7 +91,6 @@ def main(imgt_aa, joined_fastq, minimum, similarity):
     print >>sys.stderr, ">>>", imgt_aa
 
     filename, ext = os.path.splitext(imgt_aa)
-    nt_seqs = fq_to_dict(joined_fastq)
 
     # import into a table; rename cols
     col_idxs = [0,1,2,3,4,6,14]
@@ -170,17 +152,22 @@ def main(imgt_aa, joined_fastq, minimum, similarity):
     # indexes will likely be longer than unique_seqs due to grouping
 
     # print table
-    # will need
     sorted_idx = sorted(indexes)
     ss = df.ix[sorted_idx]
-    # add nucleotide sequences onto this dataframe
-    ss['nt_seq'] = nt_seqs[ss['seq_id'].str]
-
-    ss.to_csv(sys.stdout, sep="\t", cols=['immunoglobulin', 'vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3', 'nt_seq'])
+    ss.to_csv(sys.stdout, sep="\t", cols=['immunoglobulin', 'vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3'])
 
     # print composition to stderr
     t = float(len(ss))
+    # vleader
     counts = ss.vleader.value_counts()
+    for k, v in counts.iteritems():
+        perc = (v / t) * 100
+        fields = [k, str(v), str(perc)]
+        print >>sys.stderr, "\t".join(fields)
+    print >>sys.stderr, "Total: %d" % t
+
+    # immunoglobulin
+    counts = ss.immunoglobulin.value_counts()
     for k, v in counts.iteritems():
         perc = (v / t) * 100
         fields = [k, str(v), str(perc)]
@@ -191,7 +178,6 @@ def main(imgt_aa, joined_fastq, minimum, similarity):
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('imgt_aa')
-    p.add_argument('joined_fastq')
     p.add_argument('-m', '--minimum', default=6, type=int, help="minimum allowable length for a productive CDR3")
     p.add_argument('-s', '--similarity', default=0.80, type=float,
         help="similarity score used to group similar CDR3 sequences: 1 \

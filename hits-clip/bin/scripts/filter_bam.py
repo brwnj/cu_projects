@@ -32,7 +32,7 @@ def bed_from_bam(bam, mark, n):
             for read in bam_file.fetch(chrom):
                 if read.is_unmapped: continue
 
-                if mark in read.qname:
+                if mark == 'all' or mark in read.qname:
                     total_marked += 1
                     # coordinates will include read sequence in fasta
                     if read.is_reverse:
@@ -87,8 +87,13 @@ def find_discards(sequences, discard):
         with open(sequences) as fh:
             for line in fh:
                 name, sequence = line.strip().split("\t")
-                if sequence.find(discard) == -1: continue
-                discards.add(name)
+
+                for dseq in discard:
+
+                    if sequence.find(dseq) == -1: continue
+                    discards.add(name)
+                    break
+
     finally:
         remove(sequences)
     return discards
@@ -137,8 +142,8 @@ if __name__ == '__main__':
     p.add_argument('outbam', help="filtered bam")
     p.add_argument('fasta', help="reference fasta; index required")
     p.add_argument('-b', '--bases', default=100, type=int, help="number of bases downstream to look for discard sequence")
-    p.add_argument('-d', '--discard', default="TCAGTC", help="if found without flanking adapter piece, discard mapped read")
-    p.add_argument('-m', '--mark', default="inspect", help="string that was used to mark reads")
+    p.add_argument('-d', '--discard', default=["TCAGTC"], action="append", help="if found without flanking adapter piece, discard mapped read")
+    p.add_argument('-m', '--mark', default="inspect", help="string that was used to mark reads or 'all' if you want to check all aligned reads")
 
     args = vars(p.parse_args())
     main(**args)
