@@ -13,6 +13,16 @@ from toolshed import nopen
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
+def readfq(fq):
+    with nopen(fq) as fh:
+        fqclean = (x.strip("\r\n") for x in fh if x.strip())
+        while True:
+            rd = [x for x in itertools.islice(fqclean, 4)]
+            if not rd: raise StopIteration
+            assert all(rd) and len(rd) == 4
+            yield rd[0][1:], rd[1], rd[3]
+
+
 def readfa(fa):
     with nopen(fa) as fh:
         for h, g in itertools.groupby(fh, lambda l: l[0] == '>'):
@@ -35,6 +45,13 @@ def rm(file):
             _remove(f)
     else:
         _remove(f)
+
+
+def fq_to_list(fq):
+    l = []
+    for name, seq, qual in readfq(fq):
+        l.append((name, seq))
+    return l
 
 
 def cluster_proteins(sequences, sample, threshold, word_size):
@@ -80,17 +97,20 @@ def word_size(n):
     return ws
 
 
-def main(imgt_aa, minimum, similarity):
+def main(imgt_aa, fastq, minimum, similarity):
     """
     In naive populations, we expect 40% V3, 20% V1 and V4, low percentages for
     V2 and V5.
     """
-
-    cluster_word_size = word_size(similarity)
+    assert os.path.exists(imgt_aa)
+    assert os.path.exists(fastq)
 
     print >>sys.stderr, ">>>", imgt_aa
 
+    cluster_word_size = word_size(similarity)
     filename, ext = os.path.splitext(imgt_aa)
+    nt_seqs = fq_to_list(fastq)
+    nt_seqs_df = pd.DataFrame(nt_seqs, columns=['name', 'seq'])
 
     # import into a table; rename cols
     col_idxs = [0,1,2,3,4,6,14]
@@ -127,7 +147,6 @@ def main(imgt_aa, minimum, similarity):
 
     indexes = set()
     # filter table using unique sequences
-    # TODO: will need plots and tables for that as well
     for (cdr3, v_gene, j_gene), grouped_df in df.groupby(['imgt_cdr3', 'v_gene', 'j_gene']):
         if not cdr3 in unique_seqs: continue
 
@@ -153,13 +172,14 @@ def main(imgt_aa, minimum, similarity):
 
     # print table
     sorted_idx = sorted(indexes)
-    ss = df.ix[sorted_idx]
-    ss.to_csv(sys.stdout, sep="\t", cols=['immunoglobulin', 'vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3'])
+    merged_df = df.ix[sorted_idx].merge(nt_seqs_df, left_on="seq_id", right_on="name")
+    merged_df.to_csv(sys.stdout, sep="\t", cols=['immunoglobulin', 'vleader', 'v_gene', 'j_gene', 'vdj_seq', 'imgt_cdr3', 'seq'])
 
     # print composition to stderr
-    t = float(len(ss))
+    t = float(len(merged_df))
+
     # vleader
-    counts = ss.vleader.value_counts()
+    counts = merged_df.vleader.value_counts()
     for k, v in counts.iteritems():
         perc = (v / t) * 100
         fields = [k, str(v), str(perc)]
@@ -167,7 +187,7 @@ def main(imgt_aa, minimum, similarity):
     print >>sys.stderr, "Total: %d" % t
 
     # immunoglobulin
-    counts = ss.immunoglobulin.value_counts()
+    counts = merged_df.immunoglobulin.value_counts()
     for k, v in counts.iteritems():
         perc = (v / t) * 100
         fields = [k, str(v), str(perc)]
@@ -178,6 +198,7 @@ def main(imgt_aa, minimum, similarity):
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('imgt_aa')
+    p.add_argument('fastq')
     p.add_argument('-m', '--minimum', default=6, type=int, help="minimum allowable length for a productive CDR3")
     p.add_argument('-s', '--similarity', default=0.80, type=float,
         help="similarity score used to group similar CDR3 sequences: 1 \
