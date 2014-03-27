@@ -9,18 +9,6 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/williams_chipseq/bin/config.sh
 
-colors=(
-"166,206,227"
-"31,120,180"
-"178,223,138"
-"51,160,44"
-"251,154,153"
-"227,26,28"
-"253,191,111"
-"255,127,0"
-"202,178,214"
-"106,61,154"
-)
 
 # genomes.txt
 if [[ ! -f $HUB/genomes.txt ]]; then
@@ -50,9 +38,10 @@ trackdb=$HUB/$GENOME/trackDb.txt
 cat <<coverage_track >$trackdb
 track williams_coverage
 compositeTrack on
-shortLabel Williams coverage
-longLabel Williams coverage
+shortLabel Coverage
+longLabel Coverage
 maxHeightPixels 50:20:15
+subGroup1 cline CellLine s3B5_hela=s3B5_hela s3B5_mitotic_hela=s3B5_mitotic_hela polII_hela=polII_hela polII_mitotic_hela=polII_mitotic_hela SC184_hela=SC184_hela SC184_mitotic_hela=SC184_mitotic_hela hela=hela mitotic_hela=mitotic_hela
 type bigWig
 configurable on
 autoScale on
@@ -64,25 +53,24 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     cp $RESULTS/$sample/*.bw $HUB/$GENOME
     posbw=${sample}_pos.bw
     negbw=${sample}_neg.bw
-    # 0 to length of colors minus 1
-    color_idx=`shuf -i 0-"$((${#colors[@]} - 1))" -n1`
-    color=${colors[$color_idx]}
     cat <<coverage_track >>$trackdb
     track ${posbw/.bw}
     bigDataUrl $posbw
     shortLabel $sample coverage POS
     longLabel $sample coverage positive (+) strand
+    subGroups cline=${UCSC_GROUP[$sample]}
     type bigWig
     parent williams_coverage
-    color $color
+    color ${COLORS[$sample]}
 
     track ${negbw/.bw}
     bigDataUrl $negbw
     shortLabel $sample coverage NEG
     longLabel $sample coverage negative (-) strand
+    subGroups cline=${UCSC_GROUP[$sample]}
     type bigWig
     parent williams_coverage
-    color $color
+    color ${COLORS[$sample]}
 
 coverage_track
 done
@@ -92,8 +80,9 @@ cat <<peak_track >>$trackdb
 track williams_peaks
 compositeTrack on
 configurable on
-shortLabel Williams peaks
-longLabel Williams peaks
+shortLabel Peaks
+longLabel Peaks
+subGroup1 cline CellLine s3B5_hela=s3B5_hela s3B5_mitotic_hela=s3B5_mitotic_hela polII_hela=polII_hela polII_mitotic_hela=polII_mitotic_hela SC184_hela=SC184_hela SC184_mitotic_hela=SC184_mitotic_hela hela=hela mitotic_hela=mitotic_hela
 type bed 6 .
 
 peak_track
@@ -101,13 +90,15 @@ peak_track
 for bigbed in $RESULTS/*/*peaks.bb; do
     cp $bigbed $HUB/$GENOME
     bb=$(basename $bigbed)
+    sample=${bb/_peaks.bb}
     cat <<peak_track >>$trackdb
     track ${bb/.bb}
     parent williams_peaks
     shortLabel ${bb/_peaks.bb} peaks
     longLabel ${bb/_peaks.bb} peaks
+    subGroups cline=${UCSC_GROUP[$sample]}
     bigDataUrl $bb
-    color 31,120,180
+    color ${COLORS[$sample]}
     thickDrawItem on
     type bigBed 6 .
 

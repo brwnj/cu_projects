@@ -84,6 +84,29 @@ echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_diff.txt hg19 -d SC184_hel
 echo "annotatePeaks.pl SC184_mitotic_hela__SC184_hela_same.txt hg19 -d SC184_hela SC184_mitotic_hela -CpG > SC184_mitotic_hela__SC184_hela_same_annotated.txt" | bsez -P williams_chipseq -J annotatepeaks
 annotate
 
-<<unique_peaks
-
-unique_peaks
+<<motifs
+echo "findMotifsGenome.pl 3B5_hela_to_3B5_mitotic_hela/3B5_hela__3B5_mitotic_hela_diff.txt hg19 3B5_hela_to_3B5_mitotic_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_hela_to_3B5_mitotic_hela/3B5_hela__3B5_mitotic_hela_same.txt hg19 3B5_hela_to_3B5_mitotic_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_hela_to_3B5_mitotic_hela/merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt hg19 3B5_hela_to_3B5_mitotic_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_hela_to_SC184_hela/3B5_hela__SC184_hela_diff.txt hg19 3B5_hela_to_SC184_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_hela_to_SC184_hela/3B5_hela__SC184_hela_same.txt hg19 3B5_hela_to_SC184_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_hela_to_SC184_hela/merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt hg19 3B5_hela_to_SC184_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_3B5_hela/3B5_mitotic_hela__3B5_hela_diff.txt hg19 3B5_mitotic_hela_to_3B5_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_3B5_hela/3B5_mitotic_hela__3B5_hela_same.txt hg19 3B5_mitotic_hela_to_3B5_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_3B5_hela/merge_3B5_hela_peaks.txt_3B5_mitotic_hela_peaks.txt hg19 3B5_mitotic_hela_to_3B5_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_SC184_mitotic_hela/3B5_mitotic_hela__SC184_mitotic_hela_diff.txt hg19 3B5_mitotic_hela_to_SC184_mitotic_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_SC184_mitotic_hela/3B5_mitotic_hela__SC184_mitotic_hela_same.txt hg19 3B5_mitotic_hela_to_SC184_mitotic_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl 3B5_mitotic_hela_to_SC184_mitotic_hela/merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt hg19 3B5_mitotic_hela_to_SC184_mitotic_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_3B5_hela/merge_3B5_hela_peaks.txt_SC184_hela_peaks.txt hg19 SC184_hela_to_3B5_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_3B5_hela/SC184_hela__3B5_hela_diff.txt hg19 SC184_hela_to_3B5_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_3B5_hela/SC184_hela__3B5_hela_same.txt hg19 SC184_hela_to_3B5_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_SC184_mitotic_hela/merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt hg19 SC184_hela_to_SC184_mitotic_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_SC184_mitotic_hela/SC184_hela__SC184_mitotic_hela_diff.txt hg19 SC184_hela_to_SC184_mitotic_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_hela_to_SC184_mitotic_hela/SC184_hela__SC184_mitotic_hela_same.txt hg19 SC184_hela_to_SC184_mitotic_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_3B5_mitotic_hela/merge_3B5_mitotic_hela_peaks.txt_SC184_mitotic_hela_peaks.txt hg19 SC184_mitotic_hela_to_3B5_mitotic_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_3B5_mitotic_hela/SC184_mitotic_hela__3B5_mitotic_hela_diff.txt hg19 SC184_mitotic_hela_to_3B5_mitotic_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_3B5_mitotic_hela/SC184_mitotic_hela__3B5_mitotic_hela_same.txt hg19 SC184_mitotic_hela_to_3B5_mitotic_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_SC184_hela/merge_SC184_hela_peaks.txt_SC184_mitotic_hela_peaks.txt hg19 SC184_mitotic_hela_to_SC184_hela/combined_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_SC184_hela/SC184_mitotic_hela__SC184_hela_diff.txt hg19 SC184_mitotic_hela_to_SC184_hela/diff_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+echo "findMotifsGenome.pl SC184_mitotic_hela_to_SC184_hela/SC184_mitotic_hela__SC184_hela_same.txt hg19 SC184_mitotic_hela_to_SC184_hela/same_motif -p 4 -size 200" | bsez -j motifs -p williams_chipseq -n 4
+motifs

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J hubprep[1-20]
+#BSUB -J hubprep[21-26]
 #BSUB -e hubprep.%J.%I.err
 #BSUB -o hubprep.%J.%I.out
 #BSUB -q normal
