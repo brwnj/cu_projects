@@ -23,7 +23,10 @@ g3  1   1   1   3
 + 1-50 + 1, 51, 52-57 +1, 58
 
 #Leung
-+ annotate variants with snpsift
+TODO: review data for download; repeating Dan's Cytoscape work
+
++ annotate non-syn variants everything; place in lookup table for all samples
++ be able to lookup changes for each gene to see the nt and AA effect
 
 # Poly(A)
 # Ribosome stuffs
@@ -31,6 +34,11 @@ g3  1   1   1   3
 + linker sequence
 + 27-33bp
 + trim, align
+
++ analyzing what is different between time points
++ determine what is transcribed vs what is regulated prior to reaching the ribosome
++ set of genes that are changing
++ validate at protein level
 
 #Nicoli
 + annotations for genes sent in email
