@@ -32,6 +32,7 @@ def get_mid(start, counts):
             del maxpositions[0:len(maxpositions)]
             maxpositions.append(idx)
 
+
     # return midpoint among the max intensities
     midpoint = int(maxpositions[len(maxpositions) / 2])
 
@@ -43,7 +44,7 @@ def indexes_from_archive(genomedata, track_names, verbose):
     if verbose:
         print >>sys.stderr, ">> retrieving track indexes"
     indexes = []
-    with Genome(gd) as genome:
+    with Genome(genomedata) as genome:
         for track_name in track_names:
             try:
                 idx = genome.index_continuous(track_name)
@@ -54,9 +55,9 @@ def indexes_from_archive(genomedata, track_names, verbose):
     return indexes
 
 
-def main(peaks, genomedata, tracks, width, verbose, warnings):
+def main(peaks, genomedata, tracks, width, verbose, show_warnings):
     # pytables via genomedata raises warn PerformanceWarning
-    if not warnings:
+    if not show_warnings:
         warnings.simplefilter("ignore")
 
     track_indexes = indexes_from_archive(genomedata, tracks, verbose)
@@ -65,7 +66,7 @@ def main(peaks, genomedata, tracks, width, verbose, warnings):
     from_start = width / 2
     from_stop = from_start + 1
 
-    bed = BedTool(bed)
+    bed = BedTool(peaks)
 
     with Genome(genomedata) as gd:
         for chrom in gd:
@@ -74,7 +75,7 @@ def main(peaks, genomedata, tracks, width, verbose, warnings):
 
             for supercontig, continuous in chrom.itercontinuous():
 
-                track_continuous = continuous[:, [track_indexes]]
+                track_continuous = continuous[:, track_indexes]
 
                 # will be iterating over this for each supercontig
                 for b in bed:
@@ -93,7 +94,13 @@ def main(peaks, genomedata, tracks, width, verbose, warnings):
                     counts = track_continuous[relative_start:relative_stop]
 
                     # pass the actual start since we're trimming the peak here
-                    mid = get_mid(b.start, counts)
+                    try:
+                        mid = get_mid(b.start, counts)
+                    except IndexError:
+                        # It's possible for overlaping peaks to be on in a
+                        # region where those peaks have been extended;
+                        # therefore, it's possible for coverage to be 0.
+                        continue
                     start = mid - from_start
                     stop = mid + from_stop
                     print "{chrom}\t{start}\t{stop}\t{name}\t{score}\t{strand}".format(
@@ -106,14 +113,14 @@ if __name__ == "__main__":
                     formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('peaks', help='sorted peaks as bed')
     p.add_argument('genomedata', help="genomedata archive")
-    p.add_argument("-t", "--trackname", action="append", required=True,
+    p.add_argument("-t", "--trackname", dest='tracks', action="append", required=True,
                     help=("track name for samples comprising the replicates "
                             "in the peaks bed. can be specified multiple times."))
     p.add_argument("-w", "--width", default=60, type=int,
                     help="full peak width")
     p.add_argument("-v", "--verbose", action='store_true',
                     help="maximum verbosity")
-    p.add_argument("--warnings", action='store_true',
+    p.add_argument("--show-warnings", action='store_true',
                     help="show warnings")
     args = vars(p.parse_args())
     main(**args)
