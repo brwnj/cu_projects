@@ -1,6 +1,17 @@
 # Bennett
++ redo using new primer
++ all pairwise comparisons between cell types for a given subject
++ run through pRESTO
+
++ meeting with jeff:
+    + umi same; collapse into single cdr3
+    + r1_primer; build consensus sequence from within UMI bin where UMI+primer ---
+    + average sequence
+    + plot the UMI; frequency distribution
+    + filter 2 stddev; UMI total reads has to be above 2 stddev of observed UMI bin totals
+
 + overlaps between the csf and blood
-+ overlaps between among blood
++ overlaps between blood
 + align all unique sequences for a patient
 + be able to color by vh family
 
