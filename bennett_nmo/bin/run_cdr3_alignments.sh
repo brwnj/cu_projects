@@ -10,4 +10,4 @@
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/bennett/bin/config.sh
 
-python $HOME/projects/bennett/bin/target_alignment.py -l 2 -i .50 -q $RESULTS/5_*.txt -t $RESULTS/peptide_seqs.tsv
+python $HOME/projects/bennett/bin/target_alignment.py -l 0 -i .60 -q $RESULTS/5_*.txt -t $RESULTS/peptide_seqs.tsv
