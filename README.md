@@ -15,9 +15,6 @@
 + align all unique sequences for a patient
 + be able to color by vh family
 
-#Cohrs
-+ HOMER pipeline with design
-
 #Duval
 + genes with most mutations across samples
 + non-normal, non-synonymous mutation frequency
@@ -32,12 +29,6 @@ g3  1   1   1   3
 + ucsc hub
 + 1-58
 + 1-50 + 1, 51, 52-57 +1, 58
-
-#Leung
-TODO: review data for download; repeating Dan's Cytoscape work
-
-+ annotate non-syn variants everything; place in lookup table for all samples
-+ be able to lookup changes for each gene to see the nt and AA effect
 
 # Poly(A)
 # Ribosome stuffs
@@ -55,7 +46,6 @@ TODO: review data for download; repeating Dan's Cytoscape work
 + annotations for genes sent in email
 + cytoscape networks
 
-#Williams;chipseq
 #Tesla
 + set up experiment to test execution time to cpus used
 + test common aligners gsnap, novoalign, etc using 1,2,4,6,8,12 cpus
