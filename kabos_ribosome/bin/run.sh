@@ -3,15 +3,12 @@
 #BSUB -e ribosome.%J.err
 #BSUB -o ribosome.%J.out
 #BSUB -q normal
-#BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
+#BSUB -R "select[mem>1] rusage[mem=1] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P kabos_ribosome
 
 <<DOC
 ribosome profiling experiment
-
-select[mem>16] rusage[mem=16] span[hosts=1]
-
 DOC
 
 set -o nounset -o pipefail -o errexit -x
@@ -44,7 +41,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     output_file=$output_dir/$sample.fastq.gz
     if [[ ! -f $output_file ]]; then
         tmp_file=$sample.tmp
-        runscript=${sample}_filtering.sh
+        runscript=filtering_${sample}.sh
         echo "zcat $input_file | bowtie --un $tmp_file --seedlen $FILTERSEEDLEN -p 10 $FILTERINDEX - > /dev/null" > $runscript
         echo "gzip $tmp_file" >> $runscript
         echo "mv $tmp_file.gz $output_file" >> $runscript
@@ -61,10 +58,134 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
-    output_file=$output_dir/accepted_hits.bam
+    output_file=$output_dir/$sample.bam
     if [[ ! -f $output_file ]]; then
-        cmd="tophat -o $output_dir -p 10 --segment-mismatches $TOPHATSEGMENTMISMATCHES --no-novel-juncs -T --transcriptome-index $TOPHATTRANSCRIPTOMEINDEX $TOPHATREF $input_file"
-        bsub -J align -o align.%J.out -e align.%J.err -P $PROJECTID -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n 10 -K $cmd &
+
+        # STAR --runThreadN 12 \
+        #     --genomeDir ~analysiscore/genomes/reference/mm10/mm10_GencodeM2 \
+        #     --readFilesIn $fastq \
+        #     --readFilesCommand zcat \
+        #     --outFileNamePrefix $results/${sample}_ \
+        #     --outFilterMultimapNmax 2 \
+        #     --sjdbGTFfile ~analysiscore/genomes/reference/mm10/mm10_GencodeM2/gencode.vM2.annotation.gtf
+        #
+        # # clean up the STAR output
+        # sam=$results/${sample}_Aligned.out.sam
+        # bam=$results/${sample}.bam
+        #
+        # samtools view -ShuF4 $sam | samtools sort -@ 12 -m 16G - ${bam/.bam}
+        # samtools index $bam
+        # rm $sam
+
+        tmp_file=$output_dir/accepted_hits.bam
+        runscript=tophat_${sample}.sh
+        echo "tophat -o $output_dir -p 10 --segment-mismatches $TOPHATSEGMENTMISMATCHES --no-novel-juncs -T --transcriptome-index $TOPHATTRANSCRIPTOMEINDEX $TOPHATREF $input_file" > $runscript
+        echo "mv $tmp_file $output_file" >> $runscript
+        bsub -J align -o align.%J.out -e align.%J.err -P $PROJECTID -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n 10 -K < $runscript &
     fi
 done
 wait
+
+# make a hub; coverage tracks
+if [[ ! -d $HUB/$GENOME ]]; then
+    mkdir -p $HUB/$GENOME
+fi
+
+# genomes.txt
+if [[ ! -f $GENOMES ]]; then
+    echo "genome $GENOME" > $GENOMES
+    echo "trackDb $GENOME/trackDb.txt" >> $GENOMES
+fi
+
+# hub.txt
+if [[ ! -f $HUB/hub.txt ]]; then
+    hub=$HUB/hub.txt
+    echo "hub $HUBNAME" > $hub
+    echo "shortLabel $HUBLABEL" >> $hub
+    echo "longLabel $HUBLABEL" >> $hub
+    echo "genomesFile genomes.txt" >> $hub
+    echo "email $HUBEMAIL" >> $hub
+fi
+
+# make bigwigs
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    input_file=$RESULTS/$sample/alignments/$sample.bam
+    output_dir=$HUB/$GENOME
+    if [[ ! -d $output_dir ]]; then
+        mkdir -p $output_dir
+    fi
+    for strand in pos neg; do
+        output_file=$output_dir/${sample}_$strand.bw
+        if [[ ! -f $output_file ]]; then
+            symbol="-"
+            if [[ $strand == *pos* ]]; then
+                symbol="+"
+            fi
+            tmp=${sample}_$strand.tmp
+            runscript=bam2bw_${sample}_${strand}.sh
+            echo "bedtools genomecov -strand $symbol -bg -ibam $input_file | bedtools sort -i - > $tmp" > $runscript
+            echo "bedGraphToBigWig $tmp $SIZES $output_file" >> $runscript
+            echo "rm $tmp" >> $runscript
+            bsub -J bam2bw -o bam2bw.%J.out -e bam2bw.%J.err -P $PROJECTID -K < $runscript &
+        fi
+    done
+done
+wait
+
+# output for coverage
+cat <<coverage_track >$TRACKDB
+track coverage
+compositeTrack on
+subGroup1 sgroup SampleGroup MCF7=MCF7 PK12=PK12
+shortLabel Coverage
+longLabel Coverage
+maxHeightPixels 50:20:15
+type bigWig
+configurable on
+autoScale on
+
+coverage_track
+
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+
+    posbw=${sample}_pos.bw
+    negbw=${sample}_neg.bw
+
+    color=${COLORS[$sample]}
+    cat <<coverage_track >>$TRACKDB
+    track ${posbw/.bw}
+    bigDataUrl $posbw
+    subGroups sgroup=${SUBGROUP1[$sample]}
+    shortLabel $sample coverage POS
+    longLabel $sample coverage positive (+) strand
+    type bigWig
+    parent coverage
+    color $color
+
+    track ${negbw/.bw}
+    bigDataUrl $negbw
+    subGroups sgroup=${SUBGROUP1[$sample]}
+    shortLabel $sample coverage NEG
+    longLabel $sample coverage negative (-) strand
+    type bigWig
+    parent coverage
+    color $color
+
+coverage_track
+done
+
+# get counts
+input_file=$RESULTS/*/alignments/[$(IFS=,; echo "${SAMPLES[*]}")]*.bam
+output_dir=$POSTPROCESSING/feature_counts
+if [[ ! -d $output_dir ]]; then
+    mkdir -p $output_dir
+fi
+output_file=$output_dir/counts.txt
+if [[ ! -f $output_file ]]; then
+    cmd="featureCounts -a $HG19GTF -o $output_file -T 12 $input_file"
+    bsub -J counts -o counts.%J.out -e counts.%J.err -P $PROJECTID -R "span[hosts=1]" -n 12 -K $cmd &
+fi
+wait
+# do the comparisons
