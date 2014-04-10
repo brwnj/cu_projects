@@ -54,34 +54,20 @@ wait
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
     input_file=$DATA/filtered/$sample.fastq.gz
-    output_dir=$RESULTS/$sample/alignments
+    output_dir=$RESULTS/$sample/alignments/star
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
     output_file=$output_dir/$sample.bam
     if [[ ! -f $output_file ]]; then
-
-        # STAR --runThreadN 12 \
-        #     --genomeDir ~analysiscore/genomes/reference/mm10/mm10_GencodeM2 \
-        #     --readFilesIn $fastq \
-        #     --readFilesCommand zcat \
-        #     --outFileNamePrefix $results/${sample}_ \
-        #     --outFilterMultimapNmax 2 \
-        #     --sjdbGTFfile ~analysiscore/genomes/reference/mm10/mm10_GencodeM2/gencode.vM2.annotation.gtf
-        #
-        # # clean up the STAR output
-        # sam=$results/${sample}_Aligned.out.sam
-        # bam=$results/${sample}.bam
-        #
-        # samtools view -ShuF4 $sam | samtools sort -@ 12 -m 16G - ${bam/.bam}
-        # samtools index $bam
-        # rm $sam
-
-        tmp_file=$output_dir/accepted_hits.bam
-        runscript=tophat_${sample}.sh
-        echo "tophat -o $output_dir -p 10 --segment-mismatches $TOPHATSEGMENTMISMATCHES --no-novel-juncs -T --transcriptome-index $TOPHATTRANSCRIPTOMEINDEX $TOPHATREF $input_file" > $runscript
-        echo "mv $tmp_file $output_file" >> $runscript
-        bsub -J align -o align.%J.out -e align.%J.err -P $PROJECTID -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n 10 -K < $runscript &
+        cpus=12
+        tmp_file=$output_dir/${sample}_Aligned.out.sam
+        runscript=star_${sample}.sh
+        echo "STAR --runThreadN $cpus --genomeDir $STARGENOMEDIR --readFilesIn $input_file --readFilesCommand zcat --outFileNamePrefix $output_dir/${sample}_ --outFilterMultimapNmax 5 --sjdbGTFfile $HG19GTF" > $runscript
+        echo "samtools view -ShuF4 $tmp_file | samtools sort -@ $cpus -m 16G - ${output_file/.bam}" >> $runscript
+        echo "samtools index $output_file" >> $runscript
+        echo "rm $tmp_file" >> $runscript
+        bsub -J align -o align.%J.out -e align.%J.err -P $PROJECTID -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n $cpus -K < $runscript &
     fi
 done
 wait
@@ -110,7 +96,7 @@ fi
 # make bigwigs
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
-    input_file=$RESULTS/$sample/alignments/$sample.bam
+    input_file=$RESULTS/$sample/alignments/star/$sample.bam
     output_dir=$HUB/$GENOME
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
@@ -177,7 +163,7 @@ coverage_track
 done
 
 # get counts
-input_file=$RESULTS/*/alignments/[$(IFS=,; echo "${SAMPLES[*]}")]*.bam
+input_file=$RESULTS/*/alignments/star/*.bam
 output_dir=$POSTPROCESSING/feature_counts
 if [[ ! -d $output_dir ]]; then
     mkdir -p $output_dir
@@ -188,4 +174,5 @@ if [[ ! -f $output_file ]]; then
     bsub -J counts -o counts.%J.out -e counts.%J.err -P $PROJECTID -R "span[hosts=1]" -n 12 -K $cmd &
 fi
 wait
+
 # do the comparisons
