@@ -1,4 +1,5 @@
 # Bennett
++ transfer new data
 + redo using new primer
 + all pairwise comparisons between cell types for a given subject
 + run through pRESTO
@@ -16,6 +17,7 @@
 + be able to color by vh family
 
 #Duval
++ transfer new data
 + genes with most mutations across samples
 + non-normal, non-synonymous mutation frequency
 + something like:
@@ -23,6 +25,12 @@
 g1  1   1   0   2
 g2  0   0   1   1
 g3  1   1   1   3
+
+#Hesselberth
++ ucsc hub code
++ utilize bsub or multiprocessing?
++ configuration yaml
++ converting file formats
 
 #HITS-CLIP
 + new samples through pipeline
@@ -32,11 +40,6 @@ g3  1   1   1   3
 
 # Poly(A)
 # Ribosome stuffs
-+ read trimming, sequence content
-+ linker sequence
-+ 27-33bp
-+ trim, align
-
 + analyzing what is different between time points
 + determine what is transcribed vs what is regulated prior to reaching the ribosome
 + set of genes that are changing

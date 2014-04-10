@@ -1,4 +1,13 @@
 #!/usr/bin/env bash
+
+<<DOC
+When adding a new sample:
+    place named fastq into DATA
+    add to SAMPLES
+    add to COLORS
+    add to SUBGROUP1
+DOC
+
 PROJECTID=kabos_ribosome
 RESULTS=/vol1/home/brownj/projects/kabos_ribosome/results/common
 DATA=/vol1/home/brownj/projects/kabos_ribosome/data/common
@@ -11,13 +20,14 @@ SAMPLES=(MCF7-0
             PK12-0
             PK12-6)
 SIZES=/vol1/home/brownj/ref/hg19/hg19.sizes
+
 TRIMADAPTER=AGATCGGAAGAG
 TRIMMINLENGTH=25
+
 FILTERINDEX=/vol1/home/brownj/ref/hg19/rRNA
 FILTERSEEDLEN=23
-TOPHATREF=/vol1/home/brownj/ref/hg19/hg19
-TOPHATSEGMENTMISMATCHES=1
-TOPHATTRANSCRIPTOMEINDEX=/vol1/home/brownj/ref/hg19/transcriptome/genes
+
+STARGENOMEDIR=/vol1/home/brownj/ref/hg19
 
 GENOME=hg19
 HUB=$RESULTS/hub
@@ -29,6 +39,7 @@ HUBEMAIL=brwnjm@gmail.com
 
 declare -A COLORS
 declare -A SUBGROUP1
+# choose from http://colorbrewer2.org/
 COLORS=([MCF7-0]="102,194,164"
         [MCF7-0_fraction]="35,139,69"
         [MCF7-0_totalRNA]="0,68,27"
@@ -42,7 +53,7 @@ SUBGROUP1=([MCF7-0]=MCF7
             [MCF7-0_totalRNA]=MCF7
             [MCF7-6]=MCF7
             [MCF7-6_fraction]=MCF7
-            [MCF7-6_totalRNA]=MCF7
+z            [MCF7-6_totalRNA]=MCF7
             [PK12-0]=PK12
             [PK12-6]=PK12)
 
