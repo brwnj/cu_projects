@@ -33,6 +33,9 @@ g3  1   1   1   3
 + converting file formats
 
 #HITS-CLIP
+
+R100I1C6
+
 + new samples through pipeline
 + ucsc hub
 + 1-58

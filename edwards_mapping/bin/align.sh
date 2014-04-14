@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#BSUB -J "align[1-20]%6"
+#BSUB -J align[1-28]
 #BSUB -e align.%J.%I.err
 #BSUB -o align.%J.%I.out
 #BSUB -q normal
@@ -30,6 +30,14 @@ WT2_6plus_34plus_ATGTCA_L001_R1_001
 WT2_6plus_CTTGTA_L001_R1_001
 WT3_6plus_34plus_CCGTCC_L001_R1_001
 WT3_6plus_GTCCGC_L001_R1_001
+1_AAGGGA_L003_R1_001
+2_CCTTCA_L003_R1_001
+3_GGACCC_L003_R1_001
+4_TTCAGC_L003_R1_001
+5_AAGACG_L003_R1_001
+6_CCTCGG_L003_R1_001
+7_GGATGT_L003_R1_001
+8_TTCGCT_L003_R1_001
 )
 
 sample=${SAMPLES[$(($LSB_JOBINDEX - 1))]}
@@ -39,18 +47,20 @@ if [[ ! -d $results ]]; then
     mkdir -p $results
 fi
 
-STAR --runThreadN 12 \
-    --genomeDir ~analysiscore/genomes/reference/mm10/mm10_GencodeM2 \
-    --readFilesIn $fastq \
-    --readFilesCommand zcat \
-    --outFileNamePrefix $results/${sample}_ \
-    --outFilterMultimapNmax 2 \
-    --sjdbGTFfile ~analysiscore/genomes/reference/mm10/mm10_GencodeM2/gencode.vM2.annotation.gtf
-
-# clean up the STAR output
-sam=$results/${sample}_Aligned.out.sam
 bam=$results/${sample}.bam
+if [[ ! -f $bam ]]; then
+    STAR --runThreadN 12 \
+        --genomeDir ~analysiscore/genomes/reference/mm10/mm10_GencodeM2 \
+        --readFilesIn $fastq \
+        --readFilesCommand zcat \
+        --outFileNamePrefix $results/${sample}_ \
+        --outFilterMultimapNmax 2 \
+        --sjdbGTFfile ~analysiscore/genomes/reference/mm10/mm10_GencodeM2/gencode.vM2.annotation.gtf
 
-samtools view -ShuF4 $sam | samtools sort -@ 12 -m 16G - ${bam/.bam}
-samtools index $bam
-rm $sam
+    # clean up the STAR output
+    sam=$results/${sample}_Aligned.out.sam
+
+    samtools view -ShuF4 $sam | samtools sort -@ 12 -m 16G - ${bam/.bam}
+    samtools index $bam
+    rm $sam
+fi
