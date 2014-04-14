@@ -14,7 +14,7 @@ PK11, PK31 and PK15 (MCF-7)
 PK21, PK41 and PK52 (BT474)
 P24, PK42 and PK54 (MDA-231)
 
-I think we should do this slightly differently than with the newer samples:
+I think we should do this slightly differently with the newer samples:
 
     I'd take each aligned read, extend it 25bp downstream (rather than 100bp),
     and look for the presence of any of the following sequences in the extended
