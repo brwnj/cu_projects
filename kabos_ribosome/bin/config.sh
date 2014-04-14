@@ -11,11 +11,11 @@ DOC
 PROJECTID=kabos_ribosome
 RESULTS=/vol1/home/brownj/projects/kabos_ribosome/results/common
 DATA=/vol1/home/brownj/projects/kabos_ribosome/data/common
-SAMPLES=(MCF7-0
-            MCF7-0_fraction
+SAMPLES=(MCF7-0_fraction1
+            MCF7-0_fraction2
             MCF7-0_totalRNA
-            MCF7-6
-            MCF7-6_fraction
+            MCF7-6_fraction1
+            MCF7-6_fraction2
             MCF7-6_totalRNA
             PK12-0
             PK12-6)
@@ -40,20 +40,20 @@ HUBEMAIL=brwnjm@gmail.com
 declare -A COLORS
 declare -A SUBGROUP1
 # choose from http://colorbrewer2.org/
-COLORS=([MCF7-0]="102,194,164"
-        [MCF7-0_fraction]="35,139,69"
+COLORS=([MCF7-0_fraction1]="102,194,164"
+        [MCF7-0_fraction2]="35,139,69"
         [MCF7-0_totalRNA]="0,68,27"
-        [MCF7-6]="223,101,176"
-        [MCF7-6_fraction]="206,18,86"
+        [MCF7-6_fraction1]="223,101,176"
+        [MCF7-6_fraction2]="206,18,86"
         [MCF7-6_totalRNA]="103,0,31"
         [PK12-0]="107,174,214"
         [PK12-6]="253,141,60")
-SUBGROUP1=([MCF7-0]=MCF7
-            [MCF7-0_fraction]=MCF7
+SUBGROUP1=([MCF7-0_fraction1]=MCF7
+            [MCF7-0_fraction2]=MCF7
             [MCF7-0_totalRNA]=MCF7
-            [MCF7-6]=MCF7
-            [MCF7-6_fraction]=MCF7
-z            [MCF7-6_totalRNA]=MCF7
+            [MCF7-6_fraction1]=MCF7
+            [MCF7-6_fraction2]=MCF7
+            [MCF7-6_totalRNA]=MCF7
             [PK12-0]=PK12
             [PK12-6]=PK12)
 

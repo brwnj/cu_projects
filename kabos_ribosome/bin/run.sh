@@ -72,6 +72,24 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
+
+# create bedgraphs for ribosome footprint QC
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    input_file=$RESULTS/$sample/alignments/star/$sample.bam
+    output_dir=$RESULTS/$sample/interval_files
+    if [[ ! -d $output_dir ]]; then
+        mkdir -p $output_dir
+    fi
+    output_file=$output_dir/${sample}_5p_coverage.bedgraph.gz
+    if [[ ! -f $output_file ]]; then
+        cmd="bedtools genomecov -5 -bg -ibam $input_file | bedtools sort -i - | gzip -c > $output_file"
+        bsub -J gcov -o gcov.%J.out -e gcov.%J.err -P $PROJECTID -K $cmd &
+    fi
+done
+wait
+
+
 # make a hub; coverage tracks
 if [[ ! -d $HUB/$GENOME ]]; then
     mkdir -p $HUB/$GENOME
