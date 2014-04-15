@@ -22,8 +22,8 @@ RB8_9_CCGTCC_L007
 results=$HOME/projects/ichiro_rnaseq/results/common
 data=$HOME/projects/ichiro_rnaseq/data/common
 pid=ichiro_rnaseq
-stargenomedir=$HOME/brownj/ref/hg19
-hg19gtf=$HOME/brownj/ref/hg19/hg19.gtf
+stargenomedir=$HOME/ref/hg19
+hg19gtf=$HOME/ref/hg19/hg19.gtf
 hg19reference=$HOME/ref/hg19/hg19.fa
 snpeff=$HOME/opt/snpeff/snpEff.jar
 snpeffconfig=$HOME/opt/snpeff/snpEff.config
@@ -56,7 +56,7 @@ wait
 for (( i = 0; i < ${#samples[@]}; i++ )); do
     sample=${samples[$i]}
     input_file="$data/trimmed/${sample}_R1_001.fastq.gz $data/trimmed/${sample}_R2_001.fastq.gz"
-    output_dir=$RESULTS/$sample/alignments/star
+    output_dir=$results/$sample/alignments/star
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
@@ -69,7 +69,7 @@ for (( i = 0; i < ${#samples[@]}; i++ )); do
         echo "samtools view -ShuF4 $tmp_file | samtools sort -@ $cpus -m 16G - ${output_file/.bam}" >> $runscript
         echo "samtools index $output_file" >> $runscript
         echo "rm $tmp_file" >> $runscript
-        bsub -J align -o align.%J.out -e align.%J.err -P $PROJECTID -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n $cpus -K < $runscript &
+        bsub -J align -o align.%J.out -e align.%J.err -P $pid -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n $cpus -K < $runscript &
     fi
 done
 wait
@@ -85,8 +85,9 @@ for (( i = 0; i < ${#samples[@]}; i++ )); do
     fi
     output_file=$output_dir/$sample.bam
     if [[ ! -f $output_file ]]; then
-        cmd="samtools view -h $input_file | awk '$6!~/N/' | samtools view -Sb - > $output_file"
-        bsub -J rm_n -o rm_n.%J.out -e rm_n.%J.err -P $pid -K $cmd &
+        runscript=rm_n_${sample}.sh
+        echo "samtools view -h $input_file | awk '\$6!~/N/' | samtools view -Sb - > $output_file" > $runscript
+        bsub -J rm_n -o rm_n.%J.out -e rm_n.%J.err -P $pid -K < $runscript &
     fi
 done
 wait
