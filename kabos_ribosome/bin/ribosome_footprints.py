@@ -8,7 +8,7 @@ from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
 class Bed(object):
-    __slots__ = ['chrom','start','stop','name','score','strand']
+    __slots__ = ['chr','start','stop','name','score','strand']
     def __init__(self, args):
         for k, v in zip(self.__slots__, args):
             setattr(self, k, v)
@@ -25,7 +25,7 @@ class BedGraph(object):
         self.chr = args[0]
         self.start = args[1]
         self.stop = args[2]
-        self.count = int(args[3])
+        self.count = int(float(args[3]))
 
 
 def bedgraph_to_dict(bedgraph):
@@ -60,17 +60,35 @@ def main(ribosome_bg, mrna_bg, startcodon_bed):
                 one = "%s:%d:%d" % (b.chr, b.start + 1 + mult, b.start + 2 + mult)
                 two = "%s:%d:%d" % (b.chr, b.start + 2 + mult, b.start + 3 + mult)
 
-            counts['rrna']['zero'] += rrna[zero]
-            counts['mrna']['zero'] += mrna[zero]
-            counts['rrna']['one'] += rrna[one]
-            counts['mrna']['one'] += mrna[one]
-            counts['rrna']['two'] += rrna[two]
-            counts['mrna']['two'] += mrna[two]
+            try:
+                counts['rrna']['zero'] += rrna[zero]
+            except KeyError:
+                pass
+            try:
+                counts['mrna']['zero'] += mrna[zero]
+            except KeyError:
+                pass
+            try:
+                counts['rrna']['one'] += rrna[one]
+            except KeyError:
+                pass
+            try:
+                counts['mrna']['one'] += mrna[one]
+            except KeyError:
+                pass
+            try:
+                counts['rrna']['two'] += rrna[two]
+            except KeyError:
+                pass
+            try:
+                counts['mrna']['two'] += mrna[two]
+            except KeyError:
+                pass
 
     print "\t".join(["pos", "rrna", "mrna"])
-    print "0\t" + counts['rrna']['zero'] + "\t" + counts['mrna']['zero']
-    print "1\t" + counts['rrna']['one'] + "\t" + counts['mrna']['one']
-    print "2\t" + counts['rrna']['two'] + "\t" + counts['mrna']['two']
+    print "0\t%d\t%d" % (counts['rrna']['zero'], counts['mrna']['zero'])
+    print "1\t%d\t%d" % (counts['rrna']['one'], counts['mrna']['one'])
+    print "2\t%d\t%d" % (counts['rrna']['two'], counts['mrna']['two'])
 
 
 if __name__ == '__main__':
