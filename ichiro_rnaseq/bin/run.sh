@@ -97,7 +97,7 @@ wait
 for (( i = 0; i < ${#samples[@]}; i++ )); do
     sample=${samples[$i]}
     input_file=$results/$sample/alignments/remove_n/$sample.bam
-    output_dir=$results/$sample/remove_duplicates
+    output_dir=$results/$sample/alignments/remove_duplicates
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
@@ -137,7 +137,7 @@ for (( i = 0; i < ${#samples[@]}; i++ )); do
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
-    output_file=$output_dir/$sample.txt
+    output_file=$output_dir/$sample.txt.gz
     if [[ ! -f $output_file ]]; then
         cmd="java -jar $snpeff eff -chr chr -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream -noStats -v -c $snpeffconfig -o txt hg19 $input_file | gzip -c > $output_file"
         bsub -J snpeff -o snpeff.%J.out -e snpeff.%J.err -P $pid -K $cmd &

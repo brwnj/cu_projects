@@ -53,5 +53,3 @@ done
 
 # run generate_trackdb.py > trackDb.txt
 python $HOME/projects/polya/bin/generate_trackdb.py . $METADATA > trackDb.txt
-
-# rsync -rvu --delete ~/projects/polya/results/common/hub amc-sandbox:/data/home/brownj/public_html/polya/

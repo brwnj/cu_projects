@@ -90,7 +90,9 @@ fi
 # classify the peaks
 if [[ ! -f $classified ]]; then
     # sort to be safe
-    python $BIN/classify_peaks.py -s AGTAAA,TATAAA,TTTAAA,AATATA,AATACA,CATAAA,AAAATA,GATAAA,TATATA,ACTAAA,AGATAA,AATAGA,ATTACA,AGAATA,AAGAAA,AATGAA $peak $posbg $negbg $FASTA $SIZES \
+    python $BIN/classify_peaks.py -s \
+            AGTAAA,TATAAA,TTTAAA,AATATA,AATACA,CATAAA,AAAATA,GATAAA,TATATA,ACTAAA,AGATAA,AATAGA,ATTACA,AGAATA,AAGAAA,AATGAA \
+            $peak $posbg $negbg $FASTA $SIZES \
         | bedtools sort -i - \
         | gzip -c > $classified
 fi
