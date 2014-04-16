@@ -23,7 +23,7 @@ fastq=$DATA/$sample.umi.fq.gz
 
 # trim the UMI
 if [[ ! -f $fastq ]]; then
-    umitools.py trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
+    umitools trim --verbose $unprocessed_fastq $UMI | gzip -c > $fastq
 fi
 
 results=$RESULTS/$sample
@@ -45,12 +45,12 @@ if [[ ! -f $umibam ]]; then
         | samtools sort -o - $sample.temp -m 8G \
         > $umibam
     samtools index $umibam
-    bam2bw.py -5 -v $umibam $SIZES pillai_kabos_polya
+    bam2bw.py -5 -v -p pillai_kabos_polya $umibam
 fi
 
 # process the UMIs
 if [[ ! -f $bam ]]; then
-    umitools.py rmdup $umibam $bam > $umibed
+    umitools rmdup $umibam $bam > $umibed
     samtools index $bam
-    bam2bw.py -5 -v $bam $SIZES pillai_kabos_polya
+    bam2bw.py -5 -v -p pillai_kabos_polya $bam
 fi

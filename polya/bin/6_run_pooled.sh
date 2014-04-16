@@ -8,6 +8,8 @@
 #BSUB -P pillai_kabos_polya
 
 <<DOC
+testing pooled.
+
 files are output to $RESULT/pooled_results
 DOC
 
