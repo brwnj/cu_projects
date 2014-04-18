@@ -26,13 +26,10 @@ g1  1   1   0   2
 g2  0   0   1   1
 g3  1   1   1   3
 
-#Hesselberth
-+ ucsc hub code
-+ utilize bsub or multiprocessing?
-+ configuration yaml
-+ converting file formats
 
 #HITS-CLIP
++ mirna abundances on new processing style
++ R100I1C5
 + new samples through pipeline
 + ucsc hub
 + 1-58
