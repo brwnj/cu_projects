@@ -14,6 +14,7 @@ DOC
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/kabos_ribosome/bin/config.sh
 
+
 # trim the sequences using fastx toolkit
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
@@ -24,11 +25,12 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     fi
     output_file=$output_dir/${sample}.fastq.gz
     if [[ ! -f $output_file ]]; then
-        cmd="zcat $input_file | fastx_clipper -a $TRIMADAPTER -l $TRIMMINLENGTH -c -n -v -Q33 | fastx_trimmer -Q33 -f 2 | gzip -c > $output_file"
+        cmd="zcat $input_file | fastx_clipper -a $TRIMADAPTER -l $TRIMMINLENGTH -c -n -v -Q33 | fastx_trimmer -Q33 -f 1 | gzip -c > $output_file"
         bsub -J trim -o trim.%J.out -e trim.%J.err -P $PROJECTID -K $cmd &
     fi
 done
 wait
+
 
 # filter sequences using bowtie and rRNA database
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -49,6 +51,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     fi
 done
 wait
+
 
 # align reads using tophat as per methods paper
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -137,6 +140,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
+
 # output for coverage
 cat <<coverage_track >$TRACKDB
 track coverage
@@ -179,6 +183,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 
 coverage_track
 done
+
 
 # get counts
 input_file=$RESULTS/*/alignments/star/*.bam
