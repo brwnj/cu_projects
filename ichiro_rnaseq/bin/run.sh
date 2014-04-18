@@ -76,6 +76,8 @@ wait
 
 
 # remove reads spanning junction
+# could use https://github.com/mjafin/splitNreads/blob/master/splitNreads.py
+# rather than removing.
 for (( i = 0; i < ${#samples[@]}; i++ )); do
     sample=${samples[$i]}
     input_file=$results/$sample/alignments/star/$sample.bam
@@ -141,6 +143,23 @@ for (( i = 0; i < ${#samples[@]}; i++ )); do
     if [[ ! -f $output_file ]]; then
         cmd="java -jar $snpeff eff -chr chr -minC 10 -no-downstream -no-intergenic -no-intron -no-upstream -noStats -v -c $snpeffconfig -o txt hg19 $input_file | gzip -c > $output_file"
         bsub -J snpeff -o snpeff.%J.out -e snpeff.%J.err -P $pid -K $cmd &
+    fi
+done
+wait
+
+
+# filter snpeff output
+for (( i = 0; i < ${#samples[@]}; i++ )); do
+    sample=${samples[$i]}
+    input_file=$results/$sample/variants/snpeff/$sample.txt.gz
+    output_dir=$results/$sample/variants/snpeff/filtered
+    if [[ ! -d $output_dir ]]; then
+        mkdir -p $output_dir
+    fi
+    output_file=$output_dir/$sample.txt.gz
+    if [[ ! -f $output_file ]]; then
+        cmd="python ~/projects/ichiro_rnaseq/bin/gene_selection.py $input_file -e STOP_LOST_BUT_NOTHING_GAINED -e CODON_INSERTION -e EXON_DELETED -e FRAME_SHIFT -e NON_SYNONYMOUS_CODING -e NON_SYNONYMOUS_START -e NON_SYNONYMOUS_STOP -e START_LOST -e STOP_GAINED -e STOP_LOST -e NON_SYNONYMOUS_CODING | gzip -c > $output_file"
+        bsub -J filtersnpeff -o fsnpeff.%J.out -e fsnpeff.%J.err -P $pid -K $cmd &
     fi
 done
 wait
