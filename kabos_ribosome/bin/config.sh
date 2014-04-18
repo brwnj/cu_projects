@@ -59,3 +59,4 @@ SUBGROUP1=([MCF7-0_fraction1]=MCF7
 
 POSTPROCESSING=$RESULTS/postprocessing
 HG19GTF=/vol1/home/brownj/ref/hg19/hg19.gtf
+HG19STARTCODONS=/vol1/home/brownj/ref/hg19/start_codons.bed.gz

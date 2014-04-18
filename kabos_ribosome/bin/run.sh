@@ -93,6 +93,29 @@ done
 wait
 
 
+# output ribosome footprint stats
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    # only test each fraction against totalRNA
+    if [[ "$sample" = *fraction* ]]; then
+        celltype=${sample%_*}
+        input_file_1=$RESULTS/$sample/interval_files/${sample}_5p_coverage.bedgraph.gz
+        input_file_2=$RESULTS/${celltype}_totalRNA/interval_files/${celltype}_totalRNA_5p_coverage.bedgraph.gz
+        output_dir=$RESULTS/$sample/postprocessing/ribosome_footprint/
+        if [[ ! -d $output_dir ]]; then
+            mkdir -p $output_dir
+        fi
+        output_file=$output_dir/$sample.txt
+        script=/vol1/home/brownj/projects/kabos_ribosome/bin/ribosome_footprints.py
+        if [[ ! -f $output_file ]]; then
+            cmd="python $script $input_file_1 $input_file_2 $HG19STARTCODONS > $output_file"
+            bsub -J footprint -o fp.%J.out -e fp.%J.err -P $PROJECTID -K $cmd &
+        fi
+    fi
+done
+wait
+
+
 # make a hub; coverage tracks
 if [[ ! -d $HUB/$GENOME ]]; then
     mkdir -p $HUB/$GENOME
