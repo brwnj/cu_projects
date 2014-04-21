@@ -46,8 +46,10 @@ def main(ribosome_bg, mrna_bg, startcodon_bed):
     rrna = bedgraph_to_dict(ribosome_bg)
     mrna = bedgraph_to_dict(mrna_bg)
 
+    # try to go upstream 4 codons and send those numbers
     for b in reader(startcodon_bed, header=Bed):
         for i in xrange(0, codon_span):
+        # for i in xrange(-4, codon_span):
             mult = i * 3
 
             if b.rev:
