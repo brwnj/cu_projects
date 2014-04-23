@@ -3,7 +3,7 @@
 """
 First: attempt to trim adapter sequence from read; if long enough after
 identifying trim position, print read to stdout. Second: where no adapter was
-found, search for discard search. When found, discard read. Third: if neither
+found, search for discard string. When found, discard read. Third: if neither
 were found, print read with altered read name (name:inspect).
 """
 

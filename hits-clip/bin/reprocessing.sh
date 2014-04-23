@@ -14,6 +14,7 @@ PK11, PK31 and PK15 (MCF-7)
 PK21, PK41 and PK52 (BT474)
 P24, PK42 and PK54 (MDA-231)
 
+From Austin:
 I think we should do this slightly differently with the newer samples:
 
     I'd take each aligned read, extend it 25bp downstream (rather than 100bp),
@@ -90,6 +91,38 @@ trackdb=$HUB/$GENOME/trackDb.txt
 # call peaks
 GENOMEDATA=/vol1/home/brownj/projects/hits-clip/results/20140317/genomedata
 
+# stranded bams
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    bam=${sample}_filtered.bam
+    rmdbam=${sample}_filtered.rmd.bam
+
+    negbam=${sample}_filtered.neg.bam
+    negrmdbam=${sample}_filtered.rmd.neg.bam
+
+    posbam=${sample}_filtered.pos.bam
+    posrmdbam=${sample}_filtered.rmd.pos.bam
+
+    if [[ ! -f $negbam ]]; then
+        cmd="samtools view -hb -f 0x10 $bam > $negbam"
+        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
+    fi
+    if [[ ! -f $negrmdbam ]]; then
+        cmd="samtools view -hb -f 0x10 $rmdbam > $negrmdbam"
+        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
+    fi
+    if [[ ! -f $posbam ]]; then
+        cmd="samtools view -hb -F 0x10 $bam > $posbam"
+        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
+    fi
+    if [[ ! -f $posrmdbam ]]; then
+        cmd="samtools view -hb -F 0x10 $rmdbam > $posrmdbam"
+        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
+    fi
+done
+wait
+
+
 # peaks
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     sample=${SAMPLES[$i]}
@@ -112,32 +145,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     posrmdbam=${sample}_filtered.rmd.pos.bam
     posrmdNP=${posrmdbam/.bam/_peaks.narrowPeak.gz}
     posrmdbw=$HUB/$GENOME/${sample}_filtered.rmd_pos.bw
-
-    # stranded bams
-    running_jobs=false
-    if [[ ! -f $negbam ]]; then
-        cmd="samtools view -hb -f 0x10 $bam > $negbam"
-        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
-        running_jobs=true
-    fi
-    if [[ ! -f $negrmdbam ]]; then
-        cmd="samtools view -hb -f 0x10 $rmdbam > $negrmdbam"
-        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
-        running_jobs=true
-    fi
-    if [[ ! -f $posbam ]]; then
-        cmd="samtools view -hb -F 0x10 $bam > $posbam"
-        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
-        running_jobs=true
-    fi
-    if [[ ! -f $posrmdbam ]]; then
-        cmd="samtools view -hb -F 0x10 $rmdbam > $posrmdbam"
-        bsub -J stranded_bam -o sb.%J.out -e sb.%J.err -P hits-clip -K $cmd &
-        running_jobs=true
-    fi
-    if [[ running_jobs = true ]]; then
-        wait
-    fi
 
     # stranded bigwigs
     if [[ ! -f $negbw ]]; then
@@ -183,8 +190,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
         bsub -J peaks -o peaks.%J.out -e peaks.%J.err -P hits-clip -K $cmd &
     fi
 done
-echo ">> Waiting on Peak calls to finish"
 wait
+
 
 # clean up after MACS
 if test -n "$(find . -maxdepth 1 -name '*.narrowPeak' -print -quit)"; then
@@ -196,6 +203,7 @@ fi
 if test -n "$(find . -maxdepth 1 -name '*.xls' -print -quit)"; then
     rm -f *.xls
 fi
+
 
 # merge peaks across replicates
 for group in MCF7 BT474 MDA231; do
@@ -222,7 +230,6 @@ for group in MCF7 BT474 MDA231; do
             bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
         fi
 
-
         # also run bams containing duplicates
         tracks=""
         bedfiles=""
@@ -244,7 +251,6 @@ for group in MCF7 BT474 MDA231; do
         fi
     done
 done
-echo ">> Waiting on trim jobs to finish"
 wait
 
 
