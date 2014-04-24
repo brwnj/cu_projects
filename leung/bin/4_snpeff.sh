@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-#BSUB -J "variants[1-24]%8"
+#BSUB -J variants[1-24]
 #BSUB -e variants.%J.%I.err
 #BSUB -o variants.%J.%I.out
 #BSUB -q normal
-#BSUB -R "select[mem>4] rusage[mem=4] span[hosts=1]"
+#BSUB -R "select[mem>8] rusage[mem=8] span[hosts=1]"
 #BSUB -n 1
 #BSUB -P leung
 

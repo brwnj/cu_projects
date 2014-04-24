@@ -20,7 +20,7 @@ def main(files, effect, min_coverage=10, gene=None, split_sep="_"):
     df = pd.concat(tables)
 
     # filter
-    df = df[(df['Effect'] in effect)\
+    df = df[(df['Effect'].isin(effect))\
                 & (df['Coverage'] >= min_coverage)]
     df.dropna(how="all", inplace=True)
     if gene:
