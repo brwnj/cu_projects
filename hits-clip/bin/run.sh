@@ -105,8 +105,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	jname=strandbams
     sample=${SAMPLES[$i]}
 
-    input_file=$RESULTS/$sample/alignments/novoalign/$sample.bam
-    output_dir=$RESULTS/$sample/alignments/novoalign
+    input_file=$RESULTS/$sample/alignments/novoalign/filtered/$sample.bam
+    output_dir=$RESULTS/$sample/alignments/novoalign/filtered
 	for strand in pos neg; do
 	    output_file=$output_dir/${sample}_${strand}.bam
 	    if [[ ! -f $output_file ]]; then
@@ -119,8 +119,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	done
 
 	# rmdup
-    input_file=$RESULTS/$sample/alignments/rmdup/$sample.bam
-    output_dir=$RESULTS/$sample/alignments/rmdup
+    input_file=$RESULTS/$sample/alignments/rmdup/filtered/$sample.bam
+    output_dir=$RESULTS/$sample/alignments/rmdup/filtered
 	for strand in pos neg; do
 	    output_file=$output_dir/${sample}_${strand}.bam
 	    if [[ ! -f $output_file ]]; then
@@ -202,7 +202,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     jname=peaks
 	sample=${SAMPLES[$i]}
 	for strand in pos neg; do
-		input_file=$RESULTS/$sample/alignments/filtered/${sample}_${strand}.bam
+		input_file=$RESULTS/$sample/alignments/novoalign/filtered/${sample}_${strand}.bam
 		output_dir=$RESULTS/$sample/peaks/$strand
 		if [[ ! -d $output_dir ]]; then
 			mkdir -p $output_dir
@@ -210,7 +210,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 		output_file=$output_dir/${sample}_peaks.narrowPeak.gz
 		if [[ ! -f $output_file ]]; then
 			runscript=${jname}_${sample}_${strand}.sh
-			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand} --nomodel --extsize 20 -q $PEAKSNONUNIQUEQ --keep-dup all" >> $runscript
+			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand} --nomodel --extsize 20 -q $PEAKSNONUNIQUEQ --keep-dup all" > $runscript
 			echo "gzip -f ${output_file/.gz}" >> $runscript
 			echo "rm -f $output_dir/{*.xls,*.bed}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
@@ -219,7 +219,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 
 	# rmdup
 	for strand in pos neg; do
-		input_file=$RESULTS/$sample/alignments/filtered/${sample}_${strand}.bam
+		input_file=$RESULTS/$sample/alignments/rmdup/filtered/${sample}_${strand}.bam
 		output_dir=$RESULTS/$sample/peaks/$strand
 		if [[ ! -d $output_dir ]]; then
 			mkdir -p $output_dir
@@ -227,7 +227,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 		output_file=$output_dir/${sample}_peaks.narrowPeak.gz
 		if [[ ! -f $output_file ]]; then
 			runscript=${jname}_${sample}_${strand}.sh
-			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand}_rmdup --nomodel --extsize 20 -q $PEAKSUNIQUEQ --keep-dup all" >> $runscript
+			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand}_rmdup --nomodel --extsize 20 -q $PEAKSUNIQUEQ --keep-dup all" > $runscript
 			echo "gzip -f ${output_file/.gz}" >> $runscript
 			echo "rm -f $output_dir/{*.xls,*.bed}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
@@ -237,42 +237,28 @@ done
 wait
 
 
-# build genomedata archive
-
-    # if isdir(genomedata_path):
-    #     # get current track list
-    #     genome = Genome(genomedata_path)
-    #     existing_tracks = genome.tracknames_continuous
-    #     genome.close()
-    #
-    #     # iterate over existing bedgraphs
-    #     to_add = {}
-    #     for bg in glob(results + "/*/*.bedgraph.gz"):
-    #         trackname, ext = basename(bg).rsplit(".bedgraph.gz", 1)
-    #         if trackname in existing_tracks: continue
-    #         to_add[trackname] = bg
-    #
-    #     assert len(to_add) > 0, "no new data to load"
-    #
-    #     # open the genomedata archive
-    #     submit_open = bsub("open_data", P=project_id)
-    #     openarchive = "genomedata-open-data {genomedata_path} {tracks}".format(
-    #                         genomedata_path=genomedata_path,
-    #                         tracks=" ".join(to_add.keys()))
-    #     job = submit_open(openarchive)
-    #
-    #     # each job is dependent on the previous to finish
-    #     # load each of the tracks into the archive
-    #     for track, bedgraph in to_add.iteritems():
-    #         submit_load = bsub("load_data", P=project_id, w=str(job.job_id))
-    #         loaddata = "zcat {bedgraph} | genomedata-load-data {genomedata_path} {track}".format(**locals())
-    #         job = submit_load(loaddata)
-    #
-    #     submit_close = bsub("close_data", P=project_id, w=str(job.job_id))
-    #     closearchive = "genomedata-close-data {genomedata_path}".format(**locals())
-    #     submit_close(closearchive)
-    #
-    # else:
-    #     # create entire archive
-    #     pass
+# build genomedata archive;
+tracks=""
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+	sample=${SAMPLES[$i]}
+	tracks="$tracks -t ${sample}_pos=$RESULTS/$sample/intervals/bedgraph/${sample}_pos.bedgraph.gz"
+	tracks="$tracks -t ${sample}_neg=$RESULTS/$sample/intervals/bedgraph/${sample}_neg.bedgraph.gz"
+	tracks="$tracks -t ${sample}_pos_rmdup=$RESULTS/$sample/intervals/bedgraph/rmdup/${sample}_pos.bedgraph.gz"
+	tracks="$tracks -t ${sample}_neg_rmdup=$RESULTS/$sample/intervals/bedgraph/rmdup/${sample}_neg.bedgraph.gz"
+done
+if [[ ! -d $GENOMEDATA ]]; then
+	for chrom in `ls $FASTAS | sed -rn 's/(chr[0-9XYM]+).*/\1/p'`; do
+		jname=genomedata
+		runscript=${jname}_${chrom}.sh
+		echo "genomedata-load -v --directory-mode -s $FASTAS/$chrom.fa.gz $tracks $GENOMEDATA" > $runscript
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+	done
+fi
+# to add to an existing archive...
+# genomedata-open-data $GDARCHIVE <new track names>
+# zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
+# zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
+# zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
+# genomedata-close-data $GDARCHIVE
+wait
 

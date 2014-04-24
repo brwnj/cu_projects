@@ -16,9 +16,9 @@ DOC
 set -o nounset -o pipefail -o errexit -x
 source $HOME/projects/hits-clip/bin/config.sh
 
-group=${SAMPLE_GROUPS[$(($LSB_JOBINDEX - 1))]}
-replicates=${GROUP_REPLICATES[$(($LSB_JOBINDEX - 1))]}
-replicate_count=$(($(grep -o " " <<<$replicates | wc -l) + 1))
+group=${SAMPLE_GROUPS[$((LSB_JOBINDEX - 1))]}
+replicates=${GROUP_REPLICATES[$((LSB_JOBINDEX - 1))]}
+replicate_count=$(($(grep -c -o " " <<<$replicates | wc -l) + 1))
 
 results=$RESULTS/$group
 
@@ -33,7 +33,7 @@ for strand in pos neg; do
         for sample in $replicates; do
             bedfiles="$bedfiles $RESULTS/$sample/$sample.rmd_${strand}.peaks.qv.passed_filter.bed.gz"
         done
-        if [[ replicate_count == 1 ]]; then
+        if [[ $replicate_count == 1 ]]; then
             gunzip $bedfiles
             bedClip ${bedfiles/.gz} $SIZES ${out/.gz}
             gzip -f ${out/.gz}
