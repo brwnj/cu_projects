@@ -2,21 +2,26 @@ library("DESeq2")
 library("biomaRt")
 
 # need to subset sampleInfo and countData
-samples <- data.frame(row.names=c("MCF7_0_fraction1","MCF7_0_fraction2","MCF7_totalRNA", "MCF7_6_fraction1", "MCF7_6_fraction2", "MCF7_6_totalRNA", "PK12_0", "PK12_6"),
-                      condition=c("fraction", "fraction", "mRNA", "fraction", "fraction", "mRNA", "fraction", "fraction"),
-                      time=c("0h", "0h", "0h", "6h", "6h", "6h", "100h", "100h"))
-counts <- read.table("~/projects/kabos_ribosome/data/20140403/counts.txt", header=TRUE, row.names=1)
+samples <- data.frame(row.names=c("MCF7_0_fraction1","MCF7_0_fraction2","MCF7_totalRNA", "MCF7_6_fraction1", "MCF7_6_fraction2", "MCF7_6_totalRNA"),
+                      condition=c("fraction", "fraction", "mRNA", "fraction", "fraction", "mRNA"),
+                      time=c("0h", "0h", "0h", "6h", "6h", "6h"))
+counts <- read.table("~/projects/kabos_ribosome/counts_deseq.txt", header=TRUE, row.names=1)
+# remove unused columns
+drops <- c("PK12_0","PK12_6")
+counts <- counts[,!(names(counts) %in% drops)]
 
 dds <- DESeqDataSetFromMatrix(
     countData = counts,
     colData = samples,
-    design = ~ condition)
+    design = ~ time)
 
-subdds <- dds[, dds$time == "6h" ]
+subdds <- dds[, dds$condition == "mRNA" ]
 subdds <- DESeq(subdds)
 subres <- results(subdds)
 
-hist(subres$pvalue, breaks=20, col="steelblue", main="pval dist for MCF7_6", xlab="pvalue")
+pdf("~/projects/kabos_ribosome/mRNA_0_to_6_pvaldist.pdf",width=7,height=5)
+hist(subres$pvalue, breaks=20, col="steelblue", main="pval dist for mRNA 0hr to 6hr", xlab="pvalue")
+dev.off()
 
 # add gene names
 subres$ensembl <- sapply(strsplit(rownames(subres), split="nn+"), "[", 1)
@@ -28,12 +33,14 @@ genemap <- getBM(attributes=c("ensembl_gene_id", "entrezgene", "hgnc_symbol"),
 idx <- match(subres$ensembl, genemap$ensembl_gene_id)
 subres$entrez <- genemap$entrezgene[idx]
 subres$hgnc_symbol <- genemap$hgnc_symbol[idx]
-write.csv(as.data.frame(subres), file="MCF7-6_DESeq.csv")
+write.csv(as.data.frame(subres), file="~/projects/kabos_ribosome/mRNA_0_to_6_DESeq.csv")
 
 rld <- rlogTransformation(subdds)
 # par(mfrow = c(1, 2))
 # plot(log2(1+counts(dds, normalized=TRUE)[, 1:2] ), col="#00000020", pch=20, cex=0.3)
+pdf("~/projects/kabos_ribosome/mRNA_0_to_6_correlation.pdf",width=7,height=5)
 plot(assay(rld)[, 1:2], col="#00000020", pch=20, cex=0.3, main="")
+dev.off()
 
 # sampleDists <- dist( t( assay(rld) ) )
 # sampleDistMatrix <- as.matrix( sampleDists )

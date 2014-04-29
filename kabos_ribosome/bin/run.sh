@@ -214,10 +214,14 @@ output_dir=$POSTPROCESSING/feature_counts
 if [[ ! -d $output_dir ]]; then
     mkdir -p $output_dir
 fi
-output_file=$output_dir/counts.txt
+output_file_1=$output_dir/counts.txt
+output_file_2=$output_dir/counts_deseq.txt
 if [[ ! -f $output_file ]]; then
-    cmd="featureCounts -a $HG19GTF -o $output_file -T 12 $input_file"
-    bsub -J counts -o counts.%J.out -e counts.%J.err -P $PROJECTID -R "span[hosts=1]" -n 12 -K $cmd &
+    script=/vol1/home/brownj/projects/kabos_ribosome/bin/munge_counts.py
+	runscript=featureCounts.sh
+    echo "featureCounts -a $HG19GTF -o $output_file -T 12 $input_file" > $runscript
+    echo "python $script $output_file_1 > $output_file_2" >> $runscript
+    bsub -J counts -o counts.%J.out -e counts.%J.err -P $PROJECTID -R "span[hosts=1]" -n 12 -K < $runscript &
 fi
 wait
 
