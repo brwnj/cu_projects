@@ -8,6 +8,7 @@ from toolshed import reader
 from collections import Counter
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
+
 def main(files):
     c = {}
     for txt in files:
