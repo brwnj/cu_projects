@@ -254,11 +254,92 @@ if [[ ! -d $GENOMEDATA ]]; then
 		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
 	done
 fi
+
 # to add to an existing archive...
+# you can get existing track names via `genomedata-info tracknames_continuous $GENOMEDATA`
 # genomedata-open-data $GDARCHIVE <new track names>
 # zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
 # zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
 # zcat <bedgraph.gz> | genomedata-load-data $GDARCHIVE <single track name>
 # genomedata-close-data $GDARCHIVE
+
 wait
 
+
+# merge peaks across replicates
+for k in "${!REPLICATES[@]}"
+do
+  echo "key  : $k"
+  echo "value: ${array[$k]}"
+done
+
+for strand in pos neg; do
+    bedfiles=""
+    out=$results/$group.$strand.peaks.bed.gz
+    if [[ ! -f $out ]]; then
+        for sample in $replicates; do
+            bedfiles="$bedfiles $RESULTS/$sample/$sample.rmd_${strand}.peaks.qv.passed_filter.bed.gz"
+        done
+        if [[ $replicate_count == 1 ]]; then
+            gunzip $bedfiles
+            bedClip ${bedfiles/.gz} $SIZES ${out/.gz}
+            gzip -f ${out/.gz}
+            gzip ${bedfiles/.gz}
+        else
+            toclip=${out/.gz/.clipme}
+            peaktools-combine-replicates --verbose $bedfiles > $toclip
+            bedClip $toclip $SIZES $out
+            gzip $out
+            rm -f $toclip
+        fi
+    fi
+done
+
+
+# trim peaks
+for group in MCF7 BT474 MDA231; do
+    for strand in pos neg; do
+        tracks=""
+        bedfiles=""
+        combined=${group}_${strand}_rmd_peaks.bed.gz
+        trimmed=$results/${group}_${strand}_rmd_trimmed_peaks.bed.gz
+
+        for sample in ${replicates[$group]}; do
+            # PK24_filtered.rmd.neg_peaks.narrowPeak.gz
+            bedfiles="$bedfiles ${sample}_filtered.rmd.${strand}_peaks.narrowPeak.gz"
+            tracks="$tracks -t ${sample}_filtered.rmd_${strand}"
+        done
+
+        # combined the replicates
+        if [[ ! -f $combined ]]; then
+            peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $sizes ${combined/.gz}
+            gzip -f ${combined/.gz}
+        fi
+        # submit trim job separately
+        if [[ ! -f $trimmed ]]; then
+            cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
+            bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
+        fi
+
+        # also run bams containing duplicates
+        tracks=""
+        bedfiles=""
+        combined=${group}_${strand}_peaks.bed.gz
+        trimmed=${group}_${strand}_trimmed_peaks.bed.gz
+
+        for sample in ${replicates[$group]}; do
+            # PK24_filtered.neg_peaks.narrowPeak.gz
+            bedfiles="$bedfiles ${sample}_filtered.${strand}_peaks.narrowPeak.gz"
+            tracks="$tracks -t ${sample}_filtered_${strand}"
+        done
+        if [[ ! -f $combined ]]; then
+            peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $sizes ${combined/.gz}
+            gzip -f ${combined/.gz}
+        fi
+        if [[ ! -f $trimmed ]]; then
+            cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
+            bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
+        fi
+    done
+done
+wait
