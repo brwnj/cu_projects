@@ -1,10 +1,12 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Add a piece or all of the index read back onto R1 (or R2).
+Add a piece or all of the index read back onto R1.
 """
+
 from itertools import izip, islice
 from toolshed import nopen
+
 
 def readfq(fq):
     class Fastq(object):
@@ -21,6 +23,7 @@ def readfq(fq):
             return "@{name}\n{seq}\n+\n{qual}".format(name=self.name,
                     seq=self.seq, qual=self.qual)
 
+
     with nopen(fq) as fh:
         fqclean = (x.strip("\r\n") for x in fh if x.strip())
         while True:
@@ -28,6 +31,7 @@ def readfq(fq):
             if not rd: raise StopIteration
             assert all(rd) and len(rd) == 4
             yield Fastq(rd)
+
 
 def main(index, fastq, begin, end):
     for idx, rec in izip(readfq(index), readfq(fastq)):
@@ -38,15 +42,16 @@ def main(index, fastq, begin, end):
         rec.qual = idx.qual + rec.qual
         print rec
 
+
 if __name__ == '__main__':
     import argparse
     p = argparse.ArgumentParser(description=__doc__,
             formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument("index", metavar="INDEX", help="index read")
-    p.add_argument("fastq", metavar="FASTQ", help="R1 or R2")
+    p.add_argument("fastq", metavar="FASTQ", help="R1 fastq")
     p.add_argument("-b", dest="begin", default=0, type=int,
-            help="exclusive 0-based start of index read to save")
+            help="inclusive 0-based start of UMI")
     p.add_argument("-e", dest="end", type=int, default=None,
-            help="inclusive 0-based end of index read to save")
+            help="inclusive 0-based end of UMI")
     args = vars(p.parse_args())
     main(**args)
