@@ -20,7 +20,7 @@ function cleanup () {
 }
 
 
-SAMPLES=(control_ACATCG)
+SAMPLES=(control_ACATCG ON10-03B_plasmablast)
 
 # filter quality
 # $output_dir/${sample}_R[1-2]_quality-pass.fastq
@@ -37,8 +37,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     fi
     output_file_1=$output_dir/${sample}_R1_quality-pass.fastq.gz
 	output_file_2=$output_dir/${sample}_R2_quality-pass.fastq.gz
-	log_file_1=$RESULTS/logs/${sample}_R1_filter_quality.log
-	log_file_2=$RESULTS/logs/${sample}_R2_filter_quality.log
+	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
     if [[ ! -f $output_file_1 ]]; then
         runscript=${jname}_${sample}_R1.sh
 		echo "gunzip -f $input_file_1" > $runscript
@@ -73,8 +73,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 
     output_file_1=$output_dir/${sample}_R1_primers-pass.fastq.gz
 	output_file_2=$output_dir/${sample}_R2_primers-pass.fastq.gz
-	log_file_1=$RESULTS/logs/${sample}_R1_filter_primers.log
-	log_file_2=$RESULTS/logs/${sample}_R2_filter_primers.log
+	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
     if [[ ! -f $output_file_1 ]]; then
         runscript=${jname}_${sample}_R1.sh
 		echo "gunzip -f $input_file_1" > $runscript
@@ -92,13 +92,40 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
+
+# pair the sequences based on UMI
+# $output_dir/${sample}_R[1-2]_pair-pass.fastq
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+	jname=pair_sequences
+    sample=${SAMPLES[$i]}
+
+	input_file_1=$DATA/primer_filtered/${sample}_R1_primers-pass.fastq.gz
+	input_file_2=$DATA/primer_filtered/${sample}_R2_primers-pass.fastq.gz
+
+    output_dir=$DATA/paired_sequences
+    if [[ ! -d $output_dir ]]; then
+        mkdir -p $output_dir
+    fi
+
+    output_file_1=$output_dir/${sample}_R1_pair-pass.fastq.gz
+	output_file_2=$output_dir/${sample}_R2_pair-pass.fastq.gz
+	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
+    if [[ ! -f $output_file_1 ]]; then
+        runscript=${jname}_${sample}_R1.sh
+		echo "set -o nounset -o pipefail -o errexit -x" > $runscript
+		echo "gunzip -f $input_file_1 $input_file_2" >> $runscript
+		echo "PairSeq.py -1 ${input_file_1/.gz} -2 ${input_file_2/.gz} -f BARCODE --coord illumina --clean --outdir $output_dir" >> $runscript
+		# can't specify outname due to multiple files being passed
+		echo "mv ${input_file_1/.fastq.gz/_pair-pass.fastq} ${output_file_1/.gz}" >> $runscript
+		echo "mv ${input_file_2/.fastq.gz/_pair-pass.fastq} ${output_file_2/.gz}" >> $runscript
+		echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file_1/.gz} ${output_file_2/.gz}" >> $runscript
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+    fi
+done
+wait
 exit
 
-
-# Assign UIDs to read 1 sequences
-echo "   3: PairSeq                $(date +'%H:%M %D')"
-PairSeq.py -1 R1*primers-pass.fastq -2 R2*primers-pass.fastq -f BARCODE \
-    --coord illumina --clean >> $RUNLOG
 
 # Align sequence start positions by primer alignments
 echo "   4: AlignSets              $(date +'%H:%M %D')"
