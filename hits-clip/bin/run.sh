@@ -9,6 +9,7 @@
 set -o nounset -o pipefail -o errexit -x
 source /vol1/home/brownj/projects/hits-clip/bin/config.sh
 
+SAMPLES=(PK11 PK12 PK21 PK22 PK23 PK24 PK31 PK32 PK33 PK41)
 
 # trim the adapter sequence
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -41,7 +42,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     output_file_2=$output_dir/$sample.bam
     if [[ ! -f $output_file_2 ]]; then
         runscript=${jname}_${sample}.sh
-        echo "novoalign -d $NOVOIDX -f $input_file -a -o SAM -r A 20 -e 100 -c 10 -k 2> $output_file_1 | samtools view -ShuF4 - | samtools sort -o - $sample.temp -m 8G > $output_file_2" > $runscript
+        echo "novoalign -d $NOVOIDX -f $input_file -a -o SAM -r A 20 -e 100 -c 10 -s 4 -l 16 -k 2> $output_file_1 | samtools view -ShuF4 - | samtools sort -o - $sample.temp -m 8G > $output_file_2" > $runscript
         echo "samtools index $output_file_2" >> $runscript
         bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n 10 -K < $runscript &
     fi
@@ -74,7 +75,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	jname=filterbams
     sample=${SAMPLES[$i]}
 
-    input_file=$RESULTS/$sample/alignments/novoalign
+    input_file=$RESULTS/$sample/alignments/novoalign/rmdup/$sample.bam
     output_dir=$RESULTS/$sample/alignments/novoalign/filtered/
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
@@ -98,6 +99,15 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     fi
 done
 wait
+
+
+
+
+
+exit
+
+
+
 
 
 # make stranded bams
@@ -265,6 +275,8 @@ fi
 
 wait
 
+
+exit
 
 # merge peaks across replicates
 for k in "${!REPLICATES[@]}"
