@@ -9,7 +9,6 @@
 set -o nounset -o pipefail -o errexit -x
 source /vol1/home/brownj/projects/hits-clip/bin/config.sh
 
-SAMPLES=(PK11 PK12 PK21 PK22 PK23 PK24 PK31 PK32 PK33 PK41)
 
 # trim the adapter sequence
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -143,6 +142,10 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	done
 done
 wait
+
+
+exit
+
 
 
 # make bedgraphs and bigwigs
