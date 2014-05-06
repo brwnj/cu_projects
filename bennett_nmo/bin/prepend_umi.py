@@ -33,11 +33,13 @@ def readfq(fq):
             yield Fastq(rd)
 
 
-def main(index, fastq, begin, end):
+def main(index, fastq, begin, length):
+    end = begin + length
     for idx, rec in izip(readfq(index), readfq(fastq)):
         assert idx.name.partition(" ")[0] == rec.name.partition(" ")[0]
         idx.seq = idx.seq[begin:end]
         idx.qual = idx.qual[begin:end]
+        assert len(idx.seq) == length
         rec.seq = idx.seq + rec.seq
         rec.qual = idx.qual + rec.qual
         print rec
@@ -51,7 +53,7 @@ if __name__ == '__main__':
     p.add_argument("fastq", metavar="FASTQ", help="R1 fastq")
     p.add_argument("-b", dest="begin", default=0, type=int,
             help="inclusive 0-based start of UMI")
-    p.add_argument("-e", dest="end", type=int, default=None,
-            help="inclusive 0-based end of UMI")
+    p.add_argument("-l", dest="length", type=int, default=None,
+            help="length of UMI")
     args = vars(p.parse_args())
     main(**args)
