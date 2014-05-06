@@ -20,8 +20,6 @@ function cleanup () {
 }
 
 
-SAMPLES=(control_ACATCG ON10-03B_plasmablast)
-
 # filter quality
 # $output_dir/${sample}_R[1-2]_quality-pass.fastq
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -31,28 +29,32 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	input_file_1=$DATA/umi_added/${sample}_R1.fastq.gz
 	input_file_2=$DATA/raw/${sample}_R2.fastq.gz
 
-    output_dir=$DATA/quality_filtered
-    if [[ ! -d $output_dir ]]; then
-        mkdir -p $output_dir
-    fi
-    output_file_1=$output_dir/${sample}_R1_quality-pass.fastq.gz
-	output_file_2=$output_dir/${sample}_R2_quality-pass.fastq.gz
-	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
-	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
-    if [[ ! -f $output_file_1 ]]; then
-        runscript=${jname}_${sample}_R1.sh
-		echo "gunzip -f $input_file_1" > $runscript
-		echo "FilterSeq.py quality -s ${input_file_1/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R1 --log $log_file_1 --clean" >> $runscript
-		echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
-		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
-    fi
-    if [[ ! -f $output_file_2 ]]; then
-        runscript=${jname}_${sample}_R2.sh
-		echo "gunzip -f $input_file_2" > $runscript
-		echo "FilterSeq.py quality -s ${input_file_2/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R2 --log $log_file_2 --clean" >> $runscript
-		echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
-		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
-    fi
+	if [[ -f $input_file_1 && -f $input_file_2 ]]; then
+
+	    output_dir=$DATA/quality_filtered
+	    if [[ ! -d $output_dir ]]; then
+	        mkdir -p $output_dir
+	    fi
+	    output_file_1=$output_dir/${sample}_R1_quality-pass.fastq.gz
+		output_file_2=$output_dir/${sample}_R2_quality-pass.fastq.gz
+		log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+		log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
+	    if [[ ! -f $output_file_1 ]]; then
+	        runscript=${jname}_${sample}_R1.sh
+			echo "gunzip -f $input_file_1" > $runscript
+			echo "FilterSeq.py quality -s ${input_file_1/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R1 --log $log_file_1 --clean" >> $runscript
+			echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+	    fi
+	    if [[ ! -f $output_file_2 ]]; then
+	        runscript=${jname}_${sample}_R2.sh
+			echo "gunzip -f $input_file_2" > $runscript
+			echo "FilterSeq.py quality -s ${input_file_2/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R2 --log $log_file_2 --clean" >> $runscript
+			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+	    fi
+
+	fi
 done
 wait
 
@@ -66,29 +68,33 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	input_file_1=$DATA/quality_filtered/${sample}_R1_quality-pass.fastq.gz
 	input_file_2=$DATA/quality_filtered/${sample}_R2_quality-pass.fastq.gz
 
-    output_dir=$DATA/primer_filtered
-    if [[ ! -d $output_dir ]]; then
-        mkdir -p $output_dir
-    fi
+	if [[ -f $input_file_1 && $input_file_2 ]]; then
 
-    output_file_1=$output_dir/${sample}_R1_primers-pass.fastq.gz
-	output_file_2=$output_dir/${sample}_R2_primers-pass.fastq.gz
-	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
-	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
-    if [[ ! -f $output_file_1 ]]; then
-        runscript=${jname}_${sample}_R1.sh
-		echo "gunzip -f $input_file_1" > $runscript
-		echo "MaskPrimers.py score -s ${input_file_1/.gz} -p $R1PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R1_MAXERR --outdir $output_dir --outname ${sample}_R1 --nproc $NPROC --log $log_file_1 --clean" >> $runscript
-		echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
-		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
-    fi
-    if [[ ! -f $output_file_2 ]]; then
-        runscript=${jname}_${sample}_R2.sh
-		echo "gunzip -f $input_file_2" > $runscript
-		echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean" >> $runscript
-		echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
-		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
-    fi
+	    output_dir=$DATA/primer_filtered
+	    if [[ ! -d $output_dir ]]; then
+	        mkdir -p $output_dir
+	    fi
+
+	    output_file_1=$output_dir/${sample}_R1_primers-pass.fastq.gz
+		output_file_2=$output_dir/${sample}_R2_primers-pass.fastq.gz
+		log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+		log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
+	    if [[ ! -f $output_file_1 ]]; then
+	        runscript=${jname}_${sample}_R1.sh
+			echo "gunzip -f $input_file_1" > $runscript
+			echo "MaskPrimers.py score -s ${input_file_1/.gz} -p $R1PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R1_MAXERR --outdir $output_dir --outname ${sample}_R1 --nproc $NPROC --log $log_file_1 --clean" >> $runscript
+			echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+	    fi
+	    if [[ ! -f $output_file_2 ]]; then
+	        runscript=${jname}_${sample}_R2.sh
+			echo "gunzip -f $input_file_2" > $runscript
+			echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean" >> $runscript
+			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+	    fi
+
+	fi
 done
 wait
 
@@ -102,26 +108,30 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	input_file_1=$DATA/primer_filtered/${sample}_R1_primers-pass.fastq.gz
 	input_file_2=$DATA/primer_filtered/${sample}_R2_primers-pass.fastq.gz
 
-    output_dir=$DATA/paired_sequences
-    if [[ ! -d $output_dir ]]; then
-        mkdir -p $output_dir
-    fi
+	if [[ -f $input_file_1 && $input_file_2 ]]; then
 
-    output_file_1=$output_dir/${sample}_R1_pair-pass.fastq.gz
-	output_file_2=$output_dir/${sample}_R2_pair-pass.fastq.gz
-	log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
-	log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
-    if [[ ! -f $output_file_1 ]]; then
-        runscript=${jname}_${sample}_R1.sh
-		echo "set -o nounset -o pipefail -o errexit -x" > $runscript
-		echo "gunzip -f $input_file_1 $input_file_2" >> $runscript
-		echo "PairSeq.py -1 ${input_file_1/.gz} -2 ${input_file_2/.gz} -f BARCODE --coord illumina --clean --outdir $output_dir" >> $runscript
-		# can't specify outname due to multiple files being passed
-		echo "mv ${input_file_1/.fastq.gz/_pair-pass.fastq} ${output_file_1/.gz}" >> $runscript
-		echo "mv ${input_file_2/.fastq.gz/_pair-pass.fastq} ${output_file_2/.gz}" >> $runscript
-		echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file_1/.gz} ${output_file_2/.gz}" >> $runscript
-		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
-    fi
+	    output_dir=$DATA/paired_sequences
+	    if [[ ! -d $output_dir ]]; then
+	        mkdir -p $output_dir
+	    fi
+
+	    output_file_1=$output_dir/${sample}_R1_pair-pass.fastq.gz
+		output_file_2=$output_dir/${sample}_R2_pair-pass.fastq.gz
+		log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
+		log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
+	    if [[ ! -f $output_file_1 ]]; then
+	        runscript=${jname}_${sample}_R1.sh
+			echo "set -o nounset -o pipefail -o errexit -x" > $runscript
+			echo "gunzip -f $input_file_1 $input_file_2" >> $runscript
+			echo "PairSeq.py -1 ${input_file_1/.gz} -2 ${input_file_2/.gz} -f BARCODE --coord illumina --clean --outdir $output_dir" >> $runscript
+			# can't specify outname due to multiple files being passed
+			echo "mv ${input_file_1/.fastq.gz/_pair-pass.fastq} ${output_file_1/.gz}" >> $runscript
+			echo "mv ${input_file_2/.fastq.gz/_pair-pass.fastq} ${output_file_2/.gz}" >> $runscript
+			echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file_1/.gz} ${output_file_2/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+	    fi
+
+	fi
 done
 wait
 exit
