@@ -89,7 +89,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	    if [[ ! -f $output_file_2 ]]; then
 	        runscript=${jname}_${sample}_R2.sh
 			echo "gunzip -f $input_file_2" > $runscript
-			echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean" >> $runscript
+			echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start 0 --barcode --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean" >> $runscript
 			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
 	    fi
