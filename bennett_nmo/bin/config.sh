@@ -65,6 +65,7 @@ RESULTS=$HOME/projects/bennett_nmo/results/common
 DATA=$HOME/projects/bennett_nmo/data/common
 R1PRIMERS=$DATA/r1_primers.fasta
 R2PRIMERS=$DATA/r2_primers.fasta
+R2PRIMEROFFSET=$DATA/r2_primers_offsets-reverse.tab
 UMILENGTH=8
 
 PRCONS=0.6

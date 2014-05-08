@@ -8,16 +8,16 @@
 
 set -o nounset -o pipefail -o errexit -x
 source /vol1/home/brownj/projects/bennett_nmo/bin/config.sh
-trap cleanup EXIT
 
 
 # always gzip everything upon completion
 function cleanup () {
 	echo "zipping fastqs"
 	for f in `find $DATA -name *fastq`; do
-		gzip -f $f
+		echo "gzip -f $f" | bsez -J cleaningup -P $PI
 	done
 }
+trap cleanup EXIT
 
 
 # filter quality
@@ -120,15 +120,52 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 		log_file_1=$RESULTS/logs/${sample}_R1_${jname}.log
 		log_file_2=$RESULTS/logs/${sample}_R2_${jname}.log
 	    if [[ ! -f $output_file_1 ]]; then
-	        runscript=${jname}_${sample}_R1.sh
+	        runscript=${jname}_${sample}.sh
 			echo "set -o nounset -o pipefail -o errexit -x" > $runscript
 			echo "gunzip -f $input_file_1 $input_file_2" >> $runscript
 			echo "PairSeq.py -1 ${input_file_1/.gz} -2 ${input_file_2/.gz} -f BARCODE --coord illumina --clean --outdir $output_dir" >> $runscript
 			# can't specify outname due to multiple files being passed
-			echo "mv ${input_file_1/.fastq.gz/_pair-pass.fastq} ${output_file_1/.gz}" >> $runscript
-			echo "mv ${input_file_2/.fastq.gz/_pair-pass.fastq} ${output_file_2/.gz}" >> $runscript
+			echo "mv ${output_file_1/_pair-pass.fastq.gz/_primers-pass_pair-pass.fastq} ${output_file_1/.gz}" >> $runscript
+			echo "mv ${output_file_2/_pair-pass.fastq.gz/_primers-pass_pair-pass.fastq} ${output_file_2/.gz}" >> $runscript
 			echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file_1/.gz} ${output_file_2/.gz}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+	    fi
+
+	fi
+done
+wait
+
+
+# create offset table for R2 primers
+if [[ ! -f $R2PRIMEROFFSET ]]; then
+	AlignSets.py table --outdir $DATA --outname ${R2PRIMEROFFSET/_offsets-reverse.tab} -p $R2PRIMERS --reverse
+fi
+
+
+# align sequence start positions by primer alignments
+# $output_dir/${sample}_R[1-2]_.fastq
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+	jname=align_pass
+    sample=${SAMPLES[$i]}
+
+	input_file=$DATA/paired_sequences/${sample}_R2_pair-pass.fastq.gz
+
+	if [[ -f $input_file ]]; then
+
+	    output_dir=$DATA/align_pass
+	    if [[ ! -d $output_dir ]]; then
+	        mkdir -p $output_dir
+	    fi
+
+	    output_file=$output_dir/${sample}_R2_align-pass.fastq.gz
+		log_file=$RESULTS/logs/${sample}_R2_${jname}.log
+	    if [[ ! -f $output_file ]]; then
+	        runscript=${jname}_${sample}.sh
+			echo "set -o nounset -o pipefail -o errexit -x" > $runscript
+			echo "gunzip -f $input_file" >> $runscript
+			echo "AlignSets.py offset -s ${input_file/.gz} -d $R2PRIMEROFFSET --bf BARCODE --pf PRIMER --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file --clean" >> $runscript
+			echo "gzip -f ${input_file/.gz} ${output_file/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
 	    fi
 
 	fi
