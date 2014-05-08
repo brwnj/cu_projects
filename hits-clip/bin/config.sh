@@ -19,10 +19,10 @@ AGOFOOTPRINT=60
 HUB=$RESULTS/hub
 GENOME=hg19
 
-TRIMSCRIPT=/vol1/home/brownj/projects/hits-clip/bin/scripts/trim_adapter.py
+TRIMSCRIPT=$SRC/trim_adapter.py
 TRIMADAPTER=GTGTCA
 
-FILTERSCRIPT=/vol1/home/brownj/projects/hits-clip/bin/scripts/filter_bam.py
+FILTERSCRIPT=$SRC/filter_bam.py
 FILTERDOWNSTREAMBASES=25
 
 PEAKSNONUNIQUEQ=0.00001
@@ -43,3 +43,11 @@ REPLICATES=([BT474]="PK21 PK41 PK52"
 		[PK12-0_group]="PK12-0"
 		[PK12-6_group]="PK12-6"
 		[PK12-24_group]="PK12-24")
+
+# PK33
+# MCF7-0
+# MCF7-6
+# MCF7-24
+# MCF7-0_CAC
+# MCF7-24_GAT
+# MCF7-6_ATT
