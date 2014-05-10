@@ -8,6 +8,10 @@
 + new samples through pipeline
 + ucsc hub
 
++ tracks
++ peaks; time series - emerging peaks; peaks that go away
++ miRNA abundance
+
 #Ribosome profiling
 + 0 to 6 fraction
 + 0 to 6 mRNA
@@ -19,3 +23,5 @@
 + determine what is transcribed vs what is regulated prior to reaching the ribosome
 + set of genes that are changing
 + validate at protein level
+
++ uORF stuff
