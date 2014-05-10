@@ -41,7 +41,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     output_file_2=$output_dir/$sample.bam
     if [[ ! -f $output_file_2 ]]; then
         runscript=${jname}_${sample}.sh
-        echo "novoalign -d $NOVOIDX -f $input_file -a -o SAM -r A 20 -e 100 -c 10 -s 4 -l 16 -k 2> $output_file_1 | samtools view -ShuF4 - | samtools sort -o - $sample.temp -m 8G > $output_file_2" > $runscript
+		echo "set -x" > $runscript
+        echo "novoalign -d $NOVOIDX -f $input_file -a -o SAM -r A 20 -e 100 -c 10 -n 60 -s 4 -l 16 -k 2> $output_file_1 | samtools view -ShuF4 - | samtools sort -o - $sample.temp -m 8G > $output_file_2" >> $runscript
         echo "samtools index $output_file_2" >> $runscript
         bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -R "select[mem>16] rusage[mem=16] span[hosts=1]" -n 10 -K < $runscript &
     fi
@@ -210,6 +211,10 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 
 
+exit
+
+
+
 # call peaks
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     jname=peaks
@@ -250,6 +255,9 @@ done
 wait
 
 
+exit
+
+
 # build genomedata archive;
 tracks=""
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
@@ -266,6 +274,9 @@ if [[ ! -d $GENOMEDATA ]]; then
 		echo "genomedata-load -v --directory-mode -s $FASTAS/$chrom.fa.gz $tracks $GENOMEDATA" > $runscript
 		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
 	done
+else
+	echo "Genomedata exists. Load new tracks individually and comment this section out."
+	exit 1
 fi
 
 # to add to an existing archive...
