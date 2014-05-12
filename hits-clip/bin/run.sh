@@ -136,10 +136,6 @@ done
 wait
 
 
-exit
-
-
-
 # make bedgraphs and bigwigs
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     jname=bedgraph
@@ -200,10 +196,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	    fi
 	done
 done
-
-
-exit
-
 
 
 # call peaks
