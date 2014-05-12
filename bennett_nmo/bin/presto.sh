@@ -261,8 +261,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
-exit
-
 
 # Remove sequences with many Ns
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
