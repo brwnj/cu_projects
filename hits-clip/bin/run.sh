@@ -75,8 +75,8 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	jname=filterbams
     sample=${SAMPLES[$i]}
 
-    input_file=$RESULTS/$sample/alignments/novoalign/rmdup/$sample.bam
-    output_dir=$RESULTS/$sample/alignments/novoalign/filtered/
+    input_file=$RESULTS/$sample/alignments/novoalign/$sample.bam
+    output_dir=$RESULTS/$sample/alignments/novoalign/filtered
     if [[ ! -d $output_dir ]]; then
         mkdir -p $output_dir
     fi
@@ -99,15 +99,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     fi
 done
 wait
-
-
-
-
-
-exit
-
-
-
 
 
 # make stranded bams
