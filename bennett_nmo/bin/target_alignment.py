@@ -172,8 +172,8 @@ if __name__ == '__main__':
             formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('-q', '--queries', nargs="+", help="IMGT AA sequence files -- should be 5_*.txt")
     p.add_argument('-t', '--targets', help="target sequence file with peptide sequences per column, header with source id")
-    p.add_argument('-i', '--identity', type=float, default=0.75, help="sequence identity threshold -- number identical divided by length of the shorter sequence")
-    p.add_argument('-l', '--length', type=int, default=2, help="allowable length difference between target and query sequence -- -1 to disable")
+    p.add_argument('-i', '--identity', type=float, default=0.55, help="sequence identity threshold -- number identical divided by length of the shorter sequence")
+    p.add_argument('-l', '--length', type=int, default=0, help="allowable length difference between target and query sequence -- -1 to disable")
     args = vars(p.parse_args())
 
     main(**args)
