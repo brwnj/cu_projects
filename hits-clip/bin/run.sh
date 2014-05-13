@@ -208,7 +208,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 		if [[ ! -d $output_dir ]]; then
 			mkdir -p $output_dir
 		fi
-		output_file=$output_dir/${sample}_peaks.narrowPeak.gz
+		output_file=$output_dir/${sample}_${strand}_peaks.narrowPeak.gz
 		if [[ ! -f $output_file ]]; then
 			runscript=${jname}_${sample}_${strand}.sh
 			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand} --nomodel --extsize 20 -q $PEAKSNONUNIQUEQ --keep-dup all" > $runscript
@@ -225,7 +225,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 		if [[ ! -d $output_dir ]]; then
 			mkdir -p $output_dir
 		fi
-		output_file=$output_dir/${sample}_peaks.narrowPeak.gz
+		output_file=$output_dir/${sample}_${strand}_peaks.narrowPeak.gz
 		if [[ ! -f $output_file ]]; then
 			runscript=${jname}_${sample}_${strand}.sh
 			echo "macs2 callpeak -t $input_file --outdir $output_dir -g hs -n ${sample}_${strand}_rmdup --nomodel --extsize 20 -q $PEAKSUNIQUEQ --keep-dup all" > $runscript
@@ -236,9 +236,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	done
 done
 wait
-
-
-exit
 
 
 # build genomedata archive;
@@ -259,7 +256,7 @@ if [[ ! -d $GENOMEDATA ]]; then
 	done
 else
 	echo "Genomedata exists. Load new tracks individually and comment this section out."
-	exit 1
+	# exit 1
 fi
 
 # to add to an existing archive...
@@ -273,82 +270,227 @@ fi
 wait
 
 
-exit
+# merge peaks and trim across replicates
+# for sample in ${replicates[$group]}; do
+# for k in "${!REPLICATES[@]}"
+# do
+#   echo "key  : $k"
+#   echo "value: ${REPLICATES[$k]}"
+# done
+#
+# for strand in pos neg; do
+#     bedfiles=""
+# 	tracks=""
+#     output_file_1=$results/${group}_${strand}_peaks.bed.gz
+# 	output_file_2=trimmed
+#     if [[ ! -f $output_file_1 ]]; then
+#         for sample in $replicates; do
+#             bedfiles="$bedfiles $RESULTS/$sample/$sample.rmd_${strand}.peaks.qv.passed_filter.bed.gz"
+# 			# tracks="$tracks -t ${sample}_filtered.rmd_${strand}"
+#         done
+#         if [[ $replicate_count == 1 ]]; then
+#             gunzip $bedfiles
+#             bedClip ${bedfiles/.gz} $SIZES ${out/.gz}
+#             gzip -f ${out/.gz} ${bedfiles/.gz}
+#         else
+#             peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $SIZES ${combined/.gz}
+#             gzip -f ${combined/.gz}
+#
+#         fi
+#     fi
+#
+# 	if [[ ! -f $output_file_2 ]]; then
+#         cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
+#         bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
+# 	fi
+#
+# 	# then do the same for non rmdup
+#
+# done
+#
+# wait
 
-# merge peaks across replicates
-for k in "${!REPLICATES[@]}"
-do
-  echo "key  : $k"
-  echo "value: ${array[$k]}"
+
+# make a hub with coverage and peaks for samples only
+if [[ ! -d $HUB/$GENOME ]]; then
+    mkdir -p $HUB/$GENOME
+fi
+
+# genomes.txt
+if [[ ! -f $HUB/genomes.txt ]]; then
+    genomes=$HUB/genomes.txt
+    echo "genome $GENOME" > $genomes
+    echo "trackDb $GENOME/trackDb.txt" >> $genomes
+fi
+
+# hub.txt
+if [[ ! -f $HUB/hub.txt ]]; then
+    hub=$HUB/hub.txt
+    echo "hub $HUBNAME" > $hub
+    echo "shortLabel $HUBNAME" >> $hub
+    echo "longLabel $HUBNAME" >> $hub
+    echo "genomesFile genomes.txt" >> $hub
+    echo "email brwnjm@gmail.com" >> $hub
+fi
+
+# output for coverage
+trackdb=$HUB/$GENOME/trackDb.txt
+cat <<coverage_track >$trackdb
+track ${HUBNAME}_coverage
+compositeTrack on
+shortLabel Coverage
+longLabel Coverage
+maxHeightPixels 50:20:15
+type bigWig
+configurable on
+autoScale on
+
+coverage_track
+
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+
+    # already written into the hub directory
+    posbw=$RESULTS/$sample/intervals/bigwig/${sample}_pos.bigwig
+    negbw=$RESULTS/$sample/intervals/bigwig/${sample}_neg.bigwig
+    posuniqbw=$RESULTS/$sample/intervals/bigwig/rmdup/${sample}_pos.bigwig
+    neguniqbw=$RESULTS/$sample/intervals/bigwig/rmdup/${sample}_neg.bigwig
+
+	cp $posbw $negbw $HUB/$GENOME
+	cp $posuniqbw $HUB/$GENOME/${sample}_rmdup_pos.bigwig
+	cp $neguniqbw $HUB/$GENOME/${sample}_rmdup_neg.bigwig
+	# yuck.
+	posuniqbw=${sample}_rmdup_pos.bigwig
+	neguniqbw=${sample}_rmdup_neg.bigwig
+
+    color=${COLORS[$sample]}
+    cat <<coverage_track >>$trackdb
+    track $(basename $posbw .bigwig)
+    bigDataUrl $(basename $posbw)
+    shortLabel $sample coverage POS
+    longLabel $sample coverage positive (+) strand
+    type bigWig
+    parent ${HUBNAME}_coverage
+    color $color
+
+    track $(basename $negbw .bigwig)
+    bigDataUrl $(basename $negbw)
+    shortLabel $sample coverage NEG
+    longLabel $sample coverage negative (-) strand
+    type bigWig
+    parent ${HUBNAME}_coverage
+    color $color
+
+    track $(basename $posuniqbw .bigwig)
+    bigDataUrl $(basename $posuniqbw)
+    shortLabel $sample unique coverage POS
+    longLabel $sample unique coverage positive (+) strand
+    type bigWig
+    parent ${HUBNAME}_coverage
+    color $color
+
+    track $(basename $neguniqbw .bigwig)
+    bigDataUrl $(basename $neguniqbw)
+    shortLabel $sample unique coverage NEG
+    longLabel $sample unique coverage negative (-) strand
+    type bigWig
+    parent ${HUBNAME}_coverage
+    color $color
+
+coverage_track
 done
 
-for strand in pos neg; do
-    bedfiles=""
-    out=$results/$group.$strand.peaks.bed.gz
-    if [[ ! -f $out ]]; then
-        for sample in $replicates; do
-            bedfiles="$bedfiles $RESULTS/$sample/$sample.rmd_${strand}.peaks.qv.passed_filter.bed.gz"
-        done
-        if [[ $replicate_count == 1 ]]; then
-            gunzip $bedfiles
-            bedClip ${bedfiles/.gz} $SIZES ${out/.gz}
-            gzip -f ${out/.gz}
-            gzip ${bedfiles/.gz}
-        else
-            toclip=${out/.gz/.clipme}
-            peaktools-combine-replicates --verbose $bedfiles > $toclip
-            bedClip $toclip $SIZES $out
-            gzip $out
-            rm -f $toclip
-        fi
-    fi
+# intervals
+cat <<intervals_track >>$trackdb
+track peak_intervals
+compositeTrack on
+shortLabel Peak Intervals
+longLabel Peak Intervals
+type bigBed 6
+
+intervals_track
+
+fields=bb_fields.as
+cat <<bigbedfields >$fields
+table hg19intervals
+"NarrowPeak format"
+(
+string  chrom;		"Reference Chromosome"
+uint    chromStart;	"Start Position"
+uint    chromEnd;	"End Position"
+string  name;		"Gene Name"
+uint    score;		"Score"
+char[1] strand;		"Strand: + or -"
+float   signalValue;	"Measurement of Overall Enrichment"
+float   pValue;	    "p-value (-log10)"
+float  	qValue;	    "q-value (-log10)"
+uint    peak;	    "Peak source (derived peak summit)"
+)
+bigbedfields
+
+# individual samples
+for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+    sample=${SAMPLES[$i]}
+    color=${COLORS[$sample]}
+
+    # non-unique
+	bigbed=$HUB/$GENOME/${sample}_peaks.narrowPeak.bb
+	if [[ ! -f $bigbed ]]; then
+
+	    np_us=${sample}.narrowPeak.unsorted
+	    np=${sample}.narrowPeak
+	    bb=${np/.narrowPeak/.bb}
+
+		negnp=$RESULTS/$sample/peaks/neg/${sample}_neg_peaks.narrowPeak.gz
+		posnp=$RESULTS/$sample/peaks/pos/${sample}_pos_peaks.narrowPeak.gz
+
+	    awk -t -cbed '{if($5>1000){$5=1000}; $6="-"; print}' $negnp > $np_us
+	    awk -t -cbed '{if($5>1000){$5=1000}; $6="+"; print}' $posnp >> $np_us
+	    bedtools sort -i $np_us > $np
+	    bedToBigBed -type=bed6+4 -as=$fields $np $SIZES $bigbed
+	    rm -f $np_us $np
+
+	    cat <<intervals_track >>$trackdb
+        track ${bb/.bb}
+        bigDataUrl $bb
+        shortLabel ${bb/.bb} non-unique
+        longLabel $sample: non-unique peaks
+        type bigBed 6 +
+        color $color
+        parent peak_intervals
+
+intervals_track
+
+	fi
+
+    # unique
+	bigbeg=$HUB/$GENOME/${sample}_rmdup_peaks.narrowPeak.bb
+	if [[ ! -f $bigbed ]]; then
+
+	    np_us=${sample}_rmdup.narrowPeak.unsorted
+	    np=${sample}_rmdup.narrowPeak
+	    bb=${np/.narrowPeak/.bb}
+
+		negnp=$RESULTS/$sample/peaks/neg/${sample}_neg_rmdup_peaks.narrowPeak.gz
+		posnp=$RESULTS/$sample/peaks/pos/${sample}_pos_rmdup_peaks.narrowPeak.gz
+
+	    awk -t -cbed '{if($5>1000){$5=1000}; $6="-"; print}' $negnp > $np_us
+	    awk -t -cbed '{if($5>1000){$5=1000}; $6="+"; print}' $posnp >> $np_us
+	    bedtools sort -i $np_us > $np
+	    bedToBigBed -type=bed6+4 -as=$fields $np $SIZES $bigbed
+	    rm -f $np_us $np
+
+	    cat <<intervals_track >>$trackdb
+	        track ${bb/.bb}
+	        bigDataUrl $bb
+	        shortLabel ${bb/.bb} unique
+	        longLabel $sample: unique peaks
+	        type bigBed 6 +
+	        color $color
+	        parent peak_intervals
+
+intervals_track
+
+	fi
+
 done
-
-
-# trim peaks
-for group in MCF7 BT474 MDA231; do
-    for strand in pos neg; do
-        tracks=""
-        bedfiles=""
-        combined=${group}_${strand}_rmd_peaks.bed.gz
-        trimmed=$results/${group}_${strand}_rmd_trimmed_peaks.bed.gz
-
-        for sample in ${replicates[$group]}; do
-            # PK24_filtered.rmd.neg_peaks.narrowPeak.gz
-            bedfiles="$bedfiles ${sample}_filtered.rmd.${strand}_peaks.narrowPeak.gz"
-            tracks="$tracks -t ${sample}_filtered.rmd_${strand}"
-        done
-
-        # combined the replicates
-        if [[ ! -f $combined ]]; then
-            peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $sizes ${combined/.gz}
-            gzip -f ${combined/.gz}
-        fi
-        # submit trim job separately
-        if [[ ! -f $trimmed ]]; then
-            cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
-            bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
-        fi
-
-        # also run bams containing duplicates
-        tracks=""
-        bedfiles=""
-        combined=${group}_${strand}_peaks.bed.gz
-        trimmed=${group}_${strand}_trimmed_peaks.bed.gz
-
-        for sample in ${replicates[$group]}; do
-            # PK24_filtered.neg_peaks.narrowPeak.gz
-            bedfiles="$bedfiles ${sample}_filtered.${strand}_peaks.narrowPeak.gz"
-            tracks="$tracks -t ${sample}_filtered_${strand}"
-        done
-        if [[ ! -f $combined ]]; then
-            peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $sizes ${combined/.gz}
-            gzip -f ${combined/.gz}
-        fi
-        if [[ ! -f $trimmed ]]; then
-            cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
-            bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
-        fi
-    done
-done
-wait
