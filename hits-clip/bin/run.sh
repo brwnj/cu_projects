@@ -247,9 +247,9 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	tracks="$tracks -t ${sample}_pos_rmdup=$RESULTS/$sample/intervals/bedgraph/rmdup/${sample}_pos.bedgraph.gz"
 	tracks="$tracks -t ${sample}_neg_rmdup=$RESULTS/$sample/intervals/bedgraph/rmdup/${sample}_neg.bedgraph.gz"
 done
+jname=genomedata
 if [[ ! -d $GENOMEDATA ]]; then
 	for chrom in `ls $FASTAS | sed -rn 's/(chr[0-9XYM]+).*/\1/p'`; do
-		jname=genomedata
 		runscript=${jname}_${chrom}.sh
 		echo "genomedata-load -v --directory-mode -s $FASTAS/$chrom.fa.gz $tracks $GENOMEDATA" > $runscript
 		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
@@ -271,44 +271,100 @@ wait
 
 
 # merge peaks and trim across replicates
-# for sample in ${replicates[$group]}; do
-# for k in "${!REPLICATES[@]}"
-# do
-#   echo "key  : $k"
-#   echo "value: ${REPLICATES[$k]}"
-# done
-#
-# for strand in pos neg; do
-#     bedfiles=""
-# 	tracks=""
-#     output_file_1=$results/${group}_${strand}_peaks.bed.gz
-# 	output_file_2=trimmed
-#     if [[ ! -f $output_file_1 ]]; then
-#         for sample in $replicates; do
-#             bedfiles="$bedfiles $RESULTS/$sample/$sample.rmd_${strand}.peaks.qv.passed_filter.bed.gz"
-# 			# tracks="$tracks -t ${sample}_filtered.rmd_${strand}"
-#         done
-#         if [[ $replicate_count == 1 ]]; then
-#             gunzip $bedfiles
-#             bedClip ${bedfiles/.gz} $SIZES ${out/.gz}
-#             gzip -f ${out/.gz} ${bedfiles/.gz}
-#         else
-#             peaktools-combine-replicates --verbose $bedfiles | bedClip stdin $SIZES ${combined/.gz}
-#             gzip -f ${combined/.gz}
-#
-#         fi
-#     fi
-#
-# 	if [[ ! -f $output_file_2 ]]; then
-#         cmd="python ~/projects/hits-clip/bin/scripts/trim_peaks.py -v $tracks $combined $GENOMEDATA | bedtools sort -i - | gzip -c > $trimmed"
-#         bsub -J trim -o trim.%J.out -e trim.%J.err -P hits-clip -K $cmd &
-# 	fi
-#
-# 	# then do the same for non rmdup
-#
-# done
-#
-# wait
+src=/vol1/home/brownj/projects/hits-clip/results/20140317/peaktools/peaktools
+jname=combineandtrim
+for group in "${!REPLICATES[@]}"; do
+	samples=${REPLICATES[$group]}
+	for strand in pos neg; do
+
+		bedfiles=""
+		tracks=""
+
+		outdir=$RESULTS/$group/peaks/$strand/postprocessing
+		if [[ ! -d $outdir ]]; then
+			mkdir -p $outdir
+		fi
+
+		output_file_1=$outdir/${group}_${strand}_combined.bed.gz
+		output_file_2=$outdir/${group}_${strand}_trimmed.bed.gz
+
+		if [[ ! -f $output_file_1 && ! -f $output_file_2 ]]; then
+			for sample in $samples; do
+				bedfiles="$bedfiles $RESULTS/$sample/peaks/$strand/${sample}_${strand}_peaks.narrowPeak.gz"
+				tracks="$tracks -t ${sample}_${strand}"
+			done
+
+			runscript=${jname}_${sample}_${strand}.sh
+			echo "python $src/combine_replicates.py --verbose $bedfiles | bedClip stdin $SIZES ${output_file_1/.gz}" > $runscript
+			echo "gzip -f ${output_file_1/.gz}" >> $runscript
+			echo "python $SRC/trim_peaks.py -v $tracks $output_file_1 $GENOMEDATA | bedtools sort -i - | gzip -c > $output_file_2" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+		fi
+
+		# then do the same for rmdup
+		bedfiles=""
+		tracks=""
+
+		if [[ ! -d $outdir ]]; then
+			mkdir -p $outdir
+		fi
+
+		output_file_1=$outdir/${group}_${strand}_rmdup_combined.bed.gz
+		output_file_2=$outdir/${group}_${strand}_rmdup_trimmed.bed.gz
+
+		if [[ ! -f $output_file_1 && ! -f $output_file_2 ]]; then
+			for sample in $samples; do
+				bedfiles="$bedfiles $RESULTS/$sample/peaks/$strand/${sample}_${strand}_rmdup_peaks.narrowPeak.gz"
+				tracks="$tracks -t ${sample}_${strand}_rmdup"
+			done
+
+			runscript=${jname}_${sample}_${strand}_rmdup.sh
+			echo "python $src/combine_replicates.py --verbose $bedfiles | bedClip stdin $SIZES ${output_file_1/.gz}" > $runscript
+			echo "gzip -f ${output_file_1/.gz}" >> $runscript
+			echo "python $SRC/trim_peaks.py -v $tracks $output_file_1 $GENOMEDATA | bedtools sort -i - | gzip -c > $output_file_2" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+		fi
+
+	done
+done
+
+
+# trim the peaks from singletons
+jname=trim
+for (( i = 0; i < ${#SINGLETONS[@]}; i++ )); do
+	sample=${SINGLETONS[$i]}
+
+	for strand in pos neg; do
+
+		track="-t ${sample}_${strand}"
+		input_file=$RESULTS/$sample/peaks/$strand/${sample}_${strand}_peaks.narrowPeak.gz
+		outdir=$RESULTS/$sample/peaks/$strand/postprocessing
+
+		if [[ ! -d $outdir ]]; then
+			mkdir -p $outdir
+		fi
+
+		output_file=$outdir/${sample}_${strand}_trimmed.bed.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/trim_peaks.py -v $track $input_file $GENOMEDATA | bedtools sort -i - | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+		# then do the same for rmdup
+		track="-t ${sample}_${strand}_rmdup"
+		input_file=$RESULTS/$sample/peaks/$strand/${sample}_${strand}_rmdup_peaks.narrowPeak.gz
+
+		output_file=$outdir/${sample}_${strand}_rmdup_trimmed.bed.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/trim_peaks.py -v $track $input_file $GENOMEDATA | bedtools sort -i - | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+	done
+done
+wait
 
 
 # make a hub with coverage and peaks for samples only
@@ -434,11 +490,11 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     color=${COLORS[$sample]}
 
     # non-unique
-	bigbed=$HUB/$GENOME/${sample}_peaks.narrowPeak.bb
+	bigbed=$HUB/$GENOME/${sample}_peaks.bb
 	if [[ ! -f $bigbed ]]; then
 
-	    np_us=${sample}.narrowPeak.unsorted
-	    np=${sample}.narrowPeak
+	    np_us=${sample}_peaks.narrowPeak.unsorted
+	    np=${sample}_peaks.narrowPeak
 	    bb=${np/.narrowPeak/.bb}
 
 		negnp=$RESULTS/$sample/peaks/neg/${sample}_neg_peaks.narrowPeak.gz
@@ -464,11 +520,11 @@ intervals_track
 	fi
 
     # unique
-	bigbeg=$HUB/$GENOME/${sample}_rmdup_peaks.narrowPeak.bb
+	bigbed=$HUB/$GENOME/${sample}_rmdup_peaks.bb
 	if [[ ! -f $bigbed ]]; then
 
-	    np_us=${sample}_rmdup.narrowPeak.unsorted
-	    np=${sample}_rmdup.narrowPeak
+	    np_us=${sample}_rmdup_peaks.narrowPeak.unsorted
+	    np=${sample}_rmdup_peaks.narrowPeak
 	    bb=${np/.narrowPeak/.bb}
 
 		negnp=$RESULTS/$sample/peaks/neg/${sample}_neg_rmdup_peaks.narrowPeak.gz
