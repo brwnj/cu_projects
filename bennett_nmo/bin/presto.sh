@@ -24,7 +24,7 @@ DOC
 # always gzip everything upon completion
 function cleanup () {
 	echo "zipping fastqs"
-	for f in `find $DATA -name *fastq`; do
+	for f in `find $DATA -name *fast[qa]`; do
 		echo "gzip -f $f" | bsez -J cleaningup -P $PI
 	done
 }
@@ -56,14 +56,14 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 			echo "gunzip -f $input_file_1" > $runscript
 			echo "FilterSeq.py quality -s ${input_file_1/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R1 --log $log_file_1 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 	    if [[ ! -f $output_file_2 ]]; then
 	        runscript=${jname}_${sample}_R2.sh
 			echo "gunzip -f $input_file_2" > $runscript
 			echo "FilterSeq.py quality -s ${input_file_2/.gz} -q $MINQUAL --nproc $NPROC --outdir $output_dir --outname ${sample}_R2 --log $log_file_2 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
@@ -97,14 +97,14 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 			echo "gunzip -f $input_file_1" > $runscript
 			echo "MaskPrimers.py score -s ${input_file_1/.gz} -p $R1PRIMERS --mode cut --start $UMILENGTH --barcode --maxerror $R1_MAXERR --outdir $output_dir --outname ${sample}_R1 --nproc $NPROC --log $log_file_1 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 	    if [[ ! -f $output_file_2 ]]; then
 	        runscript=${jname}_${sample}_R2.sh
 			echo "gunzip -f $input_file_2" > $runscript
-			echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start 0 --barcode --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean >> ${pipeline_log}" >> $runscript
+			echo "MaskPrimers.py score -s ${input_file_2/.gz} -p $R2PRIMERS --mode cut --start 0 --maxerror $R2_MAXERR --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file_2 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
@@ -181,7 +181,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 			echo "gunzip -f $input_file" >> $runscript
 			echo "AlignSets.py offset -s ${input_file/.gz} -d $R2PRIMEROFFSET --bf BARCODE --pf PRIMER --outdir $output_dir --outname ${sample}_R2 --nproc $NPROC --log $log_file --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file/.gz} ${output_file/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
@@ -215,14 +215,14 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 			echo "gunzip -f $input_file_1" > $runscript
 			echo "BuildConsensus.py -s ${input_file_1/.gz} --bf BARCODE --pf PRIMER --prcons $PRCONS -q $MINQUAL --maxdiv $MAXDIV --nproc $NPROC --outdir $output_dir --outname ${sample}_R1 --log $log_file_1 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_1/.gz} ${output_file_1/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 	    if [[ ! -f $output_file_2 ]]; then
 	        runscript=${jname}_${sample}_R2.sh
 			echo "gunzip -f $input_file_2" > $runscript
 			echo "BuildConsensus.py -s ${input_file_2/.gz} --bf BARCODE --pf PRIMER -q $MINQUAL --maxdiv $MAXDIV --nproc $NPROC --outdir $output_dir --outname ${sample}_R2 --log $log_file_2 --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_2/.gz} ${output_file_2/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
@@ -252,9 +252,9 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	    if [[ ! -f $output_file ]]; then
 	        runscript=${jname}_${sample}.sh
 			echo "gunzip -f $input_file_1 $input_file_2" > $runscript
-			echo "AssemblePairs.py align -1 ${input_file_2} -2 ${input_file_1} --1f CONSCOUNT --2f PRCONS CONSCOUNT --coord presto --rc tail --maxerror $AP_MAXERR --alpha $ALPHA --nproc $NPROC --outdir $output_dir --outname ${sample} --log $log_file --clean >> ${pipeline_log}" >> $runscript
+			echo "AssemblePairs.py align -1 ${input_file_2/.gz} -2 ${input_file_1/.gz} --1f CONSCOUNT --2f PRCONS CONSCOUNT --coord presto --rc tail --maxerror $AP_MAXERR --alpha $ALPHA --nproc $NPROC --outdir $output_dir --outname ${sample} --log $log_file --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
@@ -283,17 +283,14 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	    if [[ ! -f $output_file ]]; then
 	        runscript=${jname}_${sample}.sh
 			echo "gunzip -f $input_file" > $runscript
-			echo "FilterSeq.py missing -s ${input_file} -n $FS_MISS --inner --nproc $NPROC --outdir $output_dir --outname ${sample} --log $log_file --clean >> ${pipeline_log}" >> $runscript
-			echo "gzip -f ${input_file_1/.gz} ${input_file_2/.gz} ${output_file/.gz}" >> $runscript
-			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K < $runscript &
+			echo "FilterSeq.py missing -s ${input_file/.gz} -n $FS_MISS --inner --nproc $NPROC --outdir $output_dir --outname ${sample} --log $log_file --clean >> ${pipeline_log}" >> $runscript
+			echo "gzip -f ${input_file/.gz}" >> $runscript
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -n $NPROC -K -R "span[hosts=1]" < $runscript &
 	    fi
 
 	fi
 done
 wait
-
-
-exit
 
 
 # Rewrite header with minimum of CONSCOUNT
@@ -317,7 +314,7 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	    if [[ ! -f $output_file ]]; then
 	        runscript=${jname}_${sample}.sh
 			echo "gunzip -f $input_file" > $runscript
-			echo "ParseHeaders.py collapse -s ${input_file/.gz} -f CONSCOUNT --act min --fasta --outdir $output_dir --outname $sample --log $log_file --clean >> ${pipeline_log}" >> $runscript
+			echo "ParseHeaders.py collapse -s ${input_file/.gz} -f CONSCOUNT --act min --fasta --outdir $output_dir --outname $sample --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file/.gz} ${output_file/.gz}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
 	    fi
@@ -325,8 +322,6 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	fi
 done
 wait
-
-exit
 
 
 # Remove duplicate sequences
@@ -359,12 +354,10 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
-exit
-
 
 # Keep sequences with at least 2 supporting sources
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
-	jname=not_sure
+	jname=at_least_2
     sample=${SAMPLES[$i]}
 
 	pipeline_log=$RESULTS/logs/${sample}_pipeline.log
@@ -378,12 +371,12 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 	        mkdir -p $output_dir
 	    fi
 
-	    output_file=$output_dir/${sample}_not-sure.fasta.gz
+	    output_file=$output_dir/${sample}_atleast-2.fasta.gz
 		log_file=$RESULTS/logs/${sample}_${jname}.log
 	    if [[ ! -f $output_file ]]; then
 	        runscript=${jname}_${sample}.sh
 			echo "gunzip -f $input_file" > $runscript
-			echo "SplitSeq.py group -s ${input_file/.gz} -f CONSCOUNT --num 2 --outdir $output_dir --outname $sample --log $log_file --clean >> ${pipeline_log}" >> $runscript
+			echo "SplitSeq.py group -s ${input_file/.gz} -f CONSCOUNT --num 2 --outdir $output_dir --outname $sample --clean >> ${pipeline_log}" >> $runscript
 			echo "gzip -f ${input_file/.gz} ${output_file/.gz}" >> $runscript
 			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
 	    fi
@@ -392,20 +385,21 @@ for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 done
 wait
 
-exit
 
 # Process log files
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
 
-	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_quality.log -f ID QUALITY > /dev/null &
-	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_primers.log -f ID BARCODE PRIMER ERROR > /dev/null &
-	ParseLog.py -l $RESULTS/logs/${sample}_*_consensus_pass.log -f BARCODE BCCOUNT CONSCOUNT PRIMER PRCOUNT PRFREQ DIVERSITY > /dev/null &
-	ParseLog.py -l $RESULTS/logs/${sample}_assemble_pass.log -f ID OVERLAP LENGTH PVAL ERROR > /dev/null &
-	ParseLog.py -l $RESULTS/logs/${sample}_missing_pass.log -f ID MISSING > /dev/null &
-	ParseLog.py -l $RESULTS/logs/${sample}_pipeline.log -f END SEQUENCES PAIRS SETS PASS FAIL UNIQUE DUPLICATE UNDETERMINED PARTS OUTPUT > /dev/null &
-	wait
+	# writes a table with .tab ext
+	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_quality.log -f ID QUALITY --outdir something --outname $sample_$jname...
+	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_primers.log -f ID BARCODE PRIMER ERROR
+	ParseLog.py -l $RESULTS/logs/${sample}_*_consensus_pass.log -f BARCODE BCCOUNT CONSCOUNT PRIMER PRCOUNT PRFREQ DIVERSITY
+	ParseLog.py -l $RESULTS/logs/${sample}_assemble_pass.log -f ID OVERLAP LENGTH PVAL ERROR
+	ParseLog.py -l $RESULTS/logs/${sample}_missing_pass.log -f ID MISSING
+	ParseLog.py -l $RESULTS/logs/${sample}_pipeline.log -f END SEQUENCES PAIRS SETS PASS FAIL UNIQUE DUPLICATE UNDETERMINED PARTS OUTPUT
 
 done
+wait
+exit
 
 # gzip all of the logs
 for f in $RESULTS/logs/*.log; do
