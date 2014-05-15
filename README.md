@@ -13,15 +13,6 @@
 + miRNA abundance
 
 #Ribosome profiling
-+ 0 to 6 fraction
-+ 0 to 6 mRNA
-
-+ start codons within the 5' UTRs email from momie
-+ stop codon
-
-+ analyzing what is different between time points
-+ determine what is transcribed vs what is regulated prior to reaching the ribosome
-+ set of genes that are changing
-+ validate at protein level
-
 + uORF stuff
+	+ start codons within the 5' UTRs email from momie
+	+ stop codon in or near the end of the UTR; can be in the CDS
