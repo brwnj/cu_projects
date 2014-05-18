@@ -30,9 +30,6 @@ SAMPLES=(MCF7 MCF7estr MDA231 BT474 BT474estr BT474herc HS27A HS5 hMSC BMEC HUVE
 GDARCHIVE=$HOME/projects/hits-clip/results/20120917/gd_20120917.rmd
 ANNOTATION=$HOME/ref/hg18/refseq.wholegene.bed.gz
 
-# likely gone.
-SRC=$HOME/devel/cliptools/cliptools/
-
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
     SAMPLE=${SAMPLES[$i]}
     DATA="$HOME/projects/hits-clip/results/common/$SAMPLE"
