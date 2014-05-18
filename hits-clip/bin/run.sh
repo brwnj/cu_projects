@@ -367,6 +367,42 @@ done
 wait
 
 
+# map seeds
+
+#     POSPEAK="$DATA/$SAMPLE.pos.peaks.trimmed.bed.gz"
+#     NEGPEAK="$DATA/$SAMPLE.neg.peaks.trimmed.bed.gz"
+#
+#     SIF="$SAMPLE.network.unfiltered.sif"
+#     FUNCTION="$SAMPLE.function.noa"
+#
+#     RUN=$SAMPLE.mirnaseeds.sh
+#
+#
+# for STRAND in pos neg; do
+#     for (( i = 0; i < \${#FASTAS[@]}; i++ )); do
+#         SEED_FASTA=\${FASTAS[\$i]}
+#         SEED_LENGTH=\${LENGTHS[\$i]}
+#
+#         POSNOTSIF=\"$SAMPLE.pos.mirna.\$SEED_LENGTH.notSIF.gz\"
+#         NEGNOTSIF=\"$SAMPLE.neg.mirna.\$SEED_LENGTH.notSIF.gz\"
+#
+#         if [ \"\$STRAND\" == \"pos\" ]; then
+#             python $SRC/aggregate_peaks.py $POSPEAK $ANNOTATION \$SEED_FASTA $GDARCHIVE | gzip -c > \$POSNOTSIF
+#             awk -v len=\"\$SEED_LENGTH\" -c header '{split(\$1,seed,\"|\"); print seed[1]\"\t\"len\"\t\"\$5}' \$POSNOTSIF > $SIF
+#         else
+#             python $SRC/aggregate_peaks.py $NEGPEAK $ANNOTATION \$SEED_FASTA $GDARCHIVE | gzip -c > \$NEGNOTSIF
+#             awk -v len=\"\$SEED_LENGTH\" -c header '{split(\$1,seed,\"|\"); print seed[1]\"\t\"len\"\t\"\$5}' \$NEGNOTSIF >> $SIF
+#         fi
+#
+#     done
+# done
+#
+# echo "functionalCategory" > $FUNCTION
+# awk -c header '{print \$1\" = miRNA\n\"\$3\" = Gene\"}' $SIF | sort | uniq >> $FUNCTION
+#
+# done
+
+
 # make a hub with coverage and peaks for samples only
 if [[ ! -d $HUB/$GENOME ]]; then
     mkdir -p $HUB/$GENOME
