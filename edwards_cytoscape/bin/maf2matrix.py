@@ -10,7 +10,7 @@ from itertools import combinations
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
 
 
-def main(data_file, gene, effect, vtype, patient, find_effect, find_type, network_file, nodeattrs_file):
+def main(data_file, gene, effect, vtype, patient, find_effect, find_type, network_file, min_comutation, nodeattrs_file):
     df = pd.read_table(data_file, compression="gzip" if data_file.endswith(".gz") else None)
     # filter out irrelevant mutations
     df = df[(df[effect].isin(find_effect)) & (df[vtype].isin(find_type))]
@@ -29,10 +29,13 @@ def main(data_file, gene, effect, vtype, patient, find_effect, find_type, networ
         # add header onto file
         print >>out, "\t".join(['source', 'interaction_type', 'target', 'comutation_count'])
         for gene_pair, comutation_count in interactions.iteritems():
+            if comutation_count < min_comutation: continue
             source, target = gene_pair.split(":")
+            if source == target: continue
             print >>out, "%s\t%s\t%s\t%d" % (source, interaction_type, target, comutation_count)
 
     # if a patient has multiple mutations in the same gene, those are counted in this metric
+    # min_comutation has no effect on these counts
     total_counts = df[gene].value_counts()
     with open(nodeattrs_file, 'w') as out:
         print >>out, "\t".join(['source', 'total_mutations'])
@@ -56,6 +59,7 @@ if __name__ == '__main__':
 
     output_file_args = p.add_argument_group("output files")
     output_file_args.add_argument('--network-file', default="network.txt", help="file name containing network file")
+    output_file_args.add_argument('--min-comutation', default=2, type=int, help="minimum comutation count in order to output interaction")
     output_file_args.add_argument('--nodeattrs-file', default="node_attrs.txt", help="file name containing node attributes")
 
     args = vars(p.parse_args())
