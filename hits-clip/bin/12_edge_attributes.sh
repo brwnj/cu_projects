@@ -36,10 +36,7 @@ if [ ! -f $CYTO_ATTR ]; then
     for STRAND in $STRANDS; do
         for LENGTH in $LENGTHS; do
             TRACKS=$(for REP in $REPLICATES; do echo -n "$REP.$STRAND.rmd "; done)
-            python $BIN/peak_intensity.py \
-                $SAMPLE.$STRAND.mirna.$LENGTH.notSIF.gz \
-                $GDARCHIVE $TRACKS \
-                >> $CYTO_ATTR
+            python $BIN/peak_intensity.py $SAMPLE.$STRAND.mirna.$LENGTH.notSIF.gz $GDARCHIVE $TRACKS >> $CYTO_ATTR
         done
     done
 fi
