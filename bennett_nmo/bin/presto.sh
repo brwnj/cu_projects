@@ -24,7 +24,7 @@ DOC
 # always gzip everything upon completion
 function cleanup () {
 	echo "zipping fastqs"
-	for f in `find $DATA -name *fast[qa]`; do
+	for f in `find $DATA/* -name *fast[qa]`; do
 		echo "gzip -f $f" | bsez -J cleaningup -P $PI
 	done
 }
@@ -388,20 +388,96 @@ wait
 
 # Process log files
 for (( i = 0; i < ${#SAMPLES[@]}; i++ )); do
+	jname=tables
+    sample=${SAMPLES[$i]}
+	outdir=$RESULTS/$sample
 
-	# writes a table with .tab ext
-	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_quality.log -f ID QUALITY --outdir something --outname $sample_$jname...
-	ParseLog.py -l $RESULTS/logs/${sample}_*_filter_primers.log -f ID BARCODE PRIMER ERROR
-	ParseLog.py -l $RESULTS/logs/${sample}_*_consensus_pass.log -f BARCODE BCCOUNT CONSCOUNT PRIMER PRCOUNT PRFREQ DIVERSITY
-	ParseLog.py -l $RESULTS/logs/${sample}_assemble_pass.log -f ID OVERLAP LENGTH PVAL ERROR
-	ParseLog.py -l $RESULTS/logs/${sample}_missing_pass.log -f ID MISSING
-	ParseLog.py -l $RESULTS/logs/${sample}_pipeline.log -f END SEQUENCES PAIRS SETS PASS FAIL UNIQUE DUPLICATE UNDETERMINED PARTS OUTPUT
+	if [[ ! -d $outdir ]]; then
+		mkdir -p $outdir
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R1_quality_pass.log
+	output_file=$outdir/$sample/${sample}_R1_quality_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID QUALITY --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R2_quality_pass.log
+	output_file=$outdir/$sample/${sample}_R2_quality_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID QUALITY --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R1_primers_pass.log
+	output_file=$outdir/$sample/${sample}_R1_primers_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID BARCODE PRIMER ERROR --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R2_primers_pass.log
+	output_file=$outdir/$sample/${sample}_R2_primers_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID BARCODE PRIMER ERROR --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R1_consensus_pass.log
+	output_file=$outdir/$sample/${sample}_R1_consensus_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f BARCODE BCCOUNT CONSCOUNT PRIMER PRCOUNT PRFREQ DIVERSITY --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_R2_consensus_pass.log
+	output_file=$outdir/$sample/${sample}_R2_consensus_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f BARCODE BCCOUNT CONSCOUNT PRIMER PRCOUNT PRFREQ DIVERSITY --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_assemble_pass.log
+	output_file=$outdir/$sample/${sample}_assemble_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID OVERLAP LENGTH PVAL ERROR --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_missing_pass.log
+	output_file=$outdir/$sample/${sample}_missing_pass_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f ID MISSING --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$RESULTS/logs/${sample}_pipeline.log
+	output_file=$outdir/$sample/${sample}_pipeline_table.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+		cmd="ParseLog.py -l $input_file -f END SEQUENCES PAIRS SETS PASS FAIL UNIQUE DUPLICATE UNDETERMINED PARTS OUTPUT --outdir $outdir"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file=$DATA/at_least_2/${sample}_atleast-2.fasta.gz
+	output_file=$outdir/$sample/${sample}_atleast-2_header.tab
+	if [[ -f $input_file && ! -f $output_file ]]; then
+        runscript=${jname}_${sample}.sh
+		echo "gunzip -f $input_file" > $runscript
+		echo "ParseHeaders.py table -s ${input_file/.gz} -f ID PRCONS CONSCOUNT DUPCOUNT --outdir $outdir" >> $runscript
+		echo "gzip -f ${input_file/.gz}" >> $runscript
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K < $runscript &
+	fi
 
 done
 wait
-exit
 
 # gzip all of the logs
-for f in $RESULTS/logs/*.log; do
-	echo "gzip -f $f" | bsez -J cleaningup -P $PI
-done
+# for f in $RESULTS/logs/*.log; do
+# 	echo "gzip -f $f" | bsez -J cleaningup -P $PI
+# done
+#
+# # gzip the summary tables
+# for f in $RESULTS/*/*.tab; do
+# 	echo "gzip -f $f" | bsez -J cleaningup -P $PI
+# done
