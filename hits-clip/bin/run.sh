@@ -368,38 +368,119 @@ wait
 
 
 # map seeds
+jname=map_seeds
+for (( i = 0; i < ${#MAPSEEDS[@]}; i++ )); do
+	sample=${MAPSEEDS[$i]}
 
-#     POSPEAK="$DATA/$SAMPLE.pos.peaks.trimmed.bed.gz"
-#     NEGPEAK="$DATA/$SAMPLE.neg.peaks.trimmed.bed.gz"
-#
-#     SIF="$SAMPLE.network.unfiltered.sif"
-#     FUNCTION="$SAMPLE.function.noa"
-#
-#     RUN=$SAMPLE.mirnaseeds.sh
-#
-#
-# for STRAND in pos neg; do
-#     for (( i = 0; i < \${#FASTAS[@]}; i++ )); do
-#         SEED_FASTA=\${FASTAS[\$i]}
-#         SEED_LENGTH=\${LENGTHS[\$i]}
-#
-#         POSNOTSIF=\"$SAMPLE.pos.mirna.\$SEED_LENGTH.notSIF.gz\"
-#         NEGNOTSIF=\"$SAMPLE.neg.mirna.\$SEED_LENGTH.notSIF.gz\"
-#
-#         if [ \"\$STRAND\" == \"pos\" ]; then
-#             python $SRC/aggregate_peaks.py $POSPEAK $ANNOTATION \$SEED_FASTA $GDARCHIVE | gzip -c > \$POSNOTSIF
-#             awk -v len=\"\$SEED_LENGTH\" -c header '{split(\$1,seed,\"|\"); print seed[1]\"\t\"len\"\t\"\$5}' \$POSNOTSIF > $SIF
-#         else
-#             python $SRC/aggregate_peaks.py $NEGPEAK $ANNOTATION \$SEED_FASTA $GDARCHIVE | gzip -c > \$NEGNOTSIF
-#             awk -v len=\"\$SEED_LENGTH\" -c header '{split(\$1,seed,\"|\"); print seed[1]\"\t\"len\"\t\"\$5}' \$NEGNOTSIF >> $SIF
-#         fi
-#
-#     done
-# done
-#
-# echo "functionalCategory" > $FUNCTION
-# awk -c header '{print \$1\" = miRNA\n\"\$3\" = Gene\"}' $SIF | sort | uniq >> $FUNCTION
-#
+	for strand in pos neg; do
+
+		input_file=$RESULTS/$sample/peaks/$strand/postprocessing/${sample}_${strand}_trimmed.bed.gz
+
+		# 8 bp seed length
+		outdir=$RESULTS/$sample/mirbase_mapping/8_bp_seed
+
+		if [[ ! -d $outdir ]]; then
+			mkdir -p $outdir
+		fi
+
+		output_file=$outdir/${sample}_${strand}_mapped.txt.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/aggregate_peaks.py $input_file $GENEANNOTATION $SEEDFASTA8 $GENOMEDATA | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+		# 7 bp seed length
+		outdir=$RESULTS/$sample/mirbase_mapping/7_bp_seed
+
+		if [[ ! -d $outdir ]]; then
+			mkdir -p $outdir
+		fi
+
+		output_file=$outdir/${sample}_${strand}_mapped.txt.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/aggregate_peaks.py $input_file $GENEANNOTATION $SEEDFASTA7 $GENOMEDATA | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+
+		# rmdup
+		input_file=$RESULTS/$sample/peaks/$strand/postprocessing/${sample}_${strand}_rmdup_trimmed.bed.gz
+		outdir=$RESULTS/$sample/mirbase_mapping/8_bp_seed
+		output_file=$outdir/${sample}_${strand}_rmdup_mapped.txt.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/aggregate_peaks.py $input_file $GENEANNOTATION $SEEDFASTA8 $GENOMEDATA | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+		outdir=$RESULTS/$sample/mirbase_mapping/7_bp_seed
+		output_file=$outdir/${sample}_${strand}_rmdup_mapped.txt.gz
+
+		if [[ ! -f $output_file ]]; then
+			cmd="python $SRC/aggregate_peaks.py $input_file $GENEANNOTATION $SEEDFASTA7 $GENOMEDATA | gzip -c > $output_file"
+			bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+		fi
+
+	done
+done
+wait
+
+
+# miRNA abundances for singletons
+jname=mirna_abundances
+for (( i = 0; i < ${#SINGLETONS[@]}; i++ )); do
+	sample=${SINGLETONS[$i]}
+
+	# just going to use the 7bp seed
+	# it'll be less stringent, but is really only used to filter present/not present
+	# the genomedata archive is used to obtain the values
+	input_file_1=$RESULTS/$sample/mirbase_mapping/7_bp_seed/${sample}_neg_mapped.txt.gz
+	input_file_2=$RESULTS/$sample/mirbase_mapping/7_bp_seed/${sample}_pos_mapped.txt.gz
+	outdir=$RESULTS/$sample/mirna_abundance/
+
+	if [[ ! -d $outdir ]]; then
+		mkdir -p $outdir
+	fi
+
+	output_file=$outdir/${sample}_abundance.txt.gz
+
+	if [[ ! -f $output_file ]]; then
+		cmd="python $SRC/mirna_abundance.py $MIRBASEREGIONS $GENOMEDATA --txt $input_file_1 $input_file_2 --tracks ${sample}_pos ${sample}_neg | gzip -c > $output_file"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+	input_file_1=$RESULTS/$sample/mirbase_mapping/7_bp_seed/${sample}_neg_rmdup_mapped.txt.gz
+	input_file_2=$RESULTS/$sample/mirbase_mapping/7_bp_seed/${sample}_pos_rmdup_mapped.txt.gz
+	outdir=$RESULTS/$sample/mirna_abundance/
+
+	if [[ ! -d $outdir ]]; then
+		mkdir -p $outdir
+	fi
+
+	output_file=$outdir/${sample}_rmdup_abundance.txt.gz
+
+	if [[ ! -f $output_file ]]; then
+		cmd="python $SRC/mirna_abundance.py $MIRBASEREGIONS $GENOMEDATA --txt $input_file_1 $input_file_2 --tracks ${sample}_pos_rmdup ${sample}_neg_rmdup | gzip -c > $output_file"
+		bsub -J $jname -o $jname.%J.out -e $jname.%J.err -P $PI -K $cmd &
+	fi
+
+done
+wait
+
+
+# miRNA abundances for reps
+# is this even a priority?
+# for group in "${!REPLICATES[@]}"; do
+# 	samples=${REPLICATES[$group]}
+# 	tracks=""
+# 	for sample in $samples; do
+# 		for strand in pos neg; do
+# 			tracks="$tracks ${sample}_${strand}"
+# 			# something for input file paths
+# 		done
+# 	done
 # done
 
 
