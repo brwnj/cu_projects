@@ -24,7 +24,7 @@ DOC
 # always gzip everything upon completion
 function cleanup () {
 	echo "zipping fastqs"
-	for f in `find $DATA/* -name *fast[qa]`; do
+	for f in `find $DATA/*/* -name *fast[qa]`; do
 		echo "gzip -f $f" | bsez -J cleaningup -P $PI
 	done
 }
