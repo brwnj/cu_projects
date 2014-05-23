@@ -39,6 +39,11 @@ FILTERDOWNSTREAMBASES=25
 PEAKSNONUNIQUEQ=0.00001
 PEAKSUNIQUEQ=0.01
 
+SEEDFASTA8=/vol1/home/brownj/ref/mirbase/20/mature.hsa.8mer_seed.fa.gz
+SEEDFASTA7=/vol1/home/brownj/ref/mirbase/20/mature.hsa.7mer_seed.fa.gz
+GENEANNOTATION=/vol1/home/brownj/ref/hg19/refseq.wholegene.bed.gz
+MIRBASEREGIONS=/vol1/home/brownj/ref/mirbase/20/mature.hsa.bed.gz
+
 declare -A REPLICATES
 REPLICATES=([BT474]="PK21 PK41 PK52"
 		[BT474estr]="PK22 PK53"
@@ -67,6 +72,33 @@ MCF7-6_ATT
 MCF7-0_TGT
 MCF7-24_CTG
 MCF7-6_GGC
+)
+
+# singletons as well as group names
+MAPSEEDS=(PK23
+PK33
+PK61
+PK62
+PK63
+MCF10A
+PK12-0
+PK12-24
+PK12-6
+MCF7-0
+MCF7-6
+MCF7-24
+MCF7-0_CAC
+MCF7-24_GAT
+MCF7-6_ATT
+MCF7-0_TGT
+MCF7-24_CTG
+MCF7-6_GGC
+BT474
+BT474estr
+HELA
+MCF7
+MCF7estr
+MDA231
 )
 
 declare -A COLORS
