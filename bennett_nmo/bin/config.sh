@@ -64,7 +64,13 @@ PI=bennett
 RESULTS=$HOME/projects/bennett_nmo/results/common
 DATA=$HOME/projects/bennett_nmo/data/common
 R1PRIMERS=$DATA/r1_primers.fasta
+if [[ -f $R1PRIMERS.gz ]]; then
+	gunzip -f $R1PRIMERS.gz
+fi
 R2PRIMERS=$DATA/r2_primers.fasta
+if [[ -f $R2PRIMERS.gz ]]; then
+	gunzip -f $R2PRIMERS.gz
+fi
 R2PRIMEROFFSET=$DATA/r2_primers_offsets-reverse.tab
 UMILENGTH=8
 
