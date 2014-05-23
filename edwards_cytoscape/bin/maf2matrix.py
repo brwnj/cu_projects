@@ -16,13 +16,18 @@ def main(data_file, gene, effect, vtype, patient, find_effect, find_type, networ
     df = df[(df[effect].isin(find_effect)) & (df[vtype].isin(find_type))]
 
     interactions = Counter()
-    for patient, gdf in df.groupby(patient):
+    for _, gdf in df.groupby(patient):
         # all genes for an individual
         genes = gdf[gene].values.tolist()
+        seen = set()
         # all pair combinations for genes list
         for (a, b) in combinations(genes, 2):
             # add pairs to counter
-            interactions.update(["%s:%s" % (a, b)])
+            # but only count a gene:gene interaction once per patient
+            pair = "%s:%s" % (a, b)
+            if pair in seen: continue
+            seen.add(pair)
+            interactions.update([pair])
 
     with open(network_file, 'w') as out:
         interaction_type = "pp"
@@ -34,9 +39,10 @@ def main(data_file, gene, effect, vtype, patient, find_effect, find_type, networ
             if source == target: continue
             print >>out, "%s\t%s\t%s\t%d" % (source, interaction_type, target, comutation_count)
 
-    # if a patient has multiple mutations in the same gene, those are counted in this metric
-    # min_comutation has no effect on these counts
-    total_counts = df[gene].value_counts()
+    total_counts = Counter()
+    # this is clearly not the best way of doing this...
+    for (g, s), count in df.groupby([gene, patient]).size().iteritems():
+        total_counts.update([g])
     with open(nodeattrs_file, 'w') as out:
         print >>out, "\t".join(['source', 'total_mutations'])
         for gene_name, count in total_counts.iteritems():
