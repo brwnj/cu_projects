@@ -5,12 +5,14 @@ sequences and report parent genes. '''
 
 import sys
 import string
-from toolshed import reader, nopen
+
 from genomedata import Genome
+from itertools import groupby
+from toolshed import reader, nopen
 from collections import defaultdict, Counter
 
 __version__ = '1.0'
-__author__ = 'Jay Hesselberth; brwnj'
+__author__ = 'Jay Hesselberth; joe brown'
 
 
 def revcomp(s, _comp=string.maketrans('ATCG', 'TAGC')):
@@ -101,7 +103,7 @@ def readfa(fa):
                 yield name, seq
 
 
-def load_seeds(seed_fastafilename, verbose):
+def load_seeds(seed_fastafile, verbose):
     if verbose:
         print >>sys.stderr, ">> loading seeds..."
 
@@ -112,28 +114,28 @@ def load_seeds(seed_fastafilename, verbose):
     return seeds
 
 
-def load_peaks(peak_bedfilename, verbose):
+def load_peaks(peak_bedfile, verbose):
 
     if verbose:
         print >>sys.stderr, ">> loading peaks..."
 
     peaks = defaultdict(dict)
 
-    for peak in reader(peak_bedfilename, header="chrom start stop name score strand".split()):
+    for peak in reader(peak_bedfile, header="chrom start stop name score strand".split()):
             data = int(peak['stop'])
-            peaks[peak['chrom'][int(peak['start']] = data
+            peaks[peak['chrom']][int(peak['start'])] = data
 
     return peaks
 
 
-def load_genes(gene_bedfilename, verbose):
+def load_genes(gene_bedfile, verbose):
 
     if verbose:
         print >>sys.stderr, ">> loading genes..."
 
     genes = defaultdict(dict)
 
-    for gene in reader(gene_bedfilename, header="chrom start stop name score strand".split()):
+    for gene in reader(gene_bedfile, header="chrom start stop name score strand".split()):
         data = (int(gene['stop']), gene['name'], int(gene['score']), gene['strand'])
         genes[gene['chrom']][int(gene['start'])] = data
 
