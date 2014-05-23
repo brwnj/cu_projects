@@ -1,104 +1,83 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-Takes miRNA coords in BED format. Outputs:
-
-hsa-miR-429 = 11872.0
-hsa-miR-4251 = 0
-hsa-miR-4689 = 5.0
+Calculate miRNA abundances for singletons or groups with replicates.
 """
 
-import argparse
+
 import os
 import sys
-from toolshed import reader
-from pybedtools import BedTool
-from genomedata import Genome
+import argparse
 from numpy import nansum
+from toolshed import reader
+from genomedata import Genome
+from pybedtools import BedTool
 from collections import defaultdict
 
 
-def peak_intensity(bed, genomedata, track, sif):
+def peak_intensity(bed, genomedata, trackname, txt):
     """For each BED entry (miRNA coordinate), get the max peak intensity.
-    
+
     bed - reference file with miRNA name, coordinate, and strand
-    genomedata - intensity archive
-    track - information organized in the archive as tracks
-    sif - network file. anything outside of this should be ignored
+    genomedata - genomedata archive
+    trackname - names of tracks for this sample or group
+    txt - mapped seeds and their gene location
     """
-    bed = BedTool(bed)
-    
-    network = mirs_in_sif(sif)
-    mir_tracker = defaultdict(list)
+    mir_bed = BedTool(bed)
+
+    observed_mirs = parse_txt(txt)
+    observed_intensities = defaultdict(list)
     with Genome(genomedata) as genome:
-        for b in bed:
-            try:
-                # filter out any chromosomes not in the genome data archive
-                chromosome = genome[b.chrom]
-                # filter out any mirs not present in the network
-                lookup = network[b.name]
-            except KeyError:
-                continue
-            
-            strand = ""
-            if b.strand is "+":
-                strand = "pos"
-            else:
-                strand = "neg"
-            
-            strand_corrected = []
-            for i, t in enumerate(track):
-                strand_corrected.append("%s.%s" % (t, strand))
-            
+        for b in mir_bed:
+            # filter out any mirs not present in the network
+            if not b.name in observed_mirs: continue
+
+            chromosome = genome[b.chrom]
+
+            strand = "pos" if b.strand == "+" else "neg"
+            selected_tracks = [t for t in trackname if strand in t]
+
             # intensities across specified tracks for peak region
-            intensities = chromosome[b.start:b.stop, strand_corrected]
+            intensities = chromosome[b.start:b.stop, selected_tracks]
             max_intensity = get_peak_max(intensities)
-            
-            mir_tracker[b.name].append(max_intensity)
-            
-            # this was for printing bed format
-            #fields = (b.chrom, b.start, b.stop, b.name, max_intensity, b.strand)
-            #print "\t".join(map(str, fields))
-    
+            observed_intensities[b.name].append(max_intensity)
+
     # taking only the maximum if a mir has multiple locations
-    for mirname, intensities in mir_tracker.iteritems():
-        fields = (mirname, "=", float(max(intensities)))
-        print " ".join(map(str, fields))
+    for mir_name, values in observed_intensities.iteritems():
+        # values is a list of what was observed for a given miRNA
+        # by name. some are listed in the bed more than once,
+        # so just take the max from whichever region
+        print "{name}\t{max_value}".format(name=mir_name, max_value=max(values))
 
 
 def get_peak_max(intensities):
     """Finds the maximum peak intensity value from ndarray.
     """
-    maximum = 0
-    for intensity in intensities:
-        # sum intensity across samples
-        sum_intensity = nansum(intensity)
-        
-        if sum_intensity > maximum:
-            maximum = sum_intensity
-    return maximum
+    sums = [nansum(i) for i in intensities]
+    return max(sums)
 
 
-def mirs_in_sif(sif):
+def parse_txt(txt):
     """returns dictionary of miRNAs present in the network."""
-    network = {}
-    for s in reader(sif, header="mir op gene".split()):
-        network[s['mir']] = s['gene']
-    return network
+    observed_mirs = set()
+    for t in txt:
+        for toks in reader(t, header=['name', 'chrom', 'start', 'stop', 'gene']):
+            mir_name = toks['name'].split("|")[0]
+            observed_mirs.add(mir_name)
+    return observed_mirs
 
 
 def main():
     p = argparse.ArgumentParser(description=__doc__,
                    formatter_class=argparse.RawDescriptionHelpFormatter)
-    
-    p.add_argument('bed', help='miRNA coordinates')
-    p.add_argument('sif', help='Cytoscape network file')
+
+    p.add_argument('bed', help='miRNA coordinates as bed file')
     p.add_argument('genomedata', help="genome data archive")
-    p.add_argument('trackname', nargs='+',
-                    help='the names of tracks corresponding to study case')
+    p.add_argument('--tracks', nargs='+', help='the names of tracks corresponding to sample; including positive and negative tracks')
+    p.add_argument('--txt', nargs="+", help='mapped seeds text file(s). format: mir|seed, chr, start, stop, gene.')
 
     args = p.parse_args()
-    peak_intensity(args.bed, args.genomedata, args.trackname, args.sif)
+    peak_intensity(args.bed, args.genomedata, args.tracks, args.txt)
 
 
 if __name__ == "__main__":
