@@ -8,10 +8,6 @@
 + new samples through pipeline
 + ucsc hub
 
-+ tracks
-+ peaks; time series - emerging peaks; peaks that go away
-+ miRNA abundance
-
 #Ribosome profiling
 + uORF stuff
 	+ start codons within the 5' UTRs email from momie
