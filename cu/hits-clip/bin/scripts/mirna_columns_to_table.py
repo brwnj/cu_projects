@@ -32,7 +32,7 @@ def main():
             cases[f[:-4]][b.name] = '0'
         for mirna in reader(f, header="name abundance".split()):
             cases[f[:-4]][mirna['name']] = mirna['abundance']
-            
+
     caselist = sorted(cases.keys())
     mirnas = [b.name for b in BedTool(args.reference)]
     print "#mirna_id\t" + "\t".join(k for k in caselist)
