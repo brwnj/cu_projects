@@ -153,7 +153,7 @@ def run_kmernorm(fastq, **kwargs):
 
 
 def fasta_complexity_filter(fasta, bases='ACTG', threshold=0.01):
-    out = fasta.rsplit(".fasta", 1)[0] + "lowcomp_filter.%f.fasta" % threshold
+    out = fasta.rsplit(".fasta", 1)[0] + (".lowcomp_filter%.3f.fasta" % threshold).lstrip("0")
     read_count = 0
     kept = 0.
 
@@ -174,6 +174,8 @@ def fasta_complexity_filter(fasta, bases='ACTG', threshold=0.01):
 
     logging.info("low complexity filtering retained %d of %d (%0.3f)", \
                     kept, read_count, kept / read_count * 100)
+    return out
+
 
 def fastq_complexity_filter(fastq, bases='ACTG', threshold=0.01):
     """
@@ -190,7 +192,7 @@ def fastq_complexity_filter(fastq, bases='ACTG', threshold=0.01):
                 assert all(r) and len(r) == 8
                 yield r[0], r[1], r[3], r[4], r[5], r[7]
 
-    out = fastq.rsplit(".fastq", 1)[0] + ".lowcomp_filter.%f.fastq" % threshold
+    out = fastq.rsplit(".fastq", 1)[0] + (".lowcomp_filter%.3f.fasta" % threshold).lstrip("0")
     read_count = 0
     kept = 0.
 
@@ -216,7 +218,6 @@ def fastq_complexity_filter(fastq, bases='ACTG', threshold=0.01):
 
     logging.info("low complexity filtering retained %d of %d (%0.3f)", \
                     kept, read_count, kept / read_count * 100)
-
     return out
 
 
@@ -287,11 +288,7 @@ def assembly_stats(fasta):
     logging.info("N50: %s", nfifty)
 
 
-def read_counts(inputfq, kmer, compfilteredfq, compfilteredfa):
-    count = fxreads(inputfq)
-    logging.info("Input reads: %s", count)
-    count = fxreads(kmer)
-    logging.info("Normalized read count: %s", count)
+def read_counts(compfilteredfq, compfilteredfa):
     count = fxreads(compfilteredfq)
     logging.info("Low Complexity Filtered Illumina reads: %s", count)
     count = fxreads(compfilteredfa)
@@ -330,19 +327,25 @@ def send_email(to="scgc@bigelow.org", subject="", message="", attachment=None):
     return runcmd(cmd)
 
 
-def tar(src):
-    dst = src + ".tgz"
-    cmd = "tar -cvzf %s %s" % (dst, src)
-    runcmd(cmd)
-    shutil.rmtree(src)
-    return dst
-
-
-def gzip_all(src):
+def gzip_all(src, ignore=['.gz']):
+    if not '.gz' in ignore: ignore.append('.gz')
     cmds = []
+
     for f in os.listdir(src):
-        if f.endswith("gz"): continue
-        cmds.append("gzip -f %s" % op.join(src, f))
+        f = op.join(src, f)
+        if op.isdir(f):
+            gzip_all(f, ignore=ignore)
+            continue
+
+        append = True
+        for extension in ignore:
+            if f.endswith(extension):
+                append = False
+                break
+
+        if append:
+            cmds.append("gzip -f %s" % f)
+
     if len(cmds) > 0:
         runcmd(cmds)
 
@@ -355,13 +358,17 @@ def main(sample, fastq, fasta, output, email, threads=16):
 
     try:
         tmpdir = tf.mkdtemp("_tmp", "%s_" % sample, tf.tempdir)
-        tmpfastq = op.join(tmpdir, fastq_name)
-        shutil.copyfile(fastq, tmpfastq)
+        # tmpfastq = op.join(tmpdir, fastq_name)
+        # shutil.copyfile(fastq, tmpfastq)
         tmpfasta = op.join(tmpdir, fasta_name)
         shutil.copyfile(fasta, tmpfasta)
 
-        kmerfq = run_kmernorm(tmpfastq, k=19, t=80, c=2)
-        compfilteredfq = fastq_complexity_filter(kmerfq)
+        # kmerfq = run_kmernorm(tmpfastq, k=19, t=80, c=2)
+        # compfilteredfq = fastq_complexity_filter(kmerfq)
+
+        # already have this file from previous assembly... skipping to here
+        compfilteredfq = op.join(tmpdir, fastq_name)
+        shutil.copyfile(fastq, compfilteredfq)
         compfilteredfa = fasta_complexity_filter(tmpfasta)
 
         if op.getsize(compfilteredfq) <= 0 or op.getsize(compfilteredfa) <= 0:
@@ -375,20 +382,17 @@ def main(sample, fastq, fasta, output, email, threads=16):
         # moves spades contigs.fasta and adds sample to header name
         renamed_hdrs = postprocess_spades(spades_fasta, sample, tmpdir)
 
-        read_counts(tmpfastq, kmerfq, compfilteredfq, compfilteredfa)
+        read_counts(compfilteredfq, compfilteredfa)
         assembly_stats(renamed_hdrs)
 
         sizefilteredfa = filter_fasta_by_size(renamed_hdrs, 2000)
         assembly_stats(sizefilteredfa)
 
-        # archive/gzip all of the spades output
-        spades_dir = tar(spades_dir)
-
     finally:
         # gzip all of the files in the temp dir
         gzip_all(tmpdir)
         # copy over the files
-        copyfiles(tmpdir, output, r=None, v=None, h=None, u=None, progress=None)
+        runcmd("cp -R -v {src}/* {dst}".format(src=tmpdir, dst=output))
         # delete the temp working directory
         shutil.rmtree(tmpdir)
 
@@ -402,7 +406,8 @@ def main(sample, fastq, fasta, output, email, threads=16):
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('sample', help="name of sample being processed; used in file naming")
-    p.add_argument('fastq', help="interweaved, paired-end reads in fastq format")
+    # p.add_argument('fastq', help="interweaved, paired-end reads in fastq format")
+    p.add_argument('fastq', help="normed and filtered fastq")
     p.add_argument('fasta', help="PACBIO reads to use in co-assembly")
     p.add_argument('output', help="location to store output files")
     p.add_argument('--email', default="", help="send completion alert")
