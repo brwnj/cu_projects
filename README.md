@@ -1,6 +1,5 @@
 # TODO
-+ public_html
-+ access to geneous
++ kmer norm testing
 
 # modules
 + module use /mnt/scgc/software/modulefiles/common
@@ -11,11 +10,6 @@ btupper@scgc_cruncher01 ~ $ cd /mnt/scgc/software/scgc_python
 btupper@scgc_cruncher01 scgc_python [master]$ git pull origin master
 btupper@scgc_cruncher01 scgc_python [master]$ sudo python setup.py install
 ```
-
-# LIMS
-+ network connection speeds
-+ LIMS; moving it over to compute_temp
-+ file storage
 
 # installing python2.7 and dependencies
 https://github.com/0xdata/h2o/wiki/Installing-python-2.7-on-centos-6.3.-Follow-this-sequence-exactly-for-centos-machine-only
@@ -35,7 +29,6 @@ pandas
 numpy
 scipy
 scgc...
-
 
 yum groupinstall "Development tools"
 yum install zlib-devel bzip2-devel openssl-devel ncurses-devel
