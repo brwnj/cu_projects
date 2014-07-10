@@ -153,7 +153,7 @@ def run_kmernorm(fastq, **kwargs):
 
 
 def fasta_complexity_filter(fasta, bases='ACTG', threshold=0.01):
-    out = fasta.rsplit(".fasta", 1)[0] + (".lowcomp_filter%.3f.fasta" % threshold).lstrip("0")
+    out = fasta.rsplit(".fasta", 1)[0] + ".lowcomp_filter" + ("%.3f" % threshold).lstrip("0") + ".fasta"
     read_count = 0
     kept = 0.
 
@@ -192,7 +192,7 @@ def fastq_complexity_filter(fastq, bases='ACTG', threshold=0.01):
                 assert all(r) and len(r) == 8
                 yield r[0], r[1], r[3], r[4], r[5], r[7]
 
-    out = fastq.rsplit(".fastq", 1)[0] + (".lowcomp_filter%.3f.fasta" % threshold).lstrip("0")
+    out = fastq.rsplit(".fastq", 1)[0] + ".lowcomp_filter" + ("%.3f" % threshold).lstrip("0") + ".fasta"
     read_count = 0
     kept = 0.
 
