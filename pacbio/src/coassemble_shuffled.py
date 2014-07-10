@@ -289,9 +289,9 @@ def assembly_stats(fasta):
 
 
 def read_counts(compfilteredfq, compfilteredfa):
-    count = fxreads(compfilteredfq)
+    count = fqreads(compfilteredfq)
     logging.info("Low Complexity Filtered Illumina reads: %s", count)
-    count = fxreads(compfilteredfa)
+    count = fqreads(compfilteredfa)
     logging.info("Low Complexity Filtered PacBio reads: %s", count)
 
 
