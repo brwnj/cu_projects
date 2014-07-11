@@ -350,7 +350,7 @@ def gzip_all(src, ignore=['.gz']):
         runcmd(cmds)
 
 
-def main(sample, fastq, fasta, output, email, threads=16):
+def main(sample, fastq, fasta, output, kmernorm, complexity_filter, email, threads=16):
     verbose_logging(**locals())
 
     fastq_name = op.basename(fastq)
@@ -358,31 +358,41 @@ def main(sample, fastq, fasta, output, email, threads=16):
 
     try:
         tmpdir = tf.mkdtemp("_tmp", "%s_" % sample, tf.tempdir)
-        # tmpfastq = op.join(tmpdir, fastq_name)
-        # shutil.copyfile(fastq, tmpfastq)
+        tmpfastq = op.join(tmpdir, fastq_name)
+        shutil.copyfile(fastq, tmpfastq)
         tmpfasta = op.join(tmpdir, fasta_name)
         shutil.copyfile(fasta, tmpfasta)
 
-        # kmerfq = run_kmernorm(tmpfastq, k=19, t=80, c=2)
-        # compfilteredfq = fastq_complexity_filter(kmerfq)
+        fq_spades_input = tmpfastq
+        fa_spades_input = tmpfasta
 
-        # already have this file from previous assembly... skipping to here
-        compfilteredfq = op.join(tmpdir, fastq_name)
-        shutil.copyfile(fastq, compfilteredfq)
-        compfilteredfa = fasta_complexity_filter(tmpfasta)
+        # run kmernorm on the illumina fastq
+        if kmernorm:
+            kmerfq = run_kmernorm(tmpfastq, k=19, t=80, c=2)
+            fq_spades_input = kmerfq
 
-        if op.getsize(compfilteredfq) <= 0 or op.getsize(compfilteredfa) <= 0:
-            logging.warning("low complexity filtered has removed all of the reads")
-            sys.exit(0)
+        # complexity filter on fastq and fasta
+        if complexity_filter:
+            compfilteredfq = lowcomp_filter(fq_spades_input)
+            fq_spades_input = compfilteredfq
+
+            compfilteredfa = fasta_complexity_filter(fa_spades_input)
+            fa_spades_input = compfilteredfa
+
+            if op.getsize(compfilteredfq) <= 0 or op.getsize(compfilteredfa) <= 0:
+                logging.warning("low complexity filtered has removed all of the reads")
+                sys.exit(0)
 
         spades_dir = tmpdir + "/spades"
-        spades_fasta = spades(**{'pacbio':compfilteredfa, 'pe1-12':compfilteredfq,
+        # coassembly with spades
+        spades_fasta = spades(**{'pacbio':fa_spades_input, 'pe1-12':fq_spades_input,
                                  't':threads, 'o':spades_dir, 'sc':None, 'careful':None})
 
         # moves spades contigs.fasta and adds sample to header name
         renamed_hdrs = postprocess_spades(spades_fasta, sample, tmpdir)
 
-        read_counts(compfilteredfq, compfilteredfa)
+        # could also add tmpfastq and tmpfasta
+        read_counts(fq_spades_input, fa_spades_input)
         assembly_stats(renamed_hdrs)
 
         sizefilteredfa = filter_fasta_by_size(renamed_hdrs, 2000)
@@ -406,10 +416,11 @@ def main(sample, fastq, fasta, output, email, threads=16):
 if __name__ == '__main__':
     p = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
     p.add_argument('sample', help="name of sample being processed; used in file naming")
-    # p.add_argument('fastq', help="interweaved, paired-end reads in fastq format")
-    p.add_argument('fastq', help="normed and filtered fastq")
+    p.add_argument('fastq', help="interweaved, paired-end reads in fastq format")
     p.add_argument('fasta', help="PACBIO reads to use in co-assembly")
     p.add_argument('output', help="location to store output files")
+    p.add_argument('--kmernorm', action='store_true', help="run kmer normalization prior to spades")
+    p.add_argument('--complexity-filter', action='store_true', help="filter out low complexity reads before running spades")
     p.add_argument('--email', default="", help="send completion alert")
     p.add_argument('--threads', default=16, type=int, help="threads for spades to utilize")
     args = p.parse_args()
@@ -425,4 +436,5 @@ if __name__ == '__main__':
                         filemode='wb')
 
     tf.tempdir = tf.gettempdir()
-    main(args.sample, args.fastq, args.fasta, args.output, args.email, args.threads)
+    main(args.sample, args.fastq, args.fasta, args.output, args.kmernorm, \
+            args.complexity_filter, args.email, args.threads)
