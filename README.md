@@ -1,5 +1,5 @@
 # TODO
-+ kmer norm testing
++ kmer norm testing (normalization project)
 
 # modules
 + module use /mnt/scgc/software/modulefiles/common
