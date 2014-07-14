@@ -264,13 +264,9 @@ def assembly_stats(fasta):
     logging.info("N50: %s", nfifty)
 
 
-def read_counts(inputfq, kmer, compfiltered):
-    count = fqreads(inputfq)
-    logging.info("Input reads: %s", count)
-    count = fqreads(kmer)
-    logging.info("Normalized read count: %s", count)
-    count = fqreads(compfiltered)
-    logging.info("Low Complexity Filtered reads: %s", count)
+def read_counts(file, msg):
+    count = fqreads(file)
+    logging.info("%s: %s", msg, count)
 
 
 def filter_fasta_by_size(fasta, size=2000):
@@ -305,19 +301,25 @@ def send_email(to="scgc@bigelow.org", subject="", message="", attachment=None):
     return runcmd(cmd)
 
 
-def tar(src):
-    dst = src + ".tgz"
-    cmd = "tar -cvzf %s %s" % (dst, src)
-    runcmd(cmd)
-    shutil.rmtree(src)
-    return dst
-
-
-def gzip_all(src):
+def gzip_all(src, ignore=['.gz']):
+    if not '.gz' in ignore: ignore.append('.gz')
     cmds = []
+
     for f in os.listdir(src):
-        if f.endswith("gz"): continue
-        cmds.append("gzip -f %s" % op.join(src, f))
+        f = op.join(src, f)
+        if op.isdir(f):
+            gzip_all(f, ignore=ignore)
+            continue
+
+        append = True
+        for extension in ignore:
+            if f.endswith(extension):
+                append = False
+                break
+
+        if append:
+            cmds.append("gzip -f %s" % f)
+
     if len(cmds) > 0:
         runcmd(cmds)
 
@@ -353,20 +355,28 @@ def main(fastq, output, kmernorm, complexity_filter, email, threads=16):
         # moves spades contigs.fasta and adds sample to header name
         renamed_hdrs = postprocess_spades(spades_fasta, sample, tmpdir)
 
-        read_counts(tmpfastq, kmerfq, compfilteredfq)
-        assembly_stats(renamed_hdrs)
+        read_counts(tmpfastq, "Original fastq")
+        if kmernorm:
+            read_counts(kmerfq, "Digital normalization")
+        if complexity_filter:
+            read_counts(compfilteredfq, "Complexity filtered")
 
+        assembly_stats(renamed_hdrs)
         sizefilteredfa = filter_fasta_by_size(renamed_hdrs, 2000)
         assembly_stats(sizefilteredfa)
 
-        # archive/gzip all of the spades output
-        spades_dir = tar(spades_dir)
+    except Exception as e:
+        print e.__doc__
+        print e.message
+        raise
 
     finally:
+        # don't make another copy of the fastq
+        os.remove(tmpfastq)
         # gzip all of the files in the temp dir
         gzip_all(tmpdir)
         # copy over the files
-        copyfiles(tmpdir, output, r=None, v=None, h=None, u=None, progress=None)
+        runcmd("cp -R -v {src}/* {dst}".format(src=tmpdir, dst=output))
         # delete the temp working directory
         shutil.rmtree(tmpdir)
 

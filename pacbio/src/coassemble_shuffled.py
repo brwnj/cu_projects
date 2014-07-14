@@ -288,11 +288,9 @@ def assembly_stats(fasta):
     logging.info("N50: %s", nfifty)
 
 
-def read_counts(compfilteredfq, compfilteredfa):
-    count = fqreads(compfilteredfq)
-    logging.info("Low Complexity Filtered Illumina reads: %s", count)
-    count = fqreads(compfilteredfa)
-    logging.info("Low Complexity Filtered PacBio reads: %s", count)
+def read_counts(file, msg):
+    count = fqreads(file)
+    logging.info("%s: %s", msg, count)
 
 
 def filter_fasta_by_size(fasta, size=2000):
@@ -391,14 +389,26 @@ def main(sample, fastq, fasta, output, kmernorm, complexity_filter, email, threa
         # moves spades contigs.fasta and adds sample to header name
         renamed_hdrs = postprocess_spades(spades_fasta, sample, tmpdir)
 
-        # could also add tmpfastq and tmpfasta
-        read_counts(fq_spades_input, fa_spades_input)
-        assembly_stats(renamed_hdrs)
+        read_counts(tmpfastq, "Original Illumina")
+        read_counts(tmpfasta, "Original PacBio")
+        if kmernorm:
+            read_counts(kmerfq, "Digital normalization")
+        if complexity_filter:
+            read_counts(compfilteredfq, "Complexity filtered Illumina")
+            read_counts(compfilteredfa, "Complexity filtered PacBio")
 
+        assembly_stats(renamed_hdrs)
         sizefilteredfa = filter_fasta_by_size(renamed_hdrs, 2000)
         assembly_stats(sizefilteredfa)
 
+    except Exception as e:
+        print e.__doc__
+        print e.message
+        raise
+
     finally:
+        os.remove(tmpfastq)
+        os.remove(tmpfasta)
         # gzip all of the files in the temp dir
         gzip_all(tmpdir)
         # copy over the files

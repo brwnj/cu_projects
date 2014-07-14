@@ -1,6 +1,8 @@
 # TODO
 + kmer norm testing (normalization project)
 
++ subprocess.CalledProcessError: Command 'parallel-blastx -num_threads 40 -outfmt 5 -evalue 0.001 -db /dev/shm/AAA160J14coverage_IBAEa6_tmp/AAA160J14coverage.blastdb -query_gencode 11 -query /dev/shm/AAA160J14coverage_IBAEa6_tmp/GOS_good.fasta -max_target_seqs 1 -out /dev/shm/AAA160J14coverage_IBAEa6_tmp/AAA160J14coverage.bacterial_fraction.xml' returned non-zero exit status 1
+
 # modules
 + module use /mnt/scgc/software/modulefiles/common
 

@@ -6,7 +6,7 @@ I don't see any pacbio reads for sample:
 AAA164N20.TAGCTT.fastq
 DOC
 
-threads=40
+threads=30
 email=jmbrown@bigelow.org
 
 src=/mnt/scgc/data/PacBio/src
